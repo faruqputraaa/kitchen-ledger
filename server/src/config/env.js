@@ -9,6 +9,8 @@ const env = {
 
   clientUrl: process.env.CLIENT_URL,
 
+  sessionSecret: process.env.SESSION_SECRET,
+
   mongoUri: process.env.MONGODB_URI,
 
   jwt: {

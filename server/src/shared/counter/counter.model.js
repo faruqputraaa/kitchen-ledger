@@ -5,7 +5,6 @@ const counterSchema = new mongoose.Schema(
     module: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       lowercase: true,
     },

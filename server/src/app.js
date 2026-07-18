@@ -3,10 +3,16 @@ import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport';
+
 import requestLogger from './middlewares/requestLogger.middleware.js';
 import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
+import configurePassport from './config/passport.js';
 import routes from './routes/index.js';
+
+configurePassport();
 
 const app = express();
 
@@ -22,6 +28,16 @@ app.use(
 app.use(compression());
 
 app.use(cookieParser());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'kitchen-ledger-dev',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
 
 app.use(express.json());
 

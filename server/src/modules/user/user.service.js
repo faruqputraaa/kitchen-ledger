@@ -55,6 +55,12 @@ class UserService {
       provider: AUTH_PROVIDER.GOOGLE,
     });
   }
+    async findByGoogleId(googleId) {
+    return userRepository.findByGoogleId(
+      googleId
+    );
+  }
+
 
   async findByEmail(email) {
     return userRepository.findByEmail(email);

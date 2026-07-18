@@ -107,7 +107,6 @@ class AuthService {
       );
     }
 
-
     const user =
       await userService.findById(session.userId);
 
@@ -153,6 +152,27 @@ class AuthService {
     await refreshTokenService.deleteAllByUser(
       userId
     );
+  }
+
+  async googleLogin(user) {
+    await userService.updateLastLogin(user._id);
+
+    const accessToken = generateAccessToken({
+      id: user._id,
+      code: user.code,
+      role: user.role,
+    });
+
+    const refreshToken =
+      await refreshTokenService.create({
+        userId: user._id,
+      });
+
+    return {
+      accessToken,
+      refreshToken,
+      user: userMapper.toResponse(user),
+    };
   }
 }
 

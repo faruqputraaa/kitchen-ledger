@@ -1,9 +1,9 @@
 import { Router } from 'express';
+import passport from 'passport';
 
 import validate from '#middlewares/validation.middleware';
 import authMiddleware from '#middlewares/auth.middleware';
 import authRateLimit from '#middlewares/rateLimit.middleware';
-
 
 import {
   register,
@@ -12,6 +12,8 @@ import {
   logout,
   logoutAll,
   me,
+  googleAuth,
+  googleCallback,
 } from './auth.controller.js';
 
 import {
@@ -56,5 +58,20 @@ router.get(
   authMiddleware,
   me
 );
+
+router.get(
+  '/google',
+  googleAuth
+);
+
+router.get(
+  '/google/callback',
+  googleCallback
+);
+
+// TEST ONLY: balikin token sebagai JSON (tanpa frontend)
+router.get('/oauth/callback', (req, res) => {
+  res.json({ token: req.query.token ?? null });
+});
 
 export default router;
