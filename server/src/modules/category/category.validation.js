@@ -1,24 +1,12 @@
 import { z } from 'zod';
 
-import {
-  CATEGORY_STATUS,
-  CATEGORY_SORT_FIELDS,
-} from './category.constants.js';
+import { CATEGORY_STATUS, CATEGORY_SORT_FIELDS } from './category.constants.js';
 
 export const createCategorySchema = z.object({
   body: z.object({
-    name: z
-      .string()
-      .trim()
-      .min(2)
-      .max(100),
+    name: z.string().trim().min(2).max(100),
 
-    description: z
-      .string()
-      .trim()
-      .max(500)
-      .optional()
-      .default(''),
+    description: z.string().trim().max(500).optional().default(''),
   }),
 });
 
@@ -28,22 +16,11 @@ export const updateCategorySchema = z.object({
   }),
 
   body: z.object({
-    name: z
-      .string()
-      .trim()
-      .min(2)
-      .max(100)
-      .optional(),
+    name: z.string().trim().min(2).max(100).optional(),
 
-    description: z
-      .string()
-      .trim()
-      .max(500)
-      .optional(),
+    description: z.string().trim().max(500).optional(),
 
-    status: z
-      .enum(Object.values(CATEGORY_STATUS))
-      .optional(),
+    status: z.enum(Object.values(CATEGORY_STATUS)).optional(),
   }),
 });
 
@@ -57,21 +34,12 @@ export const categoryQuerySchema = z.object({
   query: z.object({
     page: z.coerce.number().default(1),
 
-    limit: z.coerce
-      .number()
-      .default(10),
+    limit: z.coerce.number().default(10),
 
     search: z.string().default(''),
 
-    sort: z
-      .enum(CATEGORY_SORT_FIELDS)
-      .default('createdAt'),
+    sort: z.enum(CATEGORY_SORT_FIELDS).default('createdAt'),
 
-    order: z
-      .enum([
-        'asc',
-        'desc',
-      ])
-      .default('desc'),
+    order: z.enum(['asc', 'desc']).default('desc'),
   }),
 });

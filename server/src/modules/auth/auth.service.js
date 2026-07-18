@@ -19,10 +19,9 @@ class AuthService {
       role: user.role,
     });
 
-    const refreshToken =
-      await refreshTokenService.create({
-        userId: user._id,
-      });
+    const refreshToken = await refreshTokenService.create({
+      userId: user._id,
+    });
 
     return {
       accessToken,
@@ -31,48 +30,32 @@ class AuthService {
     };
   }
 
-  async login({
-    email,
-    password,
-    ipAddress,
-    userAgent,
-  }) {
-    const user =
-      await userService.findByEmailWithPassword(email);
+  async login({ email, password, ipAddress, userAgent }) {
+    const user = await userService.findByEmailWithPassword(email);
 
     if (!user) {
-      throw new UnauthorizedError(
-        'Invalid email or password'
-      );
+      throw new UnauthorizedError('Invalid email or password');
     }
 
-    const isPasswordValid =
-      await bcrypt.compare(
-        password,
-        user.password
-      );
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError(
-        'Invalid email or password'
-      );
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     await userService.updateLastLogin(user._id);
 
-    const accessToken =
-      generateAccessToken({
-        id: user._id,
-        code: user.code,
-        role: user.role,
-      });
+    const accessToken = generateAccessToken({
+      id: user._id,
+      code: user.code,
+      role: user.role,
+    });
 
-    const refreshToken =
-      await refreshTokenService.create({
-        userId: user._id,
-        ipAddress,
-        userAgent,
-      });
+    const refreshToken = await refreshTokenService.create({
+      userId: user._id,
+      ipAddress,
+      userAgent,
+    });
 
     return {
       accessToken,
@@ -82,53 +65,36 @@ class AuthService {
   }
 
   async refresh(refreshToken) {
-    const session =
-      await refreshTokenService.findByToken(
-        refreshToken
-      );
+    const session = await refreshTokenService.findByToken(refreshToken);
 
     if (!session) {
-      throw new UnauthorizedError(
-        'Invalid refresh token'
-      );
+      throw new UnauthorizedError('Invalid refresh token');
     }
-        if (session.revokedAt) {
-      throw new UnauthorizedError(
-        'Refresh token has been revoked'
-      );
+    if (session.revokedAt) {
+      throw new UnauthorizedError('Refresh token has been revoked');
     }
 
-    if (
-      session.expiresAt &&
-      session.expiresAt.getTime() < Date.now()
-    ) {
-      throw new UnauthorizedError(
-        'Refresh token has expired'
-      );
+    if (session.expiresAt && session.expiresAt.getTime() < Date.now()) {
+      throw new UnauthorizedError('Refresh token has expired');
     }
 
-    const user =
-      await userService.findById(session.userId);
+    const user = await userService.findById(session.userId);
 
     if (!user) {
-      throw new UnauthorizedError(
-        'User not found'
-      );
+      throw new UnauthorizedError('User not found');
     }
 
     await refreshTokenService.delete(session._id);
 
-    const newRefreshToken =
-      await refreshTokenService.create({
-        userId: user._id,
-      });
+    const newRefreshToken = await refreshTokenService.create({
+      userId: user._id,
+    });
 
-    const accessToken =
-      generateAccessToken({
-        id: user._id,
-        code: user.code,
-        role: user.role,
-      });
+    const accessToken = generateAccessToken({
+      id: user._id,
+      code: user.code,
+      role: user.role,
+    });
 
     return {
       accessToken,
@@ -138,10 +104,7 @@ class AuthService {
   }
 
   async logout(refreshToken) {
-    const session =
-      await refreshTokenService.findByToken(
-        refreshToken
-      );
+    const session = await refreshTokenService.findByToken(refreshToken);
 
     if (session) {
       await refreshTokenService.delete(session._id);
@@ -149,9 +112,7 @@ class AuthService {
   }
 
   async logoutAll(userId) {
-    await refreshTokenService.deleteAllByUser(
-      userId
-    );
+    await refreshTokenService.deleteAllByUser(userId);
   }
 
   async googleLogin(user) {
@@ -163,10 +124,9 @@ class AuthService {
       role: user.role,
     });
 
-    const refreshToken =
-      await refreshTokenService.create({
-        userId: user._id,
-      });
+    const refreshToken = await refreshTokenService.create({
+      userId: user._id,
+    });
 
     return {
       accessToken,

@@ -7,9 +7,6 @@ const stream = {
   },
 };
 
-export default morgan(
-  ':method :url :status :response-time ms',
-  {
-    stream,
-  }
-);
+export default morgan(':method :url :status :response-time ms', {
+  stream,
+});

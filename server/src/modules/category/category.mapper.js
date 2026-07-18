@@ -11,23 +11,18 @@ class CategoryMapper {
 
       name: category.name,
 
-      description:
-        category.description,
+      description: category.description,
 
       status: category.status,
 
-      createdAt:
-        category.createdAt,
+      createdAt: category.createdAt,
 
-      updatedAt:
-        category.updatedAt,
+      updatedAt: category.updatedAt,
     };
   }
 
   toList(categories) {
-    return categories.map((item) =>
-      this.toResponse(item)
-    );
+    return categories.map((item) => this.toResponse(item));
   }
 }
 

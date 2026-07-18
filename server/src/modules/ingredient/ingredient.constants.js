@@ -13,10 +13,7 @@ export const INGREDIENT_SORT_FIELDS = Object.freeze([
   'updatedAt',
 ]);
 
-export const INGREDIENT_SEARCH_FIELDS = Object.freeze([
-  'name',
-  'code',
-]);
+export const INGREDIENT_SEARCH_FIELDS = Object.freeze(['name', 'code']);
 
 export const INGREDIENT_POPULATE = Object.freeze([
   {

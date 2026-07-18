@@ -103,9 +103,6 @@ supplierSchema.index({
   status: 1,
 });
 
-const Supplier = mongoose.model(
-  'Supplier',
-  supplierSchema
-);
+const Supplier = mongoose.model('Supplier', supplierSchema);
 
 export default Supplier;

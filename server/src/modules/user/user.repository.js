@@ -5,9 +5,9 @@ class UserRepository {
     return User.create(payload);
   }
 
-    findById(id) {
+  findById(id) {
     return User.findById(id).select('-password');
-    }
+  }
 
   findByCode(code) {
     return User.findOne({ code });
@@ -18,8 +18,8 @@ class UserRepository {
   }
 
   findByEmailWithPassword(email) {
-  return User.findOne({ email });
-}
+    return User.findOne({ email });
+  }
 
   findByGoogleId(googleId) {
     return User.findOne({ googleId });

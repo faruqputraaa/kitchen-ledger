@@ -1,16 +1,10 @@
 import Unit from './unit.model.js';
 
-import {
-  buildPagination,
-  buildSearch,
-  buildSort,
-} from '#shared/utils/query.utils';
+import { buildPagination, buildSearch, buildSort } from '#shared/utils/query.utils';
 
 class UnitRepository {
   create(payload, session = null) {
-    return Unit.create([payload], { session }).then(
-      ([doc]) => doc
-    );
+    return Unit.create([payload], { session }).then(([doc]) => doc);
   }
 
   findOne(filter) {
@@ -25,33 +19,20 @@ class UnitRepository {
   }
 
   async findAll(query) {
-    const { page, limit, skip } =
-      buildPagination(query);
+    const { page, limit, skip } = buildPagination(query);
 
     const filter = {
       isDeleted: false,
-      ...buildSearch(query.search, [
-        'name',
-        'symbol',
-      ]),
+      ...buildSearch(query.search, ['name', 'symbol']),
     };
 
-    const sort = buildSort(query, [
-      'name',
-      'symbol',
-      'createdAt',
-      'updatedAt',
+    const sort = buildSort(query, ['name', 'symbol', 'createdAt', 'updatedAt']);
+
+    const [items, total] = await Promise.all([
+      Unit.find(filter).sort(sort).skip(skip).limit(limit),
+
+      Unit.countDocuments(filter),
     ]);
-
-    const [items, total] =
-      await Promise.all([
-        Unit.find(filter)
-          .sort(sort)
-          .skip(skip)
-          .limit(limit),
-
-        Unit.countDocuments(filter),
-      ]);
 
     return {
       items,

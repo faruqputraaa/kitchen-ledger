@@ -16,58 +16,25 @@ import {
   googleCallback,
 } from './auth.controller.js';
 
-import {
-  registerSchema,
-  loginSchema,
-} from './auth.validation.js';
+import { registerSchema, loginSchema } from './auth.validation.js';
 
 const router = Router();
 
-router.post(
-  '/register',
-  authRateLimit,
-  validate(registerSchema),
-  register
-);
+router.post('/register', authRateLimit, validate(registerSchema), register);
 
-router.post(
-  '/login',
-  authRateLimit,
-  validate(loginSchema),
-  login
-);
+router.post('/login', authRateLimit, validate(loginSchema), login);
 
-router.post(
-  '/refresh',
-  refresh
-);
+router.post('/refresh', refresh);
 
-router.post(
-  '/logout',
-  logout
-);
+router.post('/logout', logout);
 
-router.post(
-  '/logout-all',
-  authMiddleware,
-  logoutAll
-);
+router.post('/logout-all', authMiddleware, logoutAll);
 
-router.get(
-  '/me',
-  authMiddleware,
-  me
-);
+router.get('/me', authMiddleware, me);
 
-router.get(
-  '/google',
-  googleAuth
-);
+router.get('/google', googleAuth);
 
-router.get(
-  '/google/callback',
-  googleCallback
-);
+router.get('/google/callback', googleCallback);
 
 // TEST ONLY: balikin token sebagai JSON (tanpa frontend)
 router.get('/oauth/callback', (req, res) => {

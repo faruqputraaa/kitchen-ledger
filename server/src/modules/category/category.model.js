@@ -74,9 +74,6 @@ categorySchema.index({
   status: 1,
 });
 
-const Category = mongoose.model(
-  'Category',
-  categorySchema
-);
+const Category = mongoose.model('Category', categorySchema);
 
 export default Category;

@@ -1,8 +1,6 @@
 import { z } from 'zod';
 
-import {
-  INGREDIENT_STATUS,
-} from './ingredient.constants.js';
+import { INGREDIENT_STATUS } from './ingredient.constants.js';
 
 const objectIdSchema = z.string().regex(/^[0-9a-fA-F]{24}$/);
 

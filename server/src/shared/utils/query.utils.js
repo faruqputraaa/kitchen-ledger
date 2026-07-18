@@ -10,9 +10,7 @@ export function buildPagination(query) {
 }
 
 export function buildSort(query, allowedFields = []) {
-  const sortField = allowedFields.includes(query.sort)
-    ? query.sort
-    : 'createdAt';
+  const sortField = allowedFields.includes(query.sort) ? query.sort : 'createdAt';
 
   return {
     [sortField]: query.order === 'asc' ? 1 : -1,

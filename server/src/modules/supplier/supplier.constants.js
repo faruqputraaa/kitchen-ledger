@@ -3,9 +3,4 @@ export const SUPPLIER_STATUS = {
   INACTIVE: 'INACTIVE',
 };
 
-export const SUPPLIER_SORT_FIELDS = [
-  'name',
-  'contactPerson',
-  'createdAt',
-  'updatedAt',
-];
+export const SUPPLIER_SORT_FIELDS = ['name', 'contactPerson', 'createdAt', 'updatedAt'];

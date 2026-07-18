@@ -3,9 +3,4 @@ export const UNIT_STATUS = {
   INACTIVE: 'INACTIVE',
 };
 
-export const UNIT_SORT_FIELDS = [
-  'name',
-  'symbol',
-  'createdAt',
-  'updatedAt',
-];
+export const UNIT_SORT_FIELDS = ['name', 'symbol', 'createdAt', 'updatedAt'];

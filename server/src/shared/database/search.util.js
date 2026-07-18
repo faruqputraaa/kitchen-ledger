@@ -1,7 +1,4 @@
-export function buildSearch(
-  keyword,
-  fields = []
-) {
+export function buildSearch(keyword, fields = []) {
   if (!keyword) {
     return {};
   }

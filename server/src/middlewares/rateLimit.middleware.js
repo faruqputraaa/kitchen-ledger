@@ -14,8 +14,7 @@ export const authRateLimit = rateLimit({
   message: {
     success: false,
 
-    message:
-      'Too many attempts, please try again later',
+    message: 'Too many attempts, please try again later',
   },
 });
 

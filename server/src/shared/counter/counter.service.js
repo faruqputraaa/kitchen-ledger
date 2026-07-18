@@ -7,15 +7,10 @@ class CounterService {
     const counter = await counterRepository.increment(module);
 
     if (!counter) {
-      throw new NotFoundError(
-        `Counter configuration for "${module}" not found`
-      );
+      throw new NotFoundError(`Counter configuration for "${module}" not found`);
     }
 
-    const number = String(counter.sequence).padStart(
-      counter.padding,
-      '0'
-    );
+    const number = String(counter.sequence).padStart(counter.padding, '0');
 
     return `${counter.prefix}-${number}`;
   }

@@ -30,9 +30,7 @@ class SupplierMapper {
   }
 
   toList(suppliers) {
-    return suppliers.map((supplier) =>
-      this.toResponse(supplier)
-    );
+    return suppliers.map((supplier) => this.toResponse(supplier));
   }
 }
 

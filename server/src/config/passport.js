@@ -20,45 +20,31 @@ const configurePassport = () => {
           const email = profile.emails?.[0]?.value;
 
           if (!email) {
-            return done(
-              new Error('Google account has no email'),
-              null
-            );
+            return done(new Error('Google account has no email'), null);
           }
 
-          let user =
-            await userService.findByGoogleId(
-              profile.id
-            );
+          let user = await userService.findByGoogleId(profile.id);
 
           if (!user) {
-            user = await userService.findByEmail(
-              email
-            );
+            user = await userService.findByEmail(email);
           }
 
           if (!user) {
-            user =
-              await userService.createGoogleUser(
-                {
-                  name: profile.displayName,
+            user = await userService.createGoogleUser({
+              name: profile.displayName,
 
-                  email,
+              email,
 
-                  googleId: profile.id,
+              googleId: profile.id,
 
-                  avatar:
-                    profile.photos?.[0]?.value ??
-                    null,
-                }
-              );
+              avatar: profile.photos?.[0]?.value ?? null,
+            });
           }
 
           return done(null, user);
         } catch (error) {
-            return done(error, null);
+          return done(error, null);
         }
-
       }
     )
   );
@@ -67,18 +53,15 @@ const configurePassport = () => {
     done(null, user.id ?? user._id);
   });
 
-  passport.deserializeUser(
-    async (id, done) => {
-      try {
-        const user =
-          await userService.findById(id);
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await userService.findById(id);
 
-        done(null, user);
-      } catch (error) {
-        done(error, null);
-      }
+      done(null, user);
+    } catch (error) {
+      done(error, null);
     }
-  );
+  });
 
   return passport;
 };

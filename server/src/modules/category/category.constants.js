@@ -3,8 +3,4 @@ export const CATEGORY_STATUS = {
   INACTIVE: 'INACTIVE',
 };
 
-export const CATEGORY_SORT_FIELDS = [
-  'name',
-  'createdAt',
-  'updatedAt',
-];
+export const CATEGORY_SORT_FIELDS = ['name', 'createdAt', 'updatedAt'];

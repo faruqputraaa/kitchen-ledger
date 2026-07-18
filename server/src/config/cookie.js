@@ -4,19 +4,13 @@ const cookieConfig = {
   refreshToken: {
     httpOnly: true,
 
-    secure:
-      env.nodeEnv === 'production',
+    secure: env.nodeEnv === 'production',
 
     sameSite: 'lax',
 
     path: '/api/v1/auth',
 
-    maxAge:
-      7 *
-      24 *
-      60 *
-      60 *
-      1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 };
 

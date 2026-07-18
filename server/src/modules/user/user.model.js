@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 
-import {
-  AUTH_PROVIDER,
-  USER_ROLE,
-  USER_STATUS,
-} from './user.constants.js';
+import { AUTH_PROVIDER, USER_ROLE, USER_STATUS } from './user.constants.js';
 
 const userSchema = new mongoose.Schema(
   {

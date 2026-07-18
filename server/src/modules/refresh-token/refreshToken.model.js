@@ -56,7 +56,4 @@ refreshTokenSchema.index(
   }
 );
 
-export default mongoose.model(
-  'RefreshToken',
-  refreshTokenSchema
-);
+export default mongoose.model('RefreshToken', refreshTokenSchema);

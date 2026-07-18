@@ -4,9 +4,7 @@ const roleMiddleware =
   (...roles) =>
   (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(
-        new ForbiddenError('Permission denied')
-      );
+      return next(new ForbiddenError('Permission denied'));
     }
 
     next();

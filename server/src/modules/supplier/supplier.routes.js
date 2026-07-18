@@ -23,24 +23,11 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.get(
-  '/',
-  validate(supplierQuerySchema),
-  getSuppliers
-);
+router.get('/', validate(supplierQuerySchema), getSuppliers);
 
-router.get(
-  '/:id',
-  validate(supplierIdSchema),
-  getSupplierById
-);
+router.get('/:id', validate(supplierIdSchema), getSupplierById);
 
-router.post(
-  '/',
-  roleMiddleware('OWNER', 'STAFF'),
-  validate(createSupplierSchema),
-  createSupplier
-);
+router.post('/', roleMiddleware('OWNER', 'STAFF'), validate(createSupplierSchema), createSupplier);
 
 router.patch(
   '/:id',
@@ -49,11 +36,6 @@ router.patch(
   updateSupplier
 );
 
-router.delete(
-  '/:id',
-  roleMiddleware('OWNER', 'STAFF'),
-  validate(supplierIdSchema),
-  deleteSupplier
-);
+router.delete('/:id', roleMiddleware('OWNER', 'STAFF'), validate(supplierIdSchema), deleteSupplier);
 
 export default router;

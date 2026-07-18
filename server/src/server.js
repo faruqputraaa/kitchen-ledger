@@ -7,7 +7,7 @@ import seedCounters from '#shared/counter/counter.seed';
 const startServer = async () => {
   await connectDatabase();
   await seedCounters();
-    
+
   app.listen(env.port, () => {
     logger.info('===================================');
     logger.info('Kitchen Ledger API Started');

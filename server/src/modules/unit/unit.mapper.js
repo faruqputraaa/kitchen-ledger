@@ -24,9 +24,7 @@ class UnitMapper {
   }
 
   toList(units) {
-    return units.map((unit) =>
-      this.toResponse(unit)
-    );
+    return units.map((unit) => this.toResponse(unit));
   }
 }
 

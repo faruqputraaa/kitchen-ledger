@@ -1,16 +1,9 @@
 import Category from './category.model.js';
-import {
-  buildPagination,
-  buildSearch,
-  buildSort,
-} from '#shared/utils/query.utils';
+import { buildPagination, buildSearch, buildSort } from '#shared/utils/query.utils';
 
 class CategoryRepository {
   async create(payload, session = null) {
-    const [category] = await Category.create(
-      [payload],
-      { session }
-    );
+    const [category] = await Category.create([payload], { session });
 
     return category;
   }
@@ -29,36 +22,27 @@ class CategoryRepository {
     });
   }
 
-    async findAll(query) {
-    const { page, limit, skip } =
-        buildPagination(query);
+  async findAll(query) {
+    const { page, limit, skip } = buildPagination(query);
 
     const filter = {
-        isDeleted: false,
-        ...buildSearch(query.search, ['name']),
+      isDeleted: false,
+      ...buildSearch(query.search, ['name']),
     };
 
-    const sort = buildSort(query, [
-        'name',
-        'createdAt',
-        'updatedAt',
+    const sort = buildSort(query, ['name', 'createdAt', 'updatedAt']);
+
+    const [items, total] = await Promise.all([
+      Category.find(filter).sort(sort).skip(skip).limit(limit),
+
+      Category.countDocuments(filter),
     ]);
 
-    const [items, total] =
-        await Promise.all([
-        Category.find(filter)
-            .sort(sort)
-            .skip(skip)
-            .limit(limit),
-
-        Category.countDocuments(filter),
-        ]);
-
     return {
-        items,
-        total,
+      items,
+      total,
     };
-    }
+  }
   update(id, payload, session = null) {
     return Category.findOneAndUpdate(
       {
@@ -74,11 +58,7 @@ class CategoryRepository {
     );
   }
 
-  softDelete(
-    id,
-    deletedBy,
-    session = null
-  ) {
+  softDelete(id, deletedBy, session = null) {
     return Category.findOneAndUpdate(
       {
         _id: id,

@@ -23,6 +23,13 @@ const env = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackUrl: process.env.GOOGLE_CALLBACK_URL,
   },
+
+    owner: {
+    name: process.env.OWNER_NAME,
+    email: process.env.OWNER_EMAIL,
+    password: process.env.OWNER_PASSWORD,
+  },
+
 };
 
 if (!process.env.JWT_ACCESS_SECRET) {

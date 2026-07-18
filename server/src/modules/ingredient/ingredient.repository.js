@@ -12,42 +12,26 @@ import { executePagination } from '#shared/database/mongoose.util';
 
 class IngredientRepository {
   async create(data, session = null) {
-    const [ingredient] = await Ingredient.create(
-      [data],
-      {
-        session,
-      }
-    );
+    const [ingredient] = await Ingredient.create([data], {
+      session,
+    });
 
-    return ingredient.populate(
-      INGREDIENT_POPULATE
-    );
+    return ingredient.populate(INGREDIENT_POPULATE);
   }
 
-  async findOne(
-    filter = {},
-    options = {}
-  ) {
-    let query =
-      Ingredient.findOne(filter);
+  async findOne(filter = {}, options = {}) {
+    let query = Ingredient.findOne(filter);
 
     if (options.populate !== false) {
-      query = query.populate(
-        options.populate ??
-          INGREDIENT_POPULATE
-      );
+      query = query.populate(options.populate ?? INGREDIENT_POPULATE);
     }
 
     if (options.select) {
-      query = query.select(
-        options.select
-      );
+      query = query.select(options.select);
     }
 
     if (options.session) {
-      query = query.session(
-        options.session
-      );
+      query = query.session(options.session);
     }
 
     if (options.lean) {
@@ -57,10 +41,7 @@ class IngredientRepository {
     return query;
   }
 
-  async findById(
-    id,
-    options = {}
-  ) {
+  async findById(id, options = {}) {
     return this.findOne(
       {
         _id: id,
@@ -70,25 +51,18 @@ class IngredientRepository {
     );
   }
 
-  async findMany(
-    query = {}
-  ) {
+  async findMany(query = {}) {
     const filter = {
       isDeleted: false,
 
-      ...buildSearch(
-        query.search,
-        INGREDIENT_SEARCH_FIELDS
-      ),
+      ...buildSearch(query.search, INGREDIENT_SEARCH_FIELDS),
     };
 
-    const options =
-      buildQueryOptions({
-        query,
+    const options = buildQueryOptions({
+      query,
 
-        allowedSort:
-          INGREDIENT_SORT_FIELDS,
-      });
+      allowedSort: INGREDIENT_SORT_FIELDS,
+    });
 
     return executePagination({
       model: Ingredient,
@@ -97,68 +71,42 @@ class IngredientRepository {
 
       options,
 
-      populate:
-        INGREDIENT_POPULATE,
+      populate: INGREDIENT_POPULATE,
     });
   }
 
-  async count(
-    filter = {}
-  ) {
-    return Ingredient.countDocuments(
-      filter
-    );
+  async count(filter = {}) {
+    return Ingredient.countDocuments(filter);
   }
 
-  async update(
-    filter,
-    data,
-    options = {}
-  ) {
-    let query =
-      Ingredient.findOneAndUpdate(
-        filter,
-        data,
-        {
-          new: true,
-          runValidators: true,
-          session:
-            options.session,
-        }
-      );
+  async update(filter, data, options = {}) {
+    let query = Ingredient.findOneAndUpdate(filter, data, {
+      new: true,
+      runValidators: true,
+      session: options.session,
+    });
 
-    if (
-      options.populate !== false
-    ) {
-      query = query.populate(
-        options.populate ??
-          INGREDIENT_POPULATE
-      );
+    if (options.populate !== false) {
+      query = query.populate(options.populate ?? INGREDIENT_POPULATE);
     }
 
     return query;
   }
 
-  async softDelete(
-    filter,
-    deletedBy,
-    options = {}
-  ) {
+  async softDelete(filter, deletedBy, options = {}) {
     return Ingredient.findOneAndUpdate(
       filter,
       {
         isDeleted: true,
 
-        deletedAt:
-          new Date(),
+        deletedAt: new Date(),
 
         deletedBy,
       },
       {
         new: true,
 
-        session:
-          options.session,
+        session: options.session,
       }
     );
   }

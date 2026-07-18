@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 
-import {
-  INGREDIENT_STATUS,
-} from './ingredient.constants.js';
+import { INGREDIENT_STATUS } from './ingredient.constants.js';
 
 const ingredientSchema = new mongoose.Schema(
   {
@@ -115,7 +113,4 @@ ingredientSchema.index({
   status: 1,
 });
 
-export default mongoose.model(
-  'Ingredient',
-  ingredientSchema
-);
+export default mongoose.model('Ingredient', ingredientSchema);

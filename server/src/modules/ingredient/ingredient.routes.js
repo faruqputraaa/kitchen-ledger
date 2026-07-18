@@ -15,22 +15,13 @@ import {
   ingredientQuerySchema,
 } from './ingredient.validation.js';
 
-
 const router = Router();
 
 router.use(authMiddleware);
 
-router.get(
-  '/',
-  validate(ingredientQuerySchema),
-  ingredientController.getIngredients
-);
+router.get('/', validate(ingredientQuerySchema), ingredientController.getIngredients);
 
-router.get(
-  '/:id',
-  validate(ingredientIdSchema),
-  ingredientController.getIngredientById
-);
+router.get('/:id', validate(ingredientIdSchema), ingredientController.getIngredientById);
 
 router.post(
   '/',

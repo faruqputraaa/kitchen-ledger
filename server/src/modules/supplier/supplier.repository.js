@@ -48,21 +48,12 @@ class SupplierRepository {
   async findMany(query = {}) {
     const filter = {
       isDeleted: false,
-      ...buildSearch(query.search, [
-        'name',
-        'contactPerson',
-        'phone',
-      ]),
+      ...buildSearch(query.search, ['name', 'contactPerson', 'phone']),
     };
 
     const options = buildQueryOptions({
       query,
-      allowedSort: [
-        'name',
-        'contactPerson',
-        'createdAt',
-        'updatedAt',
-      ],
+      allowedSort: ['name', 'contactPerson', 'createdAt', 'updatedAt'],
     });
 
     return executePagination({
@@ -77,22 +68,14 @@ class SupplierRepository {
   }
 
   async update(filter, data, options = {}) {
-    return Supplier.findOneAndUpdate(
-      filter,
-      data,
-      {
-        new: true,
-        runValidators: true,
-        session: options.session,
-      }
-    );
+    return Supplier.findOneAndUpdate(filter, data, {
+      new: true,
+      runValidators: true,
+      session: options.session,
+    });
   }
 
-  async softDelete(
-    filter,
-    deletedBy,
-    options = {}
-  ) {
+  async softDelete(filter, deletedBy, options = {}) {
     return Supplier.findOneAndUpdate(
       filter,
       {

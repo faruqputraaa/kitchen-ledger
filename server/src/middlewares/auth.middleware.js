@@ -5,17 +5,13 @@ const authMiddleware = (req, res, next) => {
   const authorization = req.headers.authorization;
 
   if (!authorization) {
-    return next(
-      new UnauthorizedError('Access token is required')
-    );
+    return next(new UnauthorizedError('Access token is required'));
   }
 
   const [scheme, token] = authorization.split(' ');
 
   if (scheme !== 'Bearer' || !token) {
-    return next(
-      new UnauthorizedError('Invalid authorization header')
-    );
+    return next(new UnauthorizedError('Invalid authorization header'));
   }
 
   try {
@@ -25,9 +21,7 @@ const authMiddleware = (req, res, next) => {
 
     next();
   } catch {
-    next(
-      new UnauthorizedError('Invalid or expired access token')
-    );
+    next(new UnauthorizedError('Invalid or expired access token'));
   }
 };
 
