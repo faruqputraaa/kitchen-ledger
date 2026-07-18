@@ -1,0 +1,97 @@
+erDiagram
+
+USERS {
+  ObjectId _id PK
+  string name
+  string email UK
+  string passwordHash
+  string authProvider
+  string googleId
+  string role
+  string avatar
+  boolean isVerified
+  datetime createdAt
+  datetime updatedAt
+}
+
+REFRESH_TOKENS {
+  ObjectId _id PK
+  ObjectId userId FK
+  string token
+  datetime expiresAt
+  datetime createdAt
+}
+
+CATEGORIES {
+  ObjectId _id PK
+  string name
+  string description
+}
+
+INGREDIENTS {
+  ObjectId _id PK
+  ObjectId categoryId FK
+  string name
+  string unit
+  number currentPrice
+  number currentStock
+  number minimumStock
+  string image
+  datetime updatedAt
+}
+
+PRICE_HISTORY {
+  ObjectId _id PK
+  ObjectId ingredientId FK
+  number price
+  datetime effectiveDate
+  string source
+}
+
+RECIPES {
+  ObjectId _id PK
+  ObjectId createdBy FK
+  string title
+  string description
+  string image
+  number sellingPrice
+  number totalCost
+  datetime createdAt
+}
+
+RECIPE_INGREDIENTS {
+  ObjectId _id PK
+  ObjectId recipeId FK
+  ObjectId ingredientId FK
+  number quantity
+  string unit
+}
+
+PURCHASES {
+  ObjectId _id PK
+  ObjectId createdBy FK
+  string supplier
+  number total
+  string receiptImage
+  datetime purchaseDate
+}
+
+PURCHASE_ITEMS {
+  ObjectId _id PK
+  ObjectId purchaseId FK
+  ObjectId ingredientId FK
+  number quantity
+  string unit
+  number price
+}
+
+USERS ||--o{ REFRESH_TOKENS : owns
+USERS ||--o{ RECIPES : creates
+USERS ||--o{ PURCHASES : records
+
+CATEGORIES ||--o{ INGREDIENTS : contains
+INGREDIENTS ||--o{ PRICE_HISTORY : has
+RECIPES ||--o{ RECIPE_INGREDIENTS : contains
+INGREDIENTS ||--o{ RECIPE_INGREDIENTS : used_in
+PURCHASES ||--o{ PURCHASE_ITEMS : has
+INGREDIENTS ||--o{ PURCHASE_ITEMS : purchased

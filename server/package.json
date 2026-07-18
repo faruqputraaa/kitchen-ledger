@@ -1,0 +1,50 @@
+{
+  "name": "kitchen-ledger-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "imports": {
+    "#config/*": "./src/config/*.js",
+    "#middlewares/*": "./src/middlewares/*.js",
+    "#modules/*": "./src/modules/*.js",
+    "#shared/*": "./src/shared/*.js",
+    "#utils/*": "./src/shared/utils/*.js",
+    "#response/*": "./src/shared/response/*.js",
+    "#errors/*": "./src/shared/errors/*.js"
+  },
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express-rate-limit": "^8.5.2",
+    "express-session": "^1.19.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.7.4",
+    "morgan": "^1.11.0",
+    "multer": "^2.2.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "uuid": "^14.0.1",
+    "winston": "^3.19.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.9.5"
+  }
+}

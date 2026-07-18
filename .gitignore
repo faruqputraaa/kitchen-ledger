@@ -1,0 +1,32 @@
+# dependencies
+node_modules
+
+# workspace
+client/node_modules
+server/node_modules
+
+# environment
+.env
+.env.*
+!.env.example
+
+# logs
+logs
+*.log
+
+# uploads
+uploads
+
+# build
+dist
+build
+
+# vscode
+.vscode
+
+# OS
+.DS_Store
+Thumbs.db
+
+# coverage
+coverage

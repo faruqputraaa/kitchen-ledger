@@ -1,0 +1,1 @@
+Menjadi aplikasi open-source untuk membantu bisnis kuliner menghitung food cost secara otomatis menggunakan data harga bahan yang selalu diperbarui.
