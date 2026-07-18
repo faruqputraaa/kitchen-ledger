@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import ingredientController from './ingredient.controller.js';
+import * as ingredientController from './ingredient.controller.js';
 
 import validate from '#middlewares/validation.middleware';
 

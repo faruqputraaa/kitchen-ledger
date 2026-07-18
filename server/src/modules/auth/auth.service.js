@@ -92,6 +92,21 @@ class AuthService {
         'Invalid refresh token'
       );
     }
+        if (session.revokedAt) {
+      throw new UnauthorizedError(
+        'Refresh token has been revoked'
+      );
+    }
+
+    if (
+      session.expiresAt &&
+      session.expiresAt.getTime() < Date.now()
+    ) {
+      throw new UnauthorizedError(
+        'Refresh token has expired'
+      );
+    }
+
 
     const user =
       await userService.findById(session.userId);

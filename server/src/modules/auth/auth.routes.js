@@ -2,6 +2,8 @@ import { Router } from 'express';
 
 import validate from '#middlewares/validation.middleware';
 import authMiddleware from '#middlewares/auth.middleware';
+import authRateLimit from '#middlewares/rateLimit.middleware';
+
 
 import {
   register,
@@ -21,12 +23,14 @@ const router = Router();
 
 router.post(
   '/register',
+  authRateLimit,
   validate(registerSchema),
   register
 );
 
 router.post(
   '/login',
+  authRateLimit,
   validate(loginSchema),
   login
 );

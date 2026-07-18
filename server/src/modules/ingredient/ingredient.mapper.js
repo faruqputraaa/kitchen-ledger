@@ -1,44 +1,49 @@
 class IngredientMapper {
-  toResponse(ingredient) {
-    return {
-      id: ingredient._id,
+toResponse(ingredient) {
+  if (!ingredient) {
+    return null;
+  }
 
-      code: ingredient.code,
+  return {
+    id: ingredient._id.toString(),
 
-      name: ingredient.name,
+    code: ingredient.code,
+
+    name: ingredient.name,
 
     category: ingredient.category
-        ? {
-            id: ingredient.category._id,
-            code: ingredient.category.code,
-            name: ingredient.category.name,
+      ? {
+          id: ingredient.category._id.toString(),
+          code: ingredient.category.code,
+          name: ingredient.category.name,
         }
-        : null,
+      : null,
 
     unit: ingredient.unit
-        ? {
-            id: ingredient.unit._id,
-            code: ingredient.unit.code,
-            name: ingredient.unit.name,
-            symbol: ingredient.unit.symbol,
+      ? {
+          id: ingredient.unit._id.toString(),
+          code: ingredient.unit.code,
+          name: ingredient.unit.name,
+          symbol: ingredient.unit.symbol,
         }
-        : null,
+      : null,
 
-      minimumStock: ingredient.minimumStock,
+    minimumStock: ingredient.minimumStock,
 
-      currentStock: ingredient.currentStock,
+    currentStock: ingredient.currentStock,
 
-      averagePrice: ingredient.averagePrice,
+    averagePrice: ingredient.averagePrice,
 
-      notes: ingredient.notes,
+    notes: ingredient.notes,
 
-      status: ingredient.status,
+    status: ingredient.status,
 
-      createdAt: ingredient.createdAt,
+    createdAt: ingredient.createdAt,
 
-      updatedAt: ingredient.updatedAt,
-    };
-  }
+    updatedAt: ingredient.updatedAt,
+  };
+}
+
 
   toList(ingredients) {
     return ingredients.map((ingredient) =>
