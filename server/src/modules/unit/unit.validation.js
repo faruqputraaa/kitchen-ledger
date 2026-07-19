@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { UNIT_STATUS, UNIT_SORT_FIELDS } from './unit.constants.js';
+import {
+  UNIT_STATUS,
+  UNIT_SORT_FIELDS,
+  UNIT_DIMENSION,
+} from './unit.constants.js';
 
 export const createUnitSchema = z.object({
   body: z.object({
@@ -8,7 +12,16 @@ export const createUnitSchema = z.object({
 
     symbol: z.string().trim().min(1).max(20),
 
-    description: z.string().trim().max(500).optional().default(''),
+    dimension: z.enum(Object.values(UNIT_DIMENSION)),
+
+    baseFactor: z.number().positive(),
+
+    description: z
+      .string()
+      .trim()
+      .max(500)
+      .optional()
+      .default(''),
   }),
 });
 
@@ -21,6 +34,12 @@ export const updateUnitSchema = z.object({
     name: z.string().trim().min(2).max(100).optional(),
 
     symbol: z.string().trim().min(1).max(20).optional(),
+
+    dimension: z
+      .enum(Object.values(UNIT_DIMENSION))
+      .optional(),
+
+    baseFactor: z.number().positive().optional(),
 
     description: z.string().trim().max(500).optional(),
 

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import { UNIT_STATUS } from './unit.constants.js';
+import { UNIT_STATUS, UNIT_DIMENSION } from './unit.constants.js';
 
 const unitSchema = new mongoose.Schema(
   {
@@ -26,6 +26,18 @@ const unitSchema = new mongoose.Schema(
       trim: true,
       minlength: 1,
       maxlength: 20,
+    },
+
+    dimension: {
+      type: String,
+      enum: Object.values(UNIT_DIMENSION),
+      required: true,
+    },
+
+    baseFactor: {
+      type: Number,
+      required: true,
+      min: 0,
     },
 
     description: {

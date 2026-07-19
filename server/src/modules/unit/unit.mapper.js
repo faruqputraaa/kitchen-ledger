@@ -13,6 +13,10 @@ class UnitMapper {
 
       symbol: unit.symbol,
 
+      dimension: unit.dimension,
+
+      baseFactor: unit.baseFactor,
+
       description: unit.description,
 
       status: unit.status,

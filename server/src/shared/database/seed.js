@@ -4,6 +4,7 @@ import connectDB from '#config/database';
 
 import {
   seedOwner,
+  seedUnits,
 } from './seeders/index.js';
 
 const runSeeder = async () => {
@@ -15,6 +16,8 @@ const runSeeder = async () => {
     );
 
     await seedOwner();
+
+    await seedUnits();
 
     console.log(
       'Database seeding completed'
