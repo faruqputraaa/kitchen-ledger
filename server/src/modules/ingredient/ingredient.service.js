@@ -173,6 +173,48 @@ class IngredientService {
       }
     );
   }
+
+    // Dipanggil dari Purchase (status COMPLETED)
+  // Menambah currentStock & menghitung ulang averagePrice
+  async applyStockIncrease(
+    ingredientId,
+    addedQuantity,
+    unitPrice,
+    session = null
+  ) {
+    const ingredient = await ingredientRepository.findById(
+      ingredientId,
+      { session }
+    );
+
+    if (!ingredient) {
+      throw new NotFoundError(
+        'Ingredient not found'
+      );
+    }
+
+    const prevStock = ingredient.currentStock;
+    const prevAvg = ingredient.averagePrice;
+    const newStock = prevStock + addedQuantity;
+
+    const newAvg =
+      newStock > 0
+        ? (prevStock * prevAvg +
+            addedQuantity * unitPrice) /
+          newStock
+        : unitPrice;
+
+    return ingredientRepository.update(
+      { _id: ingredientId },
+      {
+        currentStock: newStock,
+        averagePrice:
+          Math.round(newAvg * 100) / 100,
+      },
+      { session }
+    );
+  }
+
 }
 
 export default new IngredientService();

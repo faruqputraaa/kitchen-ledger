@@ -6,6 +6,8 @@ import categoryRoutes from '#modules/category/category.routes';
 import unitRoutes from '#modules/unit/unit.routes';
 import supplierRoutes from '#modules/supplier/supplier.routes';
 import ingredientRoutes from '#modules/ingredient/ingredient.routes';
+import purchaseRoutes from '#modules/purchase/purchase.routes';
+
 
 const router = Router();
 
@@ -15,5 +17,6 @@ router.use('/categories', categoryRoutes);
 router.use('/units', unitRoutes);
 router.use('/suppliers', supplierRoutes);
 router.use('/ingredients', ingredientRoutes);
+router.use('/purchases', purchaseRoutes);
 
 export default router;
