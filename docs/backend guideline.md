@@ -430,7 +430,7 @@ CRUD satu collection tidak memerlukan transaction.
 
 Menggunakan:
 
-* JWT Access Token
+
 * Refresh Token
 * HttpOnly Cookie
 * Refresh Rotation
