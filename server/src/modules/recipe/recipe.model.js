@@ -32,12 +32,6 @@ const recipeSchema = new mongoose.Schema(
       default: RECIPE_STATUS.ACTIVE,
     },
 
-    foodCost: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
     note: {
       type: String,
       default: '',
@@ -82,9 +76,28 @@ recipeSchema.index({ name: 1 });
 recipeSchema.index({ status: 1 });
 recipeSchema.index({ isDeleted: 1 });
 
-const Recipe = mongoose.model(
-  'Recipe',
-  recipeSchema
-);
+// ======== VIRTUAL items (dari RecipeItem collection) ========
+recipeSchema.virtual('items', {
+  ref: 'RecipeItem',
+  localField: '_id',
+  foreignField: 'recipe',
+});
+
+// ======== VIRTUAL foodCost (dinamis dari lastPrice) ========
+recipeSchema.virtual('foodCost').get(function () {
+  if (!this.items || !this.items.length) return 0;
+  if (!this.populated('items.ingredient')) return 0;
+
+  return this.items.reduce((sum, item) => {
+    const price = item.ingredient?.lastPrice || 0;
+    return sum + item.quantity * price;
+  }, 0);
+});
+
+// Agar virtual muncul di JSON response
+recipeSchema.set('toJSON', { virtuals: true });
+recipeSchema.set('toObject', { virtuals: true });
+
+const Recipe = mongoose.model('Recipe', recipeSchema);
 
 export default Recipe;

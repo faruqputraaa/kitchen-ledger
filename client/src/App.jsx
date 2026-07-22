@@ -9,6 +9,7 @@ import OAuthCallback from './pages/OAuthCallback';
 import Dashboard from './pages/Dashboard';
 import Purchases from './pages/Purchases';
 import Ingredients from './pages/Ingredients';
+import IngredientDetail from './pages/IngredientDetail';
 import Recipes from './pages/Recipes';
 
 const ProtectedRoute = ({ children }) => {
@@ -28,7 +29,9 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/purchases" element={<Purchases />} />
             <Route path="/recipes" element={<Recipes />} />
-            <Route path="/Ingredients" element={<Ingredients />} />
+            <Route path="/ingredients" element={<Ingredients />} />
+            <Route path="/ingredients/:id" element={<IngredientDetail />} />
+            <Route path="/purchases" element={<Purchases />} />
             <Route path="/menus" element={
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">

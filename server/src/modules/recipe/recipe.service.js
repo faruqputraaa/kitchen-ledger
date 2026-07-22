@@ -11,12 +11,12 @@ import recipeRepository, {
 import ingredientRepository from '../ingredient/ingredient.repository.js';
 import unitRepository from '../unit/unit.repository.js';
 
-// hitung lineCost 1 item dengan konversi unit
+// hitung lineCost 1 item dengan konversi unit (pakai lastPrice)
 const computeLineCost = (
   quantity,
   recipeUnit,
   ingredientUnit,
-  averagePrice
+  lastPrice
 ) => {
   if (recipeUnit.dimension !== ingredientUnit.dimension) {
     throw new ValidationError(
@@ -31,7 +31,7 @@ const computeLineCost = (
 
   return (
     Math.round(
-      qtyInIngredientUnit * averagePrice * 100
+      qtyInIngredientUnit * lastPrice * 100
     ) / 100
   );
 };
@@ -45,7 +45,6 @@ class RecipeService {
       );
 
       const items = [];
-      let foodCost = 0;
 
       for (const it of dto.items) {
         const ingredient =
@@ -85,14 +84,12 @@ class RecipeService {
           );
         }
 
-         const lineCost = computeLineCost(
-          it.quantity,
-          recipeUnit,
-          ingredientUnit,
-          ingredient.averagePrice
-        );
-
-        foodCost += lineCost;
+        // validasi dimension tapi lineCost dihitung via virtual foodCost (pakai lastPrice)
+        if (recipeUnit.dimension !== ingredientUnit.dimension) {
+          throw new ValidationError(
+            `Unit dimension mismatch: resep pakai ${recipeUnit.symbol} (${recipeUnit.dimension}), ingredient pakai ${ingredientUnit.symbol} (${ingredientUnit.dimension})`
+          );
+        }
 
         items.push({
           recipe: null,
@@ -102,8 +99,6 @@ class RecipeService {
         });
       }
 
-      foodCost = Math.round(foodCost * 100) / 100;
-
       const recipe = await recipeRepository.create(
         {
           code,
@@ -111,10 +106,9 @@ class RecipeService {
           description: dto.description ?? '',
           status: dto.status ?? 'ACTIVE',
           note: dto.note ?? '',
-          foodCost,
           createdBy: userId,
         },
-         session
+        session
       );
 
       const itemsWithRef = items.map((it) => ({
@@ -127,7 +121,7 @@ class RecipeService {
         session
       );
 
-       const created = await recipeRepository.findById(
+      const created = await recipeRepository.findById(
         recipe._id,
         { session }
       );
@@ -150,8 +144,36 @@ class RecipeService {
   async findAll(query) {
     const result = await recipeRepository.findMany(query);
 
+    // Fetch items for each recipe separately (virtual populate not supported in pagination)
+    const recipesWithItems = await Promise.all(
+      result.items.map(async (recipe) => {
+        const recipeItems = await recipeItemRepository.findByRecipe(
+          recipe._id
+        );
+
+        // Populate ingredient for each item
+        await Promise.all(
+          recipeItems.map(async (ri) => {
+            await ri.populate({
+              path: 'ingredient',
+              select: 'code name lastPrice unit',
+              populate: {
+                path: 'unit',
+                select: 'code name symbol dimension baseFactor',
+              },
+            });
+          })
+        );
+
+        return {
+          ...recipe.toObject(),
+          items: recipeItems.map((ri) => this._mapItem(ri)),
+        };
+      })
+    );
+
     return {
-      data: result.items,
+      data: recipesWithItems,
       pagination: {
         page: result.page,
         limit: result.limit,
@@ -170,17 +192,32 @@ class RecipeService {
       throw new NotFoundError('Recipe not found');
     }
 
-    const items = await recipeItemRepository.findByRecipe(
+    // Fetch items separately (virtual populate not supported)
+    const recipeItems = await recipeItemRepository.findByRecipe(
       recipe._id
+    );
+
+    // Populate ingredient for each item
+    await Promise.all(
+      recipeItems.map(async (ri) => {
+        await ri.populate({
+          path: 'ingredient',
+          select: 'code name lastPrice unit',
+          populate: {
+            path: 'unit',
+            select: 'code name symbol dimension baseFactor',
+          },
+        });
+      })
     );
 
     return {
       ...recipe.toObject(),
-      items: items.map((ri) => this._mapItem(ri)),
+      items: recipeItems.map((ri) => this._mapItem(ri)),
     };
   }
 
-    async update(id, dto, userId) {
+  async update(id, dto, userId) {
     return withTransaction(async (session) => {
       const existing = await recipeRepository.findById(
         id,
@@ -202,11 +239,9 @@ class RecipeService {
         patch.status = dto.status;
       if (dto.note !== undefined) patch.note = dto.note;
 
-      // kalau items dikirim -> replace + recompute foodCost
+      // kalau items dikirim -> replace
       if (dto.items) {
-        const items = [];
-        let foodCost = 0;
-
+        // validasi dimension
         for (const it of dto.items) {
           const ingredient =
             await ingredientRepository.findById(
@@ -243,31 +278,27 @@ class RecipeService {
             );
           }
 
-          foodCost += computeLineCost(
-            it.quantity,
-            recipeUnit,
-            ingredientUnit,
-            ingredient.averagePrice
-          );
-
-          items.push({
-            recipe: existing._id,
-            ingredient: it.ingredient,
-            unit: it.unit,
-            quantity: it.quantity,
-          });
+          if (recipeUnit.dimension !== ingredientUnit.dimension) {
+            throw new ValidationError(
+              `Unit dimension mismatch: resep pakai ${recipeUnit.symbol} (${recipeUnit.dimension}), ingredient pakai ${ingredientUnit.symbol} (${ingredientUnit.dimension})`
+            );
+          }
         }
-
-        patch.foodCost =
-          Math.round(foodCost * 100) / 100;
 
         await recipeItemRepository.deleteByRecipe(
           existing._id,
           session
         );
 
+        const itemsWithRef = dto.items.map((it) => ({
+          recipe: existing._id,
+          ingredient: it.ingredient,
+          unit: it.unit,
+          quantity: it.quantity,
+        }));
+
         await recipeItemRepository.createMany(
-          items,
+          itemsWithRef,
           session
         );
       }
@@ -283,23 +314,28 @@ class RecipeService {
         { session }
       );
 
-      const recipeItems =
-        await recipeItemRepository.findByRecipe(
-          existing._id,
-          session
-        );
+      await updated.populate({
+        path: 'items',
+        populate: {
+          path: 'ingredient',
+          select: 'code name lastPrice unit',
+          populate: {
+            path: 'unit',
+            select: 'code name symbol dimension baseFactor',
+          },
+        },
+      });
 
       return {
         ...updated.toObject(),
-        items: recipeItems.map((ri) =>
+        items: updated.items.map((ri) =>
           this._mapItem(ri)
         ),
       };
     });
   }
 
-
-   async delete(id, userId) {
+  async delete(id, userId) {
     const recipe = await this.findById(id);
 
     return withTransaction(async (session) => {
@@ -316,27 +352,32 @@ class RecipeService {
     });
   }
 
-  // mapping 1 recipe item + hitung lineCost live
+  // mapping 1 recipe item + hitung lineCost live (pakai lastPrice)
   _mapItem(ri) {
     const ingredient = ri.ingredient;
     const recipeUnit = ri.unit;
-    const ingredientUnit =
-      ingredient?.unit?._id ?? ingredient?.unit;
+    const ingredientUnitObj = ingredient?.unit;
 
     let lineCost = null;
 
-    // hitung hanya kalau unit ter-populate lengkap
-    if (
-      recipeUnit?.dimension &&
-      ingredient?.unit?.dimension
-    ) {
-      lineCost = computeLineCost(
-        ri.quantity,
-        recipeUnit,
-        ingredient.unit,
-        ingredient.averagePrice
-      );
+    try {
+      if (
+        recipeUnit?.dimension &&
+        ingredientUnitObj?.dimension &&
+        ingredient?.lastPrice != null
+      ) {
+        lineCost = computeLineCost(
+          ri.quantity,
+          recipeUnit,
+          ingredientUnitObj,
+          ingredient.lastPrice
+        );
+      }
+    } catch (e) {
+      lineCost = null;
     }
+
+    const ingredientUnitId = ingredientUnitObj?._id ?? ingredient?.unit;
 
     return {
       id: ri._id.toString(),
@@ -344,8 +385,15 @@ class RecipeService {
         id: ingredient._id.toString(),
         code: ingredient.code,
         name: ingredient.name,
-        averagePrice: ingredient.averagePrice,
-        unit: ingredientUnit,
+        lastPrice: ingredient.lastPrice,
+        unit: ingredientUnitObj
+          ? {
+              id: ingredientUnitObj._id.toString(),
+              code: ingredientUnitObj.code,
+              name: ingredientUnitObj.name,
+              symbol: ingredientUnitObj.symbol,
+            }
+          : ingredientUnitId,
       },
       unit: recipeUnit?._id
         ? {
@@ -360,4 +408,4 @@ class RecipeService {
   }
 }
 
-export default new RecipeService();
+export default new RecipeService()

@@ -45,7 +45,7 @@ export const purchaseQuerySchema = z.object({
     search: z.string().optional(),
 
     sort: z
-      .enum(['code', 'purchaseDate', 'totalAmount'])
+      .enum(['code', 'purchaseDate', 'totalAmount', 'createdAt'])
       .default('createdAt'),
 
     order: z.enum(['asc', 'desc']).default('desc'),

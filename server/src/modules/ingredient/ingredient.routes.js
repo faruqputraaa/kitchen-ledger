@@ -1,12 +1,11 @@
 import { Router } from 'express';
-
 import * as ingredientController from './ingredient.controller.js';
-
 import validate from '#middlewares/validation.middleware';
-
 import authMiddleware from '#middlewares/auth.middleware';
-
 import roleMiddleware from '#middlewares/role.middleware';
+import { ingredientPriceHistoryRepository } from '../ingredient-price-history/index.js';
+import { successResponse } from '#shared/response/apiResponse';
+import asyncHandler from '#shared/utils/asyncHandler';
 
 import {
   createIngredientSchema,
@@ -22,6 +21,12 @@ router.use(authMiddleware);
 router.get('/', validate(ingredientQuerySchema), ingredientController.getIngredients);
 
 router.get('/:id', validate(ingredientIdSchema), ingredientController.getIngredientById);
+
+router.get(
+  '/:id/price-history',
+  validate(ingredientIdSchema),
+  ingredientController.getIngredientPriceHistory
+);
 
 router.post(
   '/',
@@ -43,5 +48,7 @@ router.delete(
   validate(ingredientIdSchema),
   ingredientController.deleteIngredient
 );
+
+
 
 export default router;

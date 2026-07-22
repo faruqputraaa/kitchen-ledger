@@ -3,6 +3,7 @@ import { successResponse } from '#shared/response/apiResponse';
 
 import recipeMapper from './recipe.mapper.js';
 import recipeService from './recipe.service.js';
+import { recipeCostHistoryRepository } from '../recipe-cost-history/index.js';
 
 export const createRecipe = asyncHandler(
   async (req, res) => {
@@ -68,6 +69,22 @@ export const updateRecipe = asyncHandler(
     return successResponse(res, {
       message: 'Recipe updated successfully',
       data: recipeMapper.toDetail(recipe),
+    });
+  }
+);
+
+export const getRecipeCostHistory = asyncHandler(
+  async (req, res) => {
+    const history = await recipeCostHistoryRepository.findMany(
+      { recipe: req.params.id },
+      { sort: { date: 1 }, limit: 365 }
+    );
+
+    return successResponse(res, {
+      data: history.map((h) => ({
+        date: h.date,
+        foodCost: h.foodCost,
+      })),
     });
   }
 );

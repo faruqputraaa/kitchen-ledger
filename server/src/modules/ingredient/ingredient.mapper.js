@@ -32,7 +32,9 @@ class IngredientMapper {
 
       currentStock: ingredient.currentStock,
 
-      averagePrice: ingredient.averagePrice,
+      lastPrice: ingredient.lastPrice,
+      lastPurchaseDate: ingredient.lastPurchaseDate,
+      lastPurchaseId: ingredient.lastPurchaseId,
 
       notes: ingredient.notes,
 

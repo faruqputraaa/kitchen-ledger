@@ -10,6 +10,7 @@ import {
   getRecipeById,
   updateRecipe,
   deleteRecipe,
+  getRecipeCostHistory,
 } from './recipe.controller.js';
 
 import {
@@ -33,6 +34,13 @@ router.get(
   '/:id',
   validate(recipeIdSchema),
   getRecipeById
+);
+
+// Cost history endpoint
+router.get(
+  '/:id/cost-history',
+  validate(recipeIdSchema),
+  getRecipeCostHistory
 );
 
 router.post(

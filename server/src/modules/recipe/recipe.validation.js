@@ -70,7 +70,7 @@ export const recipeQuerySchema = z.object({
     search: z.string().optional(),
 
     sort: z
-      .enum(['code', 'name', 'foodCost'])
+      .enum(['code', 'name', 'foodCost', 'createdAt'])
       .default('createdAt'),
 
     order: z.enum(['asc', 'desc']).default('desc'),

@@ -6,7 +6,6 @@ export const RECIPE_STATUS = Object.freeze({
 export const RECIPE_SORT_FIELDS = Object.freeze([
   'code',
   'name',
-  'foodCost',
   'createdAt',
   'updatedAt',
 ]);
@@ -23,4 +22,3 @@ export const RECIPE_POPULATE = Object.freeze([
     select: 'code name',
   },
 ]);
-

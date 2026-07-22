@@ -69,6 +69,7 @@ class PurchaseService {
             it.ingredient,
             it.quantity,
             it.unitPrice,
+            purchase._id,
             session
           );
         }

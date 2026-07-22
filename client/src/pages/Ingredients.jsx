@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 
 const fetchIngredients = async () => {
@@ -24,6 +25,7 @@ const createIngredient = async (payload) => {
 
 export default function Ingredients() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     name: '',
@@ -78,6 +80,10 @@ export default function Ingredients() {
     mutation.mutate(payload);
   };
 
+  const goToDetail = (id) => {
+    navigate(`/ingredients/${id}`);
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
@@ -105,12 +111,16 @@ export default function Ingredients() {
                 <th>Kategori</th>
                 <th className="text-right">Stok</th>
                 <th className="text-right">Min</th>
-                <th className="text-right">Avg Price</th>
+                <th className="text-right">Last Price</th>
               </tr>
             </thead>
             <tbody>
               {ingredients.map((ing) => (
-                <tr key={ing.id}>
+                <tr
+                  key={ing.id}
+                  onClick={() => goToDetail(ing.id)}
+                  className="cursor-pointer hover:bg-slate-50"
+                >
                   <td className="font-medium">{ing.code}</td>
                   <td>{ing.name}</td>
                   <td>{ing.category?.name || '-'}</td>
@@ -130,8 +140,8 @@ export default function Ingredients() {
                   <td className="text-right" style={{ color: '#64748B' }}>
                     {ing.minimumStock}
                   </td>
-                  <td className="text-right font-semibold">
-                    Rp {(ing.averagePrice ?? 0).toLocaleString('id-ID')}
+                  <td className="text-right font-semibold" style={{ color: '#10B981' }}>
+                    Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}
                   </td>
                 </tr>
               ))}

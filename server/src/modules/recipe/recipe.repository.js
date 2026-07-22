@@ -62,7 +62,7 @@ class RecipeRepository {
       model: Recipe,
       filter,
       options,
-      populate: RECIPE_POPULATE,
+      populate: null, 
     });
   }
 
@@ -106,7 +106,7 @@ class RecipeItemRepository {
     return query.populate([
       {
         path: 'ingredient',
-        select: 'code name averagePrice unit',
+        select: 'code name lastPrice unit',
         populate: {
           path: 'unit',
           select: 'code name symbol dimension baseFactor',
