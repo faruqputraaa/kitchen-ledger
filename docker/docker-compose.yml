@@ -1,43 +1,47 @@
-# docker-compose.yml
 services:
+
   server:
+
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.server
+
+      context: ../server
+
     container_name: kl-server
+
     restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-      - PORT=5000
-      - MONGODB_URI=mongodb://localhost:27018/kitchen_ledger
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - SESSION_SECRET=${SESSION_SECRET}
-      - CLIENT_URL=https://yourdomain.com
-      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+
+    env_file:
+
+      - ../server/.env
+
     ports:
-      - "5000:5000"   # Expose ke host untuk Caddy proxy
+
+      - "5000:5000"
+
     networks:
-      - kl-internal
-    depends_on:
-      - mongodb
+
+      - kl-network
 
   client:
+
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.client
+
+      context: ../client
+
     container_name: kl-client
+
     restart: unless-stopped
-    # NO ports - Caddy serve static files dari host
-    volumes:
-      - ../client/dist:/usr/share/nginx/html  # Share build ke host
+
+    ports:
+
+      - "3000:80"
+
     networks:
-      - kl-internal
+
+      - kl-network
 
 networks:
-  kl-internal:
-    driver: bridge
 
-volumes:
-  mongodb_data:
+  kl-network:
+
+    external: true
