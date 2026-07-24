@@ -2,9 +2,16 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 
-const fetchRecipes = async () => {
-  const { data } = await api.get('/recipes?limit=50');
-  return data.data;
+const fetchRecipes = async (params = {}) => {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', params.page);
+  if (params.limit) query.set('limit', params.limit);
+  if (params.search) query.set('search', params.search);
+  if (params.sort) query.set('sort', params.sort);
+  if (params.order) query.set('order', params.order);
+  if (params.status) query.set('status', params.status);
+  const { data } = await api.get(`/recipes?${query.toString()}`);
+  return data;
 };
 
 const fetchIngredients = async () => {
@@ -22,6 +29,9 @@ const createRecipe = async (payload) => {
   return data.data;
 };
 
+const formatPrice = (price) =>
+  `Rp ${(price ?? 0).toLocaleString('id-ID')}`;
+
 export default function Recipes() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -29,11 +39,19 @@ export default function Recipes() {
   const [items, setItems] = useState([
     { ingredient: '', unit: '', quantity: '' },
   ]);
-const [error, setError] = useState('');
+  const [error, setError] = useState('');
 
-  const { data: recipes = [], isLoading } = useQuery({
-    queryKey: ['recipes'],
-    queryFn: fetchRecipes,
+  // Sort & Filter state
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [sort, setSort] = useState('name');
+  const [order, setOrder] = useState('asc');
+  const [page, setPage] = useState(1);
+  const limit = 20;
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['recipes', { search, sort, order, page, status: statusFilter }],
+    queryFn: () => fetchRecipes({ search, sort, order, page, limit, status: statusFilter }),
   });
 
   const { data: ingredients = [] } = useQuery({
@@ -45,6 +63,9 @@ const [error, setError] = useState('');
     queryKey: ['units-list'],
     queryFn: fetchUnits,
   });
+
+  const recipes = data?.data || [];
+  const pagination = data?.pagination || { total: 0, totalPages: 1 };
 
   const mutation = useMutation({
     mutationFn: createRecipe,
@@ -60,15 +81,32 @@ const [error, setError] = useState('');
   });
 
   const addRow = () =>
-    setItems((p) => [
-      ...p,
-      { ingredient: '', unit: '', quantity: '' },
-    ]);
+    setItems((p) => [...p, { ingredient: '', unit: '', quantity: '' }]);
 
   const updateRow = (i, f, v) =>
     setItems((p) =>
       p.map((r, idx) => (idx === i ? { ...r, [f]: v } : r))
     );
+
+  const handleSort = (field) => {
+    if (sort === field) {
+      setOrder((o) => (o === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSort(field);
+      setOrder('asc');
+    }
+    setPage(1);
+  };
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleStatusFilter = (e) => {
+    setStatusFilter(e.target.value);
+    setPage(1);
+  };
 
   const submit = () => {
     const payload = {
@@ -107,6 +145,49 @@ const [error, setError] = useState('');
         </button>
       </div>
 
+      {/* Filter & Search */}
+      <div className="card space-y-3 p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Cari nama resep..."
+              value={search}
+              onChange={handleSearch}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={statusFilter}
+              onChange={handleStatusFilter}
+              className="w-36"
+            >
+              <option value="">Semua Status</option>
+              <option value="ACTIVE">Aktif</option>
+              <option value="INACTIVE">Tidak Aktif</option>
+            </select>
+            <select
+              value={sort}
+              onChange={(e) => handleSort(e.target.value)}
+              className="w-36"
+            >
+              <option value="name">Nama</option>
+              <option value="code">Kode</option>
+              <option value="createdAt">Dibuat</option>
+            </select>
+            <select
+              value={order}
+              onChange={(e) => setOrder(e.target.value)}
+              className="w-28"
+            >
+              <option value="asc">↑ Asc</option>
+              <option value="desc">↓ Desc</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Table */}
       {isLoading ? (
         <div className="space-y-2">
@@ -115,28 +196,87 @@ const [error, setError] = useState('');
           ))}
         </div>
       ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Nama</th>
-                <th className="text-right">Food Cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recipes.map((r) => (
-                <tr key={r.id}>
-                  <td className="font-medium">{r.code}</td>
-                  <td>{r.name}</td>
-                  <td className="text-right font-semibold">
-                    Rp {(r.foodCost ?? 0).toLocaleString('id-ID')}
-                  </td>
+        <>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort('code')} className="cursor-pointer select-none">
+                    Kode {sort === 'code' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
+                  <th onClick={() => handleSort('name')} className="cursor-pointer select-none">
+                    Nama {sort === 'name' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
+                  <th onClick={() => handleSort('createdAt')} className="cursor-pointer select-none">
+                    Dibuat {sort === 'createdAt' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
+                  <th>Status</th>
+                  <th className="text-right">Food Cost</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {recipes.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8" style={{ color: '#94A3B8' }}>
+                      Tidak ada resep
+                    </td>
+                  </tr>
+                ) : (
+                  recipes.map((r) => (
+                    <tr key={r.id}>
+                      <td className="font-medium">{r.code}</td>
+                      <td>{r.name}</td>
+                      <td>
+                        {new Date(r.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td>
+                        <span
+                          className="px-2 py-0.5 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor:
+                              r.status === 'ACTIVE' ? '#D1FAE5' : '#FEF3C7',
+                            color:
+                              r.status === 'ACTIVE' ? '#059669' : '#D97706',
+                          }}
+                        >
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="text-right font-semibold">
+                        {formatPrice(r.foodCost)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm" style={{ color: '#64748B' }}>
+                Halaman {page} dari {pagination.totalPages} (Total: {pagination.total})
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="btn-outline text-sm px-3"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  disabled={page === pagination.totalPages}
+                  className="btn-outline text-sm px-3"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal Bottom-Sheet */}
@@ -173,21 +313,19 @@ const [error, setError] = useState('');
                   <option value="">Bahan</option>
                   {ingredients.map((ing) => (
                     <option key={ing.id} value={ing.id}>
-                      {ing.name}
+                      {ing.name} - {formatPrice(ing.lastPrice)}/{ing.unit?.symbol || 'unit'}
                     </option>
                   ))}
                 </select>
                 <select
                   value={row.unit}
-                  onChange={(e) =>
-                    updateRow(i, 'unit', e.target.value)
-                  }
+                  onChange={(e) => updateRow(i, 'unit', e.target.value)}
                   className="flex-1 min-w-0"
                 >
                   <option value="">Unit</option>
                   {units.map((u) => (
                     <option key={u.id} value={u.id}>
-                      {u.symbol}
+                      {u.symbol} ({u.name})
                     </option>
                   ))}
                 </select>
@@ -195,9 +333,7 @@ const [error, setError] = useState('');
                   type="number"
                   placeholder="Qty"
                   value={row.quantity}
-                  onChange={(e) =>
-                    updateRow(i, 'quantity', e.target.value)
-                  }
+                  onChange={(e) => updateRow(i, 'quantity', e.target.value)}
                   className="flex-1 min-w-0"
                 />
               </div>

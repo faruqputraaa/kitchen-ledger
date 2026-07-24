@@ -45,16 +45,23 @@ class PurchaseRepository {
   }
 
   async findMany(query = {}) {
+    // Extract filter fields
+    const { status, supplier, ...restQuery } = query;
+
     const filter = {
       isDeleted: false,
       ...buildSearch(
-        query.search,
+        restQuery.search,
         PURCHASE_SEARCH_FIELDS
       ),
     };
 
+    // Add filter fields to filter
+    if (status) filter.status = status;
+    if (supplier) filter.supplier = supplier;
+
     const options = buildQueryOptions({
-      query,
+      query: restQuery,
       allowedSort: PURCHASE_SORT_FIELDS,
     });
 

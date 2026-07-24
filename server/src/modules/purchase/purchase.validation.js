@@ -49,5 +49,9 @@ export const purchaseQuerySchema = z.object({
       .default('createdAt'),
 
     order: z.enum(['asc', 'desc']).default('desc'),
+
+    // Filter fields (pisah dari sort)
+    status: z.enum(Object.values(PURCHASE_STATUS)).optional(),
+    supplier: objectIdSchema.optional(),
   }),
 });

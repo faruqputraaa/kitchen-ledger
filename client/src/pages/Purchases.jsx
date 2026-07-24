@@ -2,9 +2,17 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 
-const fetchPurchases = async () => {
-  const { data } = await api.get('/purchases?limit=50');
-  return data.data;
+const fetchPurchases = async (params = {}) => {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', params.page);
+  if (params.limit) query.set('limit', params.limit);
+  if (params.search) query.set('search', params.search);
+  if (params.sort) query.set('sort', params.sort);
+  if (params.order) query.set('order', params.order);
+  if (params.status) query.set('status', params.status);
+  if (params.supplier) query.set('supplier', params.supplier);
+  const { data } = await api.get(`/purchases?${query.toString()}`);
+  return data;
 };
 
 const fetchIngredients = async () => {
@@ -22,6 +30,9 @@ const createPurchase = async (payload) => {
   return data.data;
 };
 
+const formatPrice = (price) =>
+  `Rp ${(price ?? 0).toLocaleString('id-ID')}`;
+
 export default function Purchases() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -30,10 +41,19 @@ export default function Purchases() {
     { ingredient: '', quantity: '', unitPrice: '' },
   ]);
   const [error, setError] = useState('');
+  
+  // Sort & Filter state
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [supplierFilter, setSupplierFilter] = useState('');
+  const [sort, setSort] = useState('purchaseDate');
+  const [order, setOrder] = useState('desc');
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const { data: purchases = [], isLoading } = useQuery({
-    queryKey: ['purchases'],
-    queryFn: fetchPurchases,
+  const { data, isLoading } = useQuery({
+    queryKey: ['purchases', { search, sort, order, page, status: statusFilter, supplier: supplierFilter }],
+    queryFn: () => fetchPurchases({ search, sort, order, page, limit, status: statusFilter, supplier: supplierFilter }),
   });
 
   const { data: ingredients = [] } = useQuery({
@@ -45,6 +65,9 @@ export default function Purchases() {
     queryKey: ['suppliers-list'],
     queryFn: fetchSuppliers,
   });
+
+  const purchases = data?.data || [];
+  const pagination = data?.pagination || { total: 0, totalPages: 1 };
 
   const mutation = useMutation({
     mutationFn: createPurchase,
@@ -63,7 +86,34 @@ export default function Purchases() {
     setItems((p) => [...p, { ingredient: '', quantity: '', unitPrice: '' }]);
 
   const updateRow = (i, f, v) =>
-    setItems((p) => p.map((r, idx) => (idx === i ? { ...r, [f]: v } : r)));
+    setItems((p) =>
+      p.map((r, idx) => (idx === i ? { ...r, [f]: v } : r))
+    );
+
+  const handleSort = (field) => {
+    if (sort === field) {
+      setOrder((o) => (o === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSort(field);
+      setOrder('desc');
+    }
+    setPage(1);
+  };
+
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  const handleStatusFilter = (e) => {
+    setStatusFilter(e.target.value);
+    setPage(1);
+  };
+
+  const handleSupplierFilter = (e) => {
+    setSupplierFilter(e.target.value);
+    setPage(1);
+  };
 
   const submit = () => {
     const payload = {
@@ -98,6 +148,61 @@ export default function Purchases() {
         </button>
       </div>
 
+      {/* Filter & Search */}
+      <div className="card space-y-3 p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Cari kode/note..."
+              value={search}
+              onChange={handleSearch}
+              className="w-full"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <select
+              value={statusFilter}
+              onChange={handleStatusFilter}
+              className="w-36"
+            >
+              <option value="">Semua Status</option>
+              <option value="DRAFT">Draft</option>
+              <option value="ORDERED">Ordered</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+            <select
+              value={supplierFilter}
+              onChange={handleSupplierFilter}
+              className="w-40"
+            >
+              <option value="">Semua Supplier</option>
+              {suppliers.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            <select
+              value={sort}
+              onChange={(e) => handleSort(e.target.value)}
+              className="w-36"
+            >
+              <option value="purchaseDate">Tanggal</option>
+              <option value="code">Kode</option>
+              <option value="totalAmount">Total</option>
+            </select>
+            <select
+              value={order}
+              onChange={(e) => setOrder(e.target.value)}
+              className="w-28"
+            >
+              <option value="desc">↓ Desc</option>
+              <option value="asc">↑ Asc</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {/* Table */}
       {isLoading ? (
         <div className="space-y-2">
@@ -106,42 +211,87 @@ export default function Purchases() {
           ))}
         </div>
       ) : (
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Supplier</th>
-                <th>Status</th>
-                <th className="text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {purchases.map((p) => (
-                <tr key={p.id}>
-                  <td className="font-medium">{p.code}</td>
-                  <td>{p.supplier?.name || '-'}</td>
-                  <td>
-                    <span
-                      className="px-2 py-0.5 rounded-full text-xs font-medium"
-                      style={{
-                        backgroundColor:
-                          p.status === 'COMPLETED' ? '#D1FAE5' : '#FEF3C7',
-                        color:
-                          p.status === 'COMPLETED' ? '#059669' : '#D97706',
-                      }}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-<td className="text-right font-semibold">
-                    Rp {(p.totalAmount ?? 0).toLocaleString('id-ID')}
-                  </td>
+        <>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onClick={() => handleSort('code')} className="cursor-pointer select-none">
+                    Kode {sort === 'code' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
+                  <th>Supplier</th>
+                  <th onClick={() => handleSort('purchaseDate')} className="cursor-pointer select-none">
+                    Tanggal {sort === 'purchaseDate' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
+                  <th>Status</th>
+                  <th onClick={() => handleSort('totalAmount')} className="cursor-pointer select-none text-right">
+                    Total {sort === 'totalAmount' && (order === 'asc' ? ' ↑' : ' ↓')}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {purchases.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8" style={{ color: '#94A3B8' }}>
+                      Tidak ada pembelian
+                    </td>
+                  </tr>
+                ) : (
+                  purchases.map((p) => (
+                    <tr key={p.id}>
+                      <td className="font-medium">{p.code}</td>
+                      <td>{p.supplier?.name || '-'}</td>
+                      <td>
+                        {new Date(p.purchaseDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td>
+                        <span
+                          className="px-2 py-0.5 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor:
+                              p.status === 'COMPLETED' ? '#D1FAE5' : p.status === 'ORDERED' ? '#DBEAFE' : p.status === 'CANCELLED' ? '#FEE2E2' : '#FEF3C7',
+                            color:
+                              p.status === 'COMPLETED' ? '#059669' : p.status === 'ORDERED' ? '#2563EB' : p.status === 'CANCELLED' ? '#DC2626' : '#D97706',
+                          }}
+                        >
+                          {p.status}
+                        </span>
+                      </td>
+                      <td className="text-right font-semibold">
+                        {formatPrice(p.totalAmount)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between">
+              <p className="text-sm" style={{ color: '#64748B' }}>
+                Halaman {page} dari {pagination.totalPages} (Total: {pagination.total})
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="btn-outline text-sm px-3"
+                >
+                  Prev
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                  disabled={page === pagination.totalPages}
+                  className="btn-outline text-sm px-3"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal Bottom-Sheet */}
@@ -184,7 +334,7 @@ export default function Purchases() {
                   <option value="">Bahan</option>
                   {ingredients.map((ing) => (
                     <option key={ing.id} value={ing.id}>
-                      {ing.name}
+                      {ing.name} ({ing.unit?.symbol || ''}) - {formatPrice(ing.lastPrice)}/{ing.unit?.symbol || 'unit'}
                     </option>
                   ))}
                 </select>

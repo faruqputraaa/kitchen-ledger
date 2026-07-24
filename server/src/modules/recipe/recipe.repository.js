@@ -53,6 +53,11 @@ class RecipeRepository {
       ),
     };
 
+    // Add status filter if provided
+    if (query.status) {
+      filter.status = query.status;
+    }
+
     const options = buildQueryOptions({
       query,
       allowedSort: RECIPE_SORT_FIELDS,
@@ -62,7 +67,7 @@ class RecipeRepository {
       model: Recipe,
       filter,
       options,
-      populate: null, 
+      populate: null, // Items di-handle di service
     });
   }
 
