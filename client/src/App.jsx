@@ -11,6 +11,7 @@ import Purchases from './pages/Purchases';
 import Ingredients from './pages/Ingredients';
 import IngredientDetail from './pages/IngredientDetail';
 import Recipes from './pages/Recipes';
+import Categories from './pages/Categories';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -32,6 +33,7 @@ function App() {
             <Route path="/ingredients" element={<Ingredients />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
             <Route path="/purchases" element={<Purchases />} />
+            <Route path="/categories" element={<Categories />} />
             <Route path="/menus" element={
               <div className="flex items-center justify-center py-20">
                 <div className="text-center">
@@ -42,6 +44,7 @@ function App() {
               </div>
             } />
           </Route>
+          
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
