@@ -1,47 +1,30 @@
 services:
-
   server:
-
     build:
-
-      context: ../server
-
+      context: ..
+      dockerfile: server/Dockerfile
     container_name: kl-server
-
     restart: unless-stopped
-
     env_file:
-
       - ../server/.env
-
     ports:
-
       - "5000:5000"
-
     networks:
-
       - kl-network
 
   client:
-
     build:
-
-      context: ../client
-
+      context: ..
+      dockerfile: client/Dockerfile
     container_name: kl-client
-
     restart: unless-stopped
-
+    depends_on:
+      - server
     ports:
-
       - "3000:80"
-
     networks:
-
       - kl-network
 
 networks:
-
   kl-network:
-
     external: true
