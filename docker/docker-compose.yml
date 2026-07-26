@@ -3,12 +3,20 @@ services:
     build:
       context: ..
       dockerfile: server/Dockerfile
+
     container_name: kl-server
+
     restart: unless-stopped
+
     env_file:
       - ../server/.env
+
     ports:
       - "5000:5000"
+
+    volumes:
+      - /opt/logs/kitchen-ledger:/app/src/logs
+
     networks:
       - kl-network
 
@@ -16,12 +24,17 @@ services:
     build:
       context: ..
       dockerfile: client/Dockerfile
+
     container_name: kl-client
+
     restart: unless-stopped
+
     depends_on:
       - server
+
     ports:
       - "3000:80"
+
     networks:
       - kl-network
 
