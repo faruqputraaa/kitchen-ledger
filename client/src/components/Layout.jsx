@@ -4,9 +4,10 @@ import useAuthStore from '../store/authStore';
 
 const navLinks = [
   { to: '/dashboard', label: 'Dashboard' },
-  { to: '/ingredients', label: 'Ingredients' },   
+  { to: '/ingredients', label: 'Ingredients' },
   { to: '/purchases', label: 'Purchases' },
   { to: '/recipes', label: 'Recipes' },
+  { to: '/menus', label: 'Menus' },
 ];
 
 export default function Layout() {
