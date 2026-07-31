@@ -21,7 +21,16 @@ class MenuService {
   }
 
   async findAll(query) {
-    return menuRepository.findMany(query);
+    const result = await menuRepository.findMany(query);
+    return {
+      data: result.items,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: Math.ceil(result.total / result.limit),
+      },
+    };
   }
 
   async findById(id) {

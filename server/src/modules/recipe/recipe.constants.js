@@ -18,6 +18,17 @@ export const RECIPE_SEARCH_FIELDS = Object.freeze([
 
 export const RECIPE_POPULATE = Object.freeze([
   {
+    path: 'items',
+    populate: {
+      path: 'ingredient',
+      select: 'code name lastPrice unit',
+      populate: {
+        path: 'unit',
+        select: 'code name symbol dimension baseFactor',
+      },
+    },
+  },
+  {
     path: 'createdBy',
     select: 'code name',
   },

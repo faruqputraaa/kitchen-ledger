@@ -5,23 +5,23 @@
 services:
   server:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.server
+      context: ../server
+      dockerfile: Dockerfile
     container_name: kl-server
     restart: unless-stopped
     env_file:
-      - .env
+      - ../server/.env
     ports:
       - "5000:5000"
     volumes:
-      - /opt/logs/kitchen-ledger:/app/server/src/logs
+      - /opt/logs/kitchen-ledger:/app/src/logs
     networks:
       - kl-network
 
   client:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.client
+      context: ../client
+      dockerfile: Dockerfile
     container_name: kl-client
     restart: unless-stopped
     ports:

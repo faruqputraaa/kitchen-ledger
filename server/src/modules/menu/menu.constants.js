@@ -24,8 +24,11 @@ export const MENU_POPULATE = Object.freeze([
     path: 'recipe',
     select: 'code name foodCost',
     populate: {
-      path: 'items.ingredient',
-      select: 'code name lastPrice unit',
+      path: 'items',
+      populate: {
+        path: 'ingredient',
+        select: 'code name lastPrice unit',
+      },
     },
   },
   {
