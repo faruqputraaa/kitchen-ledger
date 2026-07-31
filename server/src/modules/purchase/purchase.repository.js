@@ -104,7 +104,15 @@ class PurchaseItemRepository {
   }
 
     async findByPurchase(purchaseId, session = null) {
-    let query = PurchaseItem.find({ purchase: purchaseId });
+    let query = PurchaseItem.find({ purchase: purchaseId })
+      .populate({
+        path: 'ingredient',
+        select: 'code name lastPrice unit',
+        populate: {
+          path: 'unit',
+          select: 'code name symbol',
+        },
+      });
 
     if (session) {
       query = query.session(session);
