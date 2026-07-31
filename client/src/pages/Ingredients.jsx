@@ -221,7 +221,7 @@ export default function Ingredients() {
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Catatan
+                Catatan <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <input
                 placeholder="Opsional"

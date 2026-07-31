@@ -200,7 +200,7 @@ export default function Categories() {
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Deskripsi
+                Deskripsi <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={3}

@@ -219,7 +219,9 @@ export default function Menus() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Deskripsi</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+                Deskripsi <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              </label>
               <textarea
                 rows={2}
                 placeholder="Opsional"

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 
 const fetchPurchases = async (params = {}) => {
@@ -35,6 +36,7 @@ const formatPrice = (price) =>
 
 export default function Purchases() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [supplier, setSupplier] = useState('');
   const [items, setItems] = useState([
@@ -238,7 +240,7 @@ export default function Purchases() {
                   </tr>
                 ) : (
                   purchases.map((p) => (
-                    <tr key={p.id}>
+                    <tr key={p.id} className="cursor-pointer hover:bg-slate-50" onClick={() => navigate(`/purchases/${p.id}`)}>
                       <td className="font-medium">{p.code}</td>
                       <td>{p.supplier?.name || '-'}</td>
                       <td>
@@ -310,17 +312,22 @@ export default function Purchases() {
               Pembelian Baru
             </h2>
 
-            <select
-              value={supplier}
-              onChange={(e) => setSupplier(e.target.value)}
-            >
-              <option value="">Tanpa Supplier</option>
-              {suppliers.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+            <div>
+              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+                Supplier <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              </label>
+              <select
+                value={supplier}
+                onChange={(e) => setSupplier(e.target.value)}
+              >
+                <option value="">Tanpa Supplier</option>
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {items.map((row, i) => (
               <div key={i} className="flex flex-col sm:flex-row gap-2">

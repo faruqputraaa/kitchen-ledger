@@ -217,7 +217,7 @@ export default function Suppliers() {
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Kontak Person
+                Kontak Person <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <input
                 placeholder="Nama kontak"
@@ -229,7 +229,7 @@ export default function Suppliers() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                  Telepon
+                  Telepon <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
                 </label>
                 <input
                   placeholder="08xxx"
@@ -239,7 +239,7 @@ export default function Suppliers() {
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                  Email
+                  Email <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
                 </label>
                 <input
                   placeholder="email@contoh.com"
@@ -251,7 +251,7 @@ export default function Suppliers() {
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Alamat
+                Alamat <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={2}
@@ -263,7 +263,7 @@ export default function Suppliers() {
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Notes
+                Notes <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={2}
