@@ -11,6 +11,11 @@ const countQuery = (url) => async () => {
   return data.pagination?.total ?? 0;
 };
 
+const fetchMenusCount = async () => {
+  const { data } = await api.get('/menus?limit=1');
+  return data.pagination?.total ?? 0;
+};
+
 const fetchLowStock = async () => {
   const { data } = await api.get('/ingredients?limit=200');
   const list = data.data || [];
@@ -31,6 +36,7 @@ export default function Dashboard() {
   const { data: totalIngredients } = useQuery({ queryKey: ['count-ingredients'], queryFn: countQuery('/ingredients') });
   const { data: totalPurchases } = useQuery({ queryKey: ['count-purchases'], queryFn: countQuery('/purchases') });
   const { data: totalRecipes } = useQuery({ queryKey: ['count-recipes'], queryFn: countQuery('/recipes') });
+  const { data: totalMenus } = useQuery({ queryKey: ['count-menus'], queryFn: fetchMenusCount });
   const { data: lowStock } = useQuery({ queryKey: ['low-stock'], queryFn: fetchLowStock });
   const { data: purchases } = useQuery({ queryKey: ['recent-purchases'], queryFn: fetchRecentPurchases });
   const { data: recipes } = useQuery({ queryKey: ['recent-recipes'], queryFn: fetchRecentRecipes });
@@ -39,6 +45,7 @@ export default function Dashboard() {
     { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', color: '#10B981', icon: '📦' },
     { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', color: '#F59E0B', icon: '🛒' },
     { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', color: '#8B5CF6', icon: '📝' },
+    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', color: '#10B981', icon: '🍽️' },
   ];
 
   const lowList = lowStock ?? [];
@@ -49,21 +56,20 @@ export default function Dashboard() {
     <div className="max-w-7xl mx-auto space-y-6 p-4 md:p-6">
       <h1 className="text-2xl font-bold" style={{ color: '#0F172A' }}>Dashboard</h1>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {cards.map((c) => (
           <Link key={c.label} to={c.to} className="card text-white hover:opacity-90 transition-opacity text-center relative overflow-hidden" style={{ backgroundColor: c.color }}>
-            <span className="text-3xl md:text-4xl block mb-1">{c.icon}</span>
-            <p className="text-sm opacity-90 font-medium">{c.label}</p>
-            <p className="text-2xl md:text-3xl font-bold mt-1">{c.value}</p>
+            <span className="text-3xl sm:text-3xl md:text-4xl block mb-1">{c.icon}</span>
+            <p className="text-xs sm:text-sm opacity-90 font-medium">{c.label}</p>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1">{c.value}</p>
           </Link>
         ))}
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-        {/* Left: Low Stock Alert - Full width on mobile, 2/3 on desktop */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {/* Left: Low Stock Alert - Full width on mobile, 1/2 on md, 2/3 on lg */}
+        <div className="lg:col-span-2 md:col-span-2 space-y-6">
           {/* Low Stock Card */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">

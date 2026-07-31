@@ -4,10 +4,10 @@ import useAuthStore from '../store/authStore';
 
 const navLinks = [
   { to: '/dashboard', label: 'Dashboard' },
-  { to: '/ingredients', label: 'Ingredients' },
-  { to: '/purchases', label: 'Purchases' },
-  { to: '/recipes', label: 'Recipes' },
-  { to: '/menus', label: 'Menus' },
+  { to: '/ingredients', label: 'Bahan' },
+  { to: '/purchases', label: 'Pembelian' },
+  { to: '/recipes', label: 'Resep' },
+  { to: '/menus', label: 'Menu' },
 ];
 
 export default function Layout() {
@@ -25,7 +25,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
       {/* Desktop Nav */}
-      <nav className="hidden md:flex items-center justify-between px-6 py-3 bg-white shadow-sm"
+      <nav className="hidden md:flex items-center justify-between px-6 py-3 bg-white shadow-sm sticky top-0 z-40"
         style={{ borderBottom: '1px solid #E2E8F0' }}>
         <Link to="/dashboard" className="font-bold text-xl" style={{ color: '#10B981' }}>
           Kitchen Ledger
@@ -53,8 +53,8 @@ export default function Layout() {
         </div>
       </nav>
 
-      {/* Mobile Nav */}
-      <nav className="md:hidden flex items-center justify-between px-4 py-3 bg-white shadow-sm"
+      {/* Mobile Nav - Fixed top */}
+      <nav className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-white shadow-sm z-50"
         style={{ borderBottom: '1px solid #E2E8F0' }}>
         <Link to="/dashboard" className="font-bold text-lg" style={{ color: '#10B981' }}>Kitchen</Link>
         <button onClick={() => setMenuOpen(!menuOpen)}
@@ -63,9 +63,10 @@ export default function Layout() {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Fixed top below nav */}
       {menuOpen && (
-        <div className="md:hidden bg-white shadow-lg" style={{ borderBottom: '1px solid #E2E8F0' }}>
+        <div className="md:hidden fixed top-14 left-0 right-0 bg-white shadow-lg z-40 overflow-y-auto max-h-[calc(100vh-56px)]"
+          style={{ borderBottom: '1px solid #E2E8F0' }}>
           {navLinks.map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
               className="block px-5 py-3 text-sm font-medium"
@@ -80,8 +81,11 @@ export default function Layout() {
         </div>
       )}
 
-      <main className="p-4 md:p-6">
-        <Outlet />
+      {/* Main content - offset for mobile fixed nav */}
+      <main className="pt-14 md:pt-0 px-4 md:px-6 py-4 md:py-6">
+        <div className="max-w-7xl mx-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
