@@ -13,6 +13,7 @@ import IngredientDetail from './pages/IngredientDetail';
 import Recipes from './pages/Recipes';
 import Categories from './pages/Categories';
 import Menus from './pages/Menus';
+import Suppliers from './pages/Suppliers';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -33,9 +34,9 @@ function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/ingredients" element={<Ingredients />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
-            <Route path="/purchases" element={<Purchases />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/menus" element={<Menus />} />
+            <Route path="/suppliers" element={<Suppliers />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
