@@ -12,6 +12,7 @@ import Ingredients from './pages/Ingredients';
 import IngredientDetail from './pages/IngredientDetail';
 import Recipes from './pages/Recipes';
 import Categories from './pages/Categories';
+import Menus from './pages/Menus';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -34,15 +35,7 @@ function App() {
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
             <Route path="/purchases" element={<Purchases />} />
             <Route path="/categories" element={<Categories />} />
-            <Route path="/menus" element={
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <div className="text-5xl mb-3">🍽️</div>
-                  <h2 className="text-xl font-bold" style={{ color: '#1E293B' }}>Menu</h2>
-                  <p className="text-sm mt-1" style={{ color: '#64748B' }}>Segera hadir</p>
-                </div>
-              </div>
-            } />
+            <Route path="/menus" element={<Menus />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
