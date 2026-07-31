@@ -3,6 +3,7 @@ import ValidationError from '#shared/errors/ValidationError';
 
 import menuRepository from './menu.repository.js';
 import recipeRepository from '../recipe/recipe.repository.js';
+import counterService from '#shared/counter/counter.service';
 
 class MenuService {
   async create(dto, userId) {
@@ -12,8 +13,11 @@ class MenuService {
       throw new NotFoundError('Recipe not found');
     }
 
+    const code = await counterService.generate('menu');
+
     const menu = await menuRepository.create({
       ...dto,
+      code,
       createdBy: userId,
     });
 
