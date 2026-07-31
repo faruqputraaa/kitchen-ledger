@@ -37,7 +37,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - /opt/logs/kitchen-ledger:/app/src/logs
+      - /opt/logs/kitchen-ledger:/app/server/src/logs
     networks:
       - kl-internal
       - kl-network
