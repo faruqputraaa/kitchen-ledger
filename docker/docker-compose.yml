@@ -1,29 +1,8 @@
-# docker-compose.yml - Core services only
+# docker-compose.yml - Client & Server only (MongoDB external)
 # Build context: root (workspace caching)
-# Networks: internal (db) + external (caddy)
+# Networks: external (caddy)
 
 services:
-  mongodb:
-    image: mongo:7
-    container_name: kl-mongodb
-    restart: unless-stopped
-    environment:
-      - MONGO_INITDB_DATABASE=kitchen-ledger-db
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
-    volumes:
-      - mongodb_data:/data/db
-    ports:
-      - "27017:27017"
-    networks:
-      - kl-internal
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/kitchen-ledger-db --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
   server:
     build:
       context: ..
@@ -37,11 +16,7 @@ services:
     volumes:
       - /opt/logs/kitchen-ledger:/app/server/src/logs
     networks:
-      - kl-internal
       - kl-network
-    depends_on:
-      mongodb:
-        condition: service_healthy
 
   client:
     build:
@@ -55,10 +30,5 @@ services:
       - kl-network
 
 networks:
-  kl-internal:
-    driver: bridge
   kl-network:
     external: true
-
-volumes:
-  mongodb_data:
