@@ -1,43 +1,114 @@
+# docker-compose.yml - Optimized with MongoDB, Loki, Grafana, Promtail
+# Build context: root (for workspace caching)
+# Networks: internal (db, monitoring) + external (caddy)
+
 services:
+  # ─── Database ───
+  mongodb:
+    image: mongo:7
+    container_name: kl-mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=kitchen-ledger-db
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - kl-internal
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/kitchen-ledger-db --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ─── Backend ───
   server:
     build:
       context: ..
-      dockerfile: server/Dockerfile
-
+      dockerfile: docker/Dockerfile.server
     container_name: kl-server
-
     restart: unless-stopped
-
     env_file:
-      - ../server/.env
-
+      - .env
     ports:
       - "5000:5000"
-
     volumes:
-      - /opt/logs/kitchen-ledger:/app/server/src/logs
-
+      - /opt/logs/kitchen-ledger:/app/src/logs
     networks:
+      - kl-internal
       - kl-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
 
+  # ─── Frontend ───
   client:
     build:
       context: ..
-      dockerfile: client/Dockerfile
-
+      dockerfile: docker/Dockerfile.client
     container_name: kl-client
-
     restart: unless-stopped
-
-    depends_on:
-      - server
-
     ports:
       - "3000:80"
-
     networks:
       - kl-network
 
+  # ─── Logging Stack ───
+  loki:
+    image: grafana/loki:3.0
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    networks:
+      - kl-internal
+
+  promtail:
+    image: grafana/promtail:3.0
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /opt/logs/kitchen-ledger:/var/log/kitchen-ledger:ro
+      - ./promtail-config.yaml:/etc/promtail/config.yaml
+    networks:
+      - kl-internal
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:10.2
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-loki-datasource
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana_data:/var/lib/grafana
+    networks:
+      - kl-internal
+      - kl-network
+    depends_on:
+      - loki
+
 networks:
+  kl-internal:
+    driver: bridge
   kl-network:
     external: true
+
+volumes:
+  mongodb_data:
+  loki_data:
+  grafana_data:
