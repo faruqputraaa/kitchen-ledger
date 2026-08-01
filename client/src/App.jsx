@@ -15,6 +15,7 @@ import Categories from './pages/Categories';
 import Menus from './pages/Menus';
 import Suppliers from './pages/Suppliers';
 import PurchaseDetail from './pages/PurchaseDetail';
+import StockAdjustment from './pages/StockAdjustment';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -39,6 +40,7 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/menus" element={<Menus />} />
             <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/stock-adjustments" element={<StockAdjustment />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

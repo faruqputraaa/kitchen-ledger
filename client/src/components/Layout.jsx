@@ -15,6 +15,7 @@ const navLinks = [
   { to: '/purchases', label: 'Pembelian' },
   { to: '/recipes', label: 'Resep' },
   { to: '/menus', label: 'Menu' },
+  { to: '/stock-adjustments', label: 'Stok Adjust' },
 ];
 
 const flatNav = [
@@ -25,6 +26,7 @@ const flatNav = [
   { to: '/purchases', label: 'Pembelian' },
   { to: '/recipes', label: 'Resep' },
   { to: '/menus', label: 'Menu' },
+  { to: '/stock-adjustments', label: 'Stok Adjust' },
 ];
 
 export default function Layout() {
