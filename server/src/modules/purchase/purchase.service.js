@@ -9,6 +9,7 @@ import purchaseRepository, {
   purchaseItemRepository,
 } from './purchase.repository.js';
 import ingredientService from '../ingredient/ingredient.service.js';
+import stockAdjustmentRepository from '../stock-adjustment/stock-adjustment.repository.js';
 
 class PurchaseService {
   async create(dto, userId) {
@@ -40,6 +41,7 @@ class PurchaseService {
       totalAmount =
         Math.round(totalAmount * 100) / 100;
 
+      const purchaseCode = code;
       const purchase = await purchaseRepository.create(
         {
           code,
@@ -64,14 +66,28 @@ class PurchaseService {
       );
 
       if (purchase.status === 'COMPLETED') {
-        for (const it of dto.items) {
-          await ingredientService.applyStockIncrease(
-            it.ingredient,
-            it.quantity,
-            it.unitPrice,
+        const adjCode = await counterService.generate('stock-adjustment');
+        for (const item of dto.items) {
+          const result = await ingredientService.applyStockIncrease(
+            item.ingredient,
+            item.quantity,
+            item.unitPrice,
             purchase._id,
             session
           );
+
+          // Record as stock adjustment (IN from purchase)
+          await stockAdjustmentRepository.create({
+            code: adjCode,
+            ingredient: result.ingredientId,
+            type: 'IN',
+            reason: 'OTHER',
+            quantity: result.addedQuantity,
+            stockBefore: result.previousStock,
+            stockAfter: result.newStock,
+            notes: `Purchase ${purchaseCode}`,
+            createdBy: userId,
+          }, session);
         }
       }
 

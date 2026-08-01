@@ -5,7 +5,7 @@ const stockAdjustmentSchema = new mongoose.Schema(
   {
     code: { type: String, required: true, unique: true, trim: true },
     ingredient: { type: mongoose.Schema.Types.ObjectId, ref: 'Ingredient', required: true },
-    type: { type: String, enum: ['OUT'], default: 'OUT' },
+    type: { type: String, enum: ['IN', 'OUT'], required: true },
     reason: { type: String, enum: Object.values(STOCK_ADJUSTMENT_REASON), required: true },
     quantity: { type: Number, required: true, min: 0 },
     adjustmentDate: { type: Date, default: Date.now },
