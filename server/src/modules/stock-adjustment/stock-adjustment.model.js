@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import { STOCK_ADJUSTMENT_TYPE, STOCK_ADJUSTMENT_REASON } from './stock-adjustment.constants.js';
+import { STOCK_ADJUSTMENT_REASON } from './stock-adjustment.constants.js';
 
 const stockAdjustmentSchema = new mongoose.Schema(
   {
     code: { type: String, required: true, unique: true, trim: true },
     ingredient: { type: mongoose.Schema.Types.ObjectId, ref: 'Ingredient', required: true },
-    type: { type: String, enum: Object.values(STOCK_ADJUSTMENT_TYPE), required: true },
+    type: { type: String, enum: ['OUT'], default: 'OUT' },
     reason: { type: String, enum: Object.values(STOCK_ADJUSTMENT_REASON), required: true },
     quantity: { type: Number, required: true, min: 0 },
     adjustmentDate: { type: Date, default: Date.now },

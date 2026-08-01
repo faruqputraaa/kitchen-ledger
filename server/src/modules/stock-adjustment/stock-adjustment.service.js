@@ -10,15 +10,13 @@ class StockAdjustmentService {
     if (!ingredient) throw new NotFoundError('Ingredient not found');
 
     const stockBefore = ingredient.currentStock;
-    const stockAfter = dto.type === 'IN'
-      ? stockBefore + dto.quantity
-      : stockBefore - dto.quantity;
+    const stockAfter = stockBefore - dto.quantity; // Always OUT
 
     if (stockAfter < 0) throw new ValidationError('Stock tidak boleh negatif');
 
     const code = await counterService.generate('stock-adjustment');
 
-    // Update ingredient stock
+    // Update ingredient stock (only decrease)
     await ingredientRepository.update(
       { _id: ingredient._id },
       { currentStock: stockAfter, updatedBy: userId }
@@ -28,7 +26,7 @@ class StockAdjustmentService {
     return stockAdjustmentRepository.create({
       code,
       ingredient: ingredient._id,
-      type: dto.type,
+      type: 'OUT',
       reason: dto.reason,
       quantity: dto.quantity,
       adjustmentDate: dto.adjustmentDate ?? new Date(),

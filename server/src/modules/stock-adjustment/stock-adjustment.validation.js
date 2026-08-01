@@ -3,7 +3,6 @@ import z from 'zod';
 export const createStockAdjustmentSchema = z.object({
   body: z.object({
     ingredient: z.string().min(1, 'Ingredient is required'),
-    type: z.enum(['IN', 'OUT']),
     reason: z.enum(['WASTE', 'TRANSFER', 'CORRECTION', 'OTHER']),
     quantity: z.number().min(0.01, 'Quantity must be > 0'),
     adjustmentDate: z.string().optional(),

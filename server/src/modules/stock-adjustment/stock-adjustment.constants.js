@@ -1,8 +1,3 @@
-export const STOCK_ADJUSTMENT_TYPE = Object.freeze({
-  IN: 'IN',
-  OUT: 'OUT',
-});
-
 export const STOCK_ADJUSTMENT_REASON = Object.freeze({
   WASTE: 'WASTE',
   TRANSFER: 'TRANSFER',

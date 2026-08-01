@@ -47,7 +47,7 @@ export default function StockAdjustment() {
     if (!form.quantity || Number(form.quantity) <= 0) { setError('Quantity harus > 0'); return; }
     mutation.mutate({
       ingredient: form.ingredient,
-      type: form.type,
+      type: 'OUT',
       reason: form.reason,
       quantity: Number(form.quantity),
       notes: form.notes || '',
@@ -57,8 +57,8 @@ export default function StockAdjustment() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Penyesuaian Stok</h1>
-        <button onClick={() => setOpen(true)} className="btn-primary text-sm">+ Penyesuaian Baru</button>
+        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Riwayat Stok</h1>
+        <button onClick={() => setOpen(true)} className="btn-primary text-sm">+ Kurangi Stok</button>
       </div>
 
       {isLoading ? (
@@ -108,7 +108,7 @@ export default function StockAdjustment() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>Penyesuaian Stok Baru</h2>
+            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>Kurangi Stok</h2>
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Bahan *</label>
@@ -120,14 +120,7 @@ export default function StockAdjustment() {
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Tipe *</label>
-                <select value={form.type} onChange={(e) => setForm(p => ({ ...p, type: e.target.value }))}>
-                  <option value="IN">Masuk (IN)</option>
-                  <option value="OUT">Keluar (OUT)</option>
-                </select>
-              </div>
+            <div className="grid grid-cols-1 gap-3">
               <div>
                 <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Alasan *</label>
                 <select value={form.reason} onChange={(e) => setForm(p => ({ ...p, reason: e.target.value }))}>
