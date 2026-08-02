@@ -142,7 +142,7 @@ export default function Layout() {
       )}
 
       {/* Main content */}
-      <main className="pt-14 md:pt-0 px-4 md:px-6 py-4 md:py-6">
+      <main className="pt-16 md:pt-14 px-4 md:px-6 py-4 md:py-6">
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>
