@@ -20,13 +20,13 @@ router.use(authMiddleware);
 
 router.get('/', validate(ingredientQuerySchema), ingredientController.getIngredients);
 
-router.get('/:id', validate(ingredientIdSchema), ingredientController.getIngredientById);
-
 router.get(
-  '/:id/price-history',
-  validate(ingredientIdSchema),
-  ingredientController.getIngredientPriceHistory
+  '/search',
+  validate(ingredientQuerySchema),
+  ingredientController.searchIngredients
 );
+
+router.get('/:id', validate(ingredientIdSchema), ingredientController.getIngredientById);
 
 router.post(
   '/',
