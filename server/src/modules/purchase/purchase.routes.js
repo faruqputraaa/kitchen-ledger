@@ -9,6 +9,8 @@ import {
   getPurchases,
   getPurchaseById,
   deletePurchase,
+  scanReceipt,
+  scanReceiptMiddleware,
 } from './purchase.controller.js';
 
 import {
@@ -45,6 +47,12 @@ router.delete(
   roleMiddleware('OWNER'),
   validate(purchaseIdSchema),
   deletePurchase
+);
+
+router.post(
+  '/scan-receipt',
+  scanReceiptMiddleware,
+  scanReceipt
 );
 
 export default router;
