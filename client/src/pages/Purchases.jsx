@@ -1,16 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
-
-const scanReceipt = async (file) => {
-  const formData = new FormData();
-  formData.append('receipt', file);
-  const { data } = await api.post('/purchases/scan-receipt', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return data.data.text;
-};
 
 const fetchPurchases = async (params = {}) => {
   const query = new URLSearchParams();
@@ -52,8 +43,6 @@ export default function Purchases() {
     { ingredient: '', quantity: '', unitPrice: '' },
   ]);
   const [error, setError] = useState('');
-  const [ocrLoading, setOcrLoading] = useState(false);
-  const fileInputRef = useRef(null);
   
   // Sort & Filter state
   const [search, setSearch] = useState('');
@@ -144,28 +133,6 @@ export default function Purchases() {
       return;
     }
     mutation.mutate(payload);
-  };
-
-  const handleOcrFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setOcrLoading(true);
-    setError('');
-    try {
-      const text = await scanReceipt(file);
-      if (text) {
-        // Simple parsing: split lines, look for patterns like "item qty price"
-        // For now just alert the text - user can copy manually
-        alert('OCR Result:\n\n' + text + '\n\nSilakan copy-paste manual ke item.');
-      } else {
-        setError('Tidak ada teks terbaca dari gambar.');
-      }
-    } catch (err) {
-      setError('Gagal scan: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setOcrLoading(false);
-      if (e.target) e.target.value = '';
-    }
   };
 
   return (
@@ -344,24 +311,6 @@ export default function Purchases() {
             >
               Pembelian Baru
             </h2>
-
-            <div style={{ marginBottom: '8px' }}>
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="image/*"
-                onChange={handleOcrFile}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={ocrLoading}
-                className="btn-outline text-sm w-full"
-              >
-                {ocrLoading ? 'Memindai...' : '📷 Scan Nota'}
-              </button>
-            </div>
 
             <div>
               <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>

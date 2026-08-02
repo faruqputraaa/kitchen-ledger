@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import useAuthStore from '../store/authStore';
 
 const navLinks = [
@@ -35,6 +35,17 @@ export default function Layout() {
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -60,12 +71,10 @@ export default function Layout() {
         <Link to="/dashboard" className="font-bold text-xl" style={{ color: '#10B981' }}>
           Kitchen Ledger
         </Link>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1" ref={dropdownRef}>
           {navLinks.map((l) =>
             l.children ? (
-              <div key={l.label} className="relative"
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}>
+              <div key={l.label} className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
