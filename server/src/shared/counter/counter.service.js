@@ -3,8 +3,8 @@ import NotFoundError from '#errors/NotFoundError';
 import counterRepository from './counter.repository.js';
 
 class CounterService {
-  async generate(module) {
-    const counter = await counterRepository.increment(module);
+  async generate(module, session = null) {
+    const counter = await counterRepository.increment(module, session);
 
     if (!counter) {
       throw new NotFoundError(`Counter configuration for "${module}" not found`);

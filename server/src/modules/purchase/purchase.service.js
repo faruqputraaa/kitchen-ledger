@@ -66,7 +66,6 @@ class PurchaseService {
       );
 
       if (purchase.status === 'COMPLETED') {
-        const adjCode = await counterService.generate('stock-adjustment');
         for (const item of dto.items) {
           const result = await ingredientService.applyStockIncrease(
             item.ingredient,
@@ -75,6 +74,9 @@ class PurchaseService {
             purchase._id,
             session
           );
+
+          // Generate unique code for EACH stock adjustment
+          const adjCode = await counterService.generate('stock-adjustment', session);
 
           // Record as stock adjustment (IN from purchase)
           await stockAdjustmentRepository.create({
