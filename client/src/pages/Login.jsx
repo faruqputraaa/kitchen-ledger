@@ -30,11 +30,14 @@ export default function Login() {
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
+    mode: 'onSubmit',
   });
 
   const registerForm = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   const handleLogin = async (values) => {
