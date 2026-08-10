@@ -3,6 +3,26 @@
 # Networks: external (caddy)
 
 services:
+  mongodb:
+    image: mongo:8
+    container_name: mongodb
+    restart: unless-stopped
+    command:
+      - mongod
+      - --bind_ip_all
+      - --replSet
+      - rs0
+      - --keyFile
+      - /data/configdb/keyfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: adminhost123
+    volumes:
+      - mongodb_data:/data/db
+      - ./keyfile:/data/configdb/keyfile
+    networks:
+      - kl-network
+
   server:
     build:
       context: ..
@@ -17,6 +37,8 @@ services:
       - /opt/logs/kitchen-ledger:/app/src/logs
     networks:
       - kl-network
+    depends_on:
+      - mongodb
 
   client:
     build:
@@ -29,6 +51,31 @@ services:
     networks:
       - kl-network
 
+  paddleocr:
+    build:
+      context: ../../paddleocr
+      dockerfile: Dockerfile
+    container_name: kl-paddleocr
+    restart: unless-stopped
+    env_file:
+      - ../../paddleocr/.env
+    ports:
+      - "8001:8000"
+    volumes:
+      - paddleocr_cache:/app/.paddleocr
+    networks:
+      - kl-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
 networks:
   kl-network:
     external: true
+
+volumes:
+  paddleocr_cache:
+  mongodb_data:

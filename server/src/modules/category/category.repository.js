@@ -22,6 +22,10 @@ class CategoryRepository {
     });
   }
 
+  findOne(filter) {
+    return Category.findOne(filter);
+  }
+
   async findAll(query) {
     const { page, limit, skip } = buildPagination(query);
 

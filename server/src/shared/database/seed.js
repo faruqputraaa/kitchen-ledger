@@ -5,7 +5,10 @@ import connectDB from '#config/database';
 import {
   seedOwner,
   seedUnits,
+  seedCategories,
 } from './seeders/index.js';
+
+import seedCounters from '#shared/counter/counter.seed';
 
 const runSeeder = async () => {
   try {
@@ -17,7 +20,10 @@ const runSeeder = async () => {
 
     await seedOwner();
 
+    await seedCategories();
     await seedUnits();
+    
+    await seedCounters();
 
     console.log(
       'Database seeding completed'
