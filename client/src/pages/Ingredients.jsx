@@ -136,7 +136,7 @@ export default function Ingredients() {
             </thead>
             <tbody>
               {ingredients.map((ing) => (
-                <tr key={ing.id} className="hover:bg-slate-50">
+                <tr key={ing.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/ingredients/${ing.id}`)}>
                   <td className="font-medium">{ing.name}</td>
                   <td>{ing.category?.name || '-'}</td>
                   <td className="text-right" style={{ color: ing.currentStock <= ing.minimumStock ? '#F97316' : '#059669', fontWeight: '600' }}>{ing.currentStock}</td>
@@ -144,10 +144,10 @@ export default function Ingredients() {
                   <td className="text-right" style={{ color: '#10B981' }}>Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}</td>
                   <td className="text-right">
                     <div className="flex items-center gap-1 justify-end">
-                      <button onClick={() => openEdit(ing)} title="Edit" style={{ color: '#2563EB', fontSize: '1rem', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
+                      <button onClick={(e) => { e.stopPropagation(); openEdit(ing); }} title="Edit" style={{ color: '#2563EB', fontSize: '1rem', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
                         ✎
                       </button>
-                      <button onClick={() => { if (confirm(`Hapus ${ing.name}?`)) deleteMut.mutate(ing.id); }} title="Hapus" style={{ color: '#DC2626', fontSize: '14px', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
+                      <button onClick={(e) => { e.stopPropagation(); if (confirm(`Hapus ${ing.name}?`)) deleteMut.mutate(ing.id); }} title="Hapus" style={{ color: '#DC2626', fontSize: '14px', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
                         ✕
                       </button>
                     </div>
