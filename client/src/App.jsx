@@ -12,6 +12,10 @@ import Ingredients from './pages/Ingredients';
 import IngredientDetail from './pages/IngredientDetail';
 import Recipes from './pages/Recipes';
 import Categories from './pages/Categories';
+import Menus from './pages/Menus';
+import Suppliers from './pages/Suppliers';
+import PurchaseDetail from './pages/PurchaseDetail';
+import StockAdjustment from './pages/StockAdjustment';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -29,20 +33,14 @@ function App() {
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/purchases" element={<Purchases />} />
+            <Route path="/purchases/:id" element={<PurchaseDetail />} />
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/ingredients" element={<Ingredients />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
-            <Route path="/purchases" element={<Purchases />} />
             <Route path="/categories" element={<Categories />} />
-            <Route path="/menus" element={
-              <div className="flex items-center justify-center py-20">
-                <div className="text-center">
-                  <div className="text-5xl mb-3">🍽️</div>
-                  <h2 className="text-xl font-bold" style={{ color: '#1E293B' }}>Menu</h2>
-                  <p className="text-sm mt-1" style={{ color: '#64748B' }}>Segera hadir</p>
-                </div>
-              </div>
-            } />
+            <Route path="/menus" element={<Menus />} />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/stock-adjustments" element={<StockAdjustment />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -67,3 +67,11 @@ export const getIngredientPriceHistory = asyncHandler(async (req, res) => {
       })),
     });
   });
+
+export const searchIngredients = asyncHandler(async (req, res) => {
+  const result = await ingredientService.searchIngredients(req.validated.query);
+  return successResponse(res, {
+    data: ingredientMapper.toList(result.data),
+    pagination: result.pagination,
+  });
+});

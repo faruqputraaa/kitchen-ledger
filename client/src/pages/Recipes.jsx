@@ -295,11 +295,16 @@ export default function Recipes() {
               Resep Baru
             </h2>
 
-            <input
-              placeholder="Nama resep"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div>
+              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+                Nama Resep *
+              </label>
+              <input
+                placeholder="Nama resep"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
             {items.map((row, i) => (
               <div key={i} className="flex flex-col sm:flex-row gap-2">
@@ -310,7 +315,7 @@ export default function Recipes() {
                   }
                   className="flex-1 min-w-0"
                 >
-                  <option value="">Bahan</option>
+                  <option value="">Bahan *</option>
                   {ingredients.map((ing) => (
                     <option key={ing.id} value={ing.id}>
                       {ing.name} - {formatPrice(ing.lastPrice)}/{ing.unit?.symbol || 'unit'}
@@ -322,7 +327,7 @@ export default function Recipes() {
                   onChange={(e) => updateRow(i, 'unit', e.target.value)}
                   className="flex-1 min-w-0"
                 >
-                  <option value="">Unit</option>
+                  <option value="">Unit *</option>
                   {units.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.symbol} ({u.name})
@@ -331,7 +336,7 @@ export default function Recipes() {
                 </select>
                 <input
                   type="number"
-                  placeholder="Qty"
+                  placeholder="Qty *"
                   value={row.quantity}
                   onChange={(e) => updateRow(i, 'quantity', e.target.value)}
                   className="flex-1 min-w-0"

@@ -86,6 +86,10 @@ class IngredientService {
     );
   }
 
+  async searchIngredients(query) {
+    return this.findAll(query);
+  }
+
   // Dipanggil dari Purchase (status COMPLETED)
   async applyStockIncrease(
     ingredientId,

@@ -8,6 +8,8 @@ import supplierRoutes from '#modules/supplier/supplier.routes';
 import ingredientRoutes from '#modules/ingredient/ingredient.routes';
 import purchaseRoutes from '#modules/purchase/purchase.routes';
 import recipeRoutes from '#modules/recipe/recipe.routes';
+import menuRoutes from '#modules/menu/menu.routes';
+import stockAdjustmentRoutes from '#modules/stock-adjustment/stock-adjustment.routes';
 
 
 const router = Router();
@@ -20,5 +22,7 @@ router.use('/suppliers', supplierRoutes);
 router.use('/ingredients', ingredientRoutes);
 router.use('/purchases', purchaseRoutes);
 router.use('/recipes', recipeRoutes);
+router.use('/menus', menuRoutes);
+router.use('/stock-adjustments', stockAdjustmentRoutes);
 
 export default router;

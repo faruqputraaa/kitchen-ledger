@@ -33,8 +33,14 @@ class PurchaseMapper {
       ...base,
       items: rawItems.map((it) => ({
         id: it._id?.toString?.() ?? it.id?.toString?.() ?? null,
-        ingredient:
-          it.ingredient?.toString?.() ?? it.ingredient ?? null,
+        ingredient: it.ingredient?.name
+          ? {
+              id: it.ingredient._id?.toString() ?? it.ingredient.id,
+              code: it.ingredient.code,
+              name: it.ingredient.name,
+              unit: it.ingredient.unit,
+            }
+          : (it.ingredient?.toString?.() ?? it.ingredient ?? null),
         quantity: it.quantity,
         unitPrice: it.unitPrice,
         totalPrice: it.totalPrice,

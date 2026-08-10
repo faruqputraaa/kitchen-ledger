@@ -1,43 +1,81 @@
+# docker-compose.yml - Client & Server only (MongoDB external)
+# Build context: root (workspace caching)
+# Networks: external (caddy)
+
 services:
+  mongodb:
+    image: mongo:8
+    container_name: mongodb
+    restart: unless-stopped
+    command:
+      - mongod
+      - --bind_ip_all
+      - --replSet
+      - rs0
+      - --keyFile
+      - /data/configdb/keyfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: adminhost123
+    volumes:
+      - mongodb_data:/data/db
+      - ./keyfile:/data/configdb/keyfile
+    networks:
+      - kl-network
+
   server:
     build:
       context: ..
-      dockerfile: server/Dockerfile
-
+      dockerfile: docker/Dockerfile.server
     container_name: kl-server
-
     restart: unless-stopped
-
     env_file:
       - ../server/.env
-
     ports:
       - "5000:5000"
-
     volumes:
-      - /opt/logs/kitchen-ledger:/app/server/src/logs
-
+      - /opt/logs/kitchen-ledger:/app/src/logs
     networks:
       - kl-network
+    depends_on:
+      - mongodb
 
   client:
     build:
-      context: ..
-      dockerfile: client/Dockerfile
-
+      context: ../client
+      dockerfile: Dockerfile
     container_name: kl-client
-
     restart: unless-stopped
-
-    depends_on:
-      - server
-
     ports:
       - "3000:80"
-
     networks:
       - kl-network
+
+  paddleocr:
+    build:
+      context: ../../paddleocr
+      dockerfile: Dockerfile
+    container_name: kl-paddleocr
+    restart: unless-stopped
+    env_file:
+      - ../../paddleocr/.env
+    ports:
+      - "8001:8000"
+    volumes:
+      - paddleocr_cache:/app/.paddleocr
+    networks:
+      - kl-network
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
 
 networks:
   kl-network:
     external: true
+
+volumes:
+  paddleocr_cache:
+  mongodb_data:

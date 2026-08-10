@@ -9,8 +9,8 @@ class CounterRepository {
     return Counter.create(payload);
   }
 
-  async increment(module) {
-    return Counter.findOneAndUpdate(
+  async increment(module, session = null) {
+    const query = Counter.findOneAndUpdate(
       { module },
       {
         $inc: {
@@ -21,6 +21,12 @@ class CounterRepository {
         new: true,
       }
     );
+
+    if (session) {
+      query.session(session);
+    }
+
+    return query;
   }
 }
 

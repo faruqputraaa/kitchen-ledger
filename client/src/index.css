@@ -71,7 +71,7 @@ body {
   width: 100%; max-height: 90vh; overflow-y: auto;
 }
 @media (min-width: 640px) {
-  .modal-box { border-radius: 1rem; max-width: 28rem; }
+  .modal-box { border-radius: 1rem; max-width: 36rem; }
 }
 
 input, select {

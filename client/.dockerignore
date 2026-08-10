@@ -1,7 +1,9 @@
 node_modules
-dist
 .git
-.vscode
+.dockerignore
+Dockerfile
 .env
-.env.*
-npm-debug.log
+.env.example
+*.log
+!dist
+!nginx.conf

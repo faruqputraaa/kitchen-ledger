@@ -33,6 +33,10 @@ const counters = [
     module: 'purchase',
     prefix: 'PUR',
   },
+  {
+    module: 'stock-adjustment',
+    prefix: 'STK',
+  },
 ];
 
 const seedCounters = async () => {
