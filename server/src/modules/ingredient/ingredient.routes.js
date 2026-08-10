@@ -49,6 +49,12 @@ router.delete(
   ingredientController.deleteIngredient
 );
 
+router.get(
+  '/:id/price-history',
+  validate(ingredientIdSchema),
+  ingredientController.getIngredientPriceHistory
+);
+
 
 
 export default router;

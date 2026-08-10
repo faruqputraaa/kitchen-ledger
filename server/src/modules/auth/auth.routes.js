@@ -3,7 +3,6 @@ import passport from 'passport';
 
 import validate from '#middlewares/validation.middleware';
 import authMiddleware from '#middlewares/auth.middleware';
-import authRateLimit from '#middlewares/rateLimit.middleware';
 
 import {
   register,
@@ -20,9 +19,9 @@ import { registerSchema, loginSchema } from './auth.validation.js';
 
 const router = Router();
 
-router.post('/register', authRateLimit, validate(registerSchema), register);
+router.post('/register', validate(registerSchema), register);
 
-router.post('/login', authRateLimit, validate(loginSchema), login);
+router.post('/login', validate(loginSchema), login);
 
 router.post('/refresh', refresh);
 

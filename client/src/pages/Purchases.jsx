@@ -367,21 +367,40 @@ export default function Purchases() {
             </div>
 
             {items.map((row, i) => (
-              <div key={i} className="grid grid-cols-[1fr_80px_100px_80px_40px] gap-3 mb-3 items-start">
-                <div className="min-w-0">
-                  <input type="text" list={`ingredient-list-${i}`} value={row.ingredientText} onChange={(e) => setItemIngredient(i, e.target.value)} placeholder="Nama bahan..." className="w-full" />
-                  <datalist id={`ingredient-list-${i}`}>
-                    {ingredients.map((ing) => (<option key={ing.id} value={ing.name} />))}
-                  </datalist>
-                  {row.unit && <span className="text-xs" style={{ color: '#94A3B8' }}>Default: {row.unit}</span>}
+              <div key={i} className="space-y-3 mb-3 p-3 rounded-lg border" style={{ borderColor: '#E2E8F0', backgroundColor: '#FAFAFA' }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium" style={{ color: '#475569' }}>Item #{i + 1}</span>
+                  <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Hapus item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
                 </div>
-                <input type="number" placeholder="Qty" value={row.quantity} onChange={(e) => updateRow(i, 'quantity', e.target.value)} className="w-full" />
-                <input type="number" placeholder="Harga" value={row.unitPrice} onChange={(e) => updateRow(i, 'unitPrice', e.target.value)} className="w-full" />
-                <input type="text" list={`unit-list-${i}`} value={row.unit || ''} onChange={(e) => updateRow(i, 'unit', e.target.value)} placeholder="Unit" className="w-full" />
-                <datalist id={`unit-list-${i}`}>
-                  {units.map((u) => (<option key={u.id} value={u.symbol} />))}
-                </datalist>
-                <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-2 rounded" title="Hapus item">−</button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_80px_100px_80px_40px] gap-3 items-start">
+                  <div className="min-w-0 lg:col-span-1">
+                    <input type="text" list={`ingredient-list-${i}`} value={row.ingredientText} onChange={(e) => setItemIngredient(i, e.target.value)} placeholder="Nama bahan..." className="w-full" />
+                    <datalist id={`ingredient-list-${i}`}>
+                      {ingredients.map((ing) => (<option key={ing.id} value={ing.name} />))}
+                    </datalist>
+                    {row.unit && <span className="text-xs" style={{ color: '#94A3B8' }}>Default: {row.unit}</span>}
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[80px]">
+                    <input type="number" placeholder="Qty" value={row.quantity} onChange={(e) => updateRow(i, 'quantity', e.target.value)} className="w-full" />
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[100px]">
+                    <input type="number" placeholder="Harga" value={row.unitPrice} onChange={(e) => updateRow(i, 'unitPrice', e.target.value)} className="w-full" />
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[80px]">
+                    <input type="text" list={`unit-list-${i}`} value={row.unit || ''} onChange={(e) => updateRow(i, 'unit', e.target.value)} placeholder="Unit" className="w-full" />
+                    <datalist id={`unit-list-${i}`}>
+                      {units.map((u) => (<option key={u.id} value={u.symbol} />))}
+                    </datalist>
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[40px] lg:flex lg:items-end">
+                    <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-2 rounded lg:hidden" title="Hapus item">−</button>
+                  </div>
+                </div>
               </div>
             ))}
 
