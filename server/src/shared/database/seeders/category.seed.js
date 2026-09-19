@@ -33,6 +33,8 @@ export const seedCategories = async () => {
       name: data.name,
       description: '',
       status: 'ACTIVE',
+      isSystem: true,
+      tenantId: null,
     });
 
     console.log(`Category "${data.name}" created with code ${code}`);

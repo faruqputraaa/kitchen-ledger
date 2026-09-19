@@ -41,6 +41,8 @@ export const seedUnits = async () => {
       symbol: data.symbol,
       dimension: data.dimension,
       baseFactor: data.baseFactor,
+      isSystem: true,
+      tenantId: null,
     });
   }
 
