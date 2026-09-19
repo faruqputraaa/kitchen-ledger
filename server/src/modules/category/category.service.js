@@ -1,4 +1,5 @@
 import ConflictError from '#errors/ConflictError';
+import ForbiddenError from '#errors/ForbiddenError';
 import NotFoundError from '#errors/NotFoundError';
 
 import counterService from '#shared/counter/counter.service';
@@ -50,8 +51,14 @@ class CategoryService {
     return category;
   }
 
-  async update(id, dto, userId) {
+  async update(id, dto, userId, tenantId) {
     const current = await this.findById(id);
+    if (current.isSystem && !tenantId) throw new NotFoundError('Category not found');
+    if (current.isSystem && tenantId && !current.tenantId) {
+      // system category: tenant tidak boleh ubah global, buat custom copy? simplest block
+      throw new ForbiddenError('Kategori system tidak bisa diubah');
+    }
+    if (current.tenantId && tenantId && current.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Category not found');
 
     if (dto.name && dto.name !== current.name) {
       const exists = await categoryRepository.findByName(dto.name);
@@ -67,8 +74,10 @@ class CategoryService {
     });
   }
 
-  async delete(id, userId) {
-    await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const current = await this.findById(id);
+    if (current.isSystem && !current.tenantId) throw new ForbiddenError('Kategori system tidak bisa dihapus');
+    if (current.tenantId && tenantId && current.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Category not found');
 
     return categoryRepository.softDelete(id, userId);
   }

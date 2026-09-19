@@ -36,7 +36,8 @@ export const updateIngredient = asyncHandler(async (req, res) => {
   const ingredient = await ingredientService.update(
     req.validated.params.id,
     req.validated.body,
-    req.user.id
+    req.user.id,
+    req.tenantId
   );
 
   return successResponse(res, {
@@ -46,7 +47,7 @@ export const updateIngredient = asyncHandler(async (req, res) => {
 });
 
 export const deleteIngredient = asyncHandler(async (req, res) => {
-  await ingredientService.delete(req.validated.params.id, req.user.id);
+  await ingredientService.delete(req.validated.params.id, req.user.id, req.tenantId);
 
   return successResponse(res, {
     message: 'Ingredient deleted successfully',

@@ -36,7 +36,8 @@ export const update = asyncHandler(async (req, res) => {
   const category = await categoryService.update(
     req.validated.params.id,
     req.validated.body,
-    req.user.id
+    req.user.id,
+    req.tenantId
   );
 
   return successResponse(res, {
@@ -46,7 +47,7 @@ export const update = asyncHandler(async (req, res) => {
 });
 
 export const remove = asyncHandler(async (req, res) => {
-  await categoryService.delete(req.validated.params.id, req.user.id);
+  await categoryService.delete(req.validated.params.id, req.user.id, req.tenantId);
 
   return successResponse(res, {
     message: 'Category deleted successfully',

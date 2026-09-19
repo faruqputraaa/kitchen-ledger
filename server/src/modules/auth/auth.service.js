@@ -44,6 +44,10 @@ class AuthService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
+    if (user.status === 'INACTIVE') {
+      throw new UnauthorizedError('Account is inactive');
+    }
+
     await userService.updateLastLogin(user._id);
 
     const accessToken = generateAccessToken({

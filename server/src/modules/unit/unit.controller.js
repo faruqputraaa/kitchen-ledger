@@ -33,7 +33,7 @@ export const getUnitById = asyncHandler(async (req, res) => {
 });
 
 export const updateUnit = asyncHandler(async (req, res) => {
-  const unit = await unitService.update(req.validated.params.id, req.validated.body, req.user.id);
+  const unit = await unitService.update(req.validated.params.id, req.validated.body, req.user.id, req.tenantId);
 
   return successResponse(res, {
     message: 'Unit updated successfully',
@@ -42,7 +42,7 @@ export const updateUnit = asyncHandler(async (req, res) => {
 });
 
 export const deleteUnit = asyncHandler(async (req, res) => {
-  await unitService.delete(req.validated.params.id, req.user.id);
+  await unitService.delete(req.validated.params.id, req.user.id, req.tenantId);
 
   return successResponse(res, {
     message: 'Unit deleted successfully',
