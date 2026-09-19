@@ -17,6 +17,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({
@@ -49,6 +50,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({
@@ -94,6 +96,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     return {
@@ -122,6 +125,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({

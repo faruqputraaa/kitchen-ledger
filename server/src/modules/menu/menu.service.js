@@ -6,18 +6,19 @@ import recipeRepository from '../recipe/recipe.repository.js';
 import counterService from '#shared/counter/counter.service';
 
 class MenuService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     // Validate recipe exists
     const recipe = await recipeRepository.findById(dto.recipe);
     if (!recipe) {
       throw new NotFoundError('Recipe not found');
     }
 
-    const code = await counterService.generate('menu');
+    const code = await counterService.generate('menu', tenantId);
 
     const menu = await menuRepository.create({
       ...dto,
       code,
+      tenantId,
       createdBy: userId,
     });
 
@@ -37,19 +38,21 @@ class MenuService {
     };
   }
 
-  async findById(id) {
+  async findById(id, tenantId) {
     const menu = await menuRepository.findById(id);
     if (!menu) {
       throw new NotFoundError('Menu not found');
     }
+    if (tenantId && menu.tenantId && menu.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Menu not found');
     return menu;
   }
 
-  async update(id, dto, userId) {
+  async update(id, dto, userId, tenantId) {
     const existing = await menuRepository.findById(id);
     if (!existing) {
       throw new NotFoundError('Menu not found');
     }
+    if (tenantId && existing.tenantId && existing.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Menu not found');
 
     // If recipe changed, validate new recipe exists
     if (dto.recipe && dto.recipe !== existing.recipe.toString()) {
@@ -74,8 +77,8 @@ class MenuService {
     return updated;
   }
 
-  async delete(id, userId) {
-    const menu = await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const menu = await this.findById(id, tenantId);
 
     await menuRepository.softDelete(
       { _id: id, isDeleted: false },

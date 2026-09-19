@@ -40,6 +40,7 @@ class MenuRepository {
   async findMany(query = {}) {
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { tenantId: query.tenantId } : {}),
       ...buildSearch(query.search, MENU_SEARCH_FIELDS),
     };
 

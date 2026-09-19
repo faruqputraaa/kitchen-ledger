@@ -60,6 +60,13 @@ const ingredientSchema = new mongoose.Schema(
     },
     // ==================================
 
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: true,
+      index: true,
+    },
+
     status: {
       type: String,
       enum: Object.values(INGREDIENT_STATUS),
@@ -110,6 +117,26 @@ ingredientSchema.index({ name: 1 });
 ingredientSchema.index({ category: 1 });
 ingredientSchema.index({ status: 1 });
 ingredientSchema.index({ isDeleted: 1 });
+ingredientSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+ingredientSchema.index({ tenantId: 1, name: 1 });
+
+// Auto-filter by tenantId for all queries
+ingredientSchema.pre(/^find/, async function () {
+  const tenantId = this.getOptions().tenantId;
+  if (tenantId) {
+    this.where({ tenantId });
+  }
+});
+
+// Auto-set tenantId on create
+ingredientSchema.pre('save', async function () {
+  if (this.isNew && !this.tenantId) {
+    const tenantId = this.getOptions().tenantId;
+    if (tenantId) {
+      this.tenantId = tenantId;
+    }
+  }
+});
 
 const Ingredient = mongoose.model('Ingredient', ingredientSchema);
 

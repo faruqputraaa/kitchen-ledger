@@ -6,7 +6,7 @@ import counterService from '#shared/counter/counter.service';
 import unitRepository from './unit.repository.js';
 
 class UnitService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     const duplicate = await unitRepository.findOne({
       isDeleted: false,
       $or: [{ name: dto.name }, { symbol: dto.symbol }],
@@ -23,6 +23,8 @@ class UnitService {
     return unitRepository.create({
       code,
       ...dto,
+      isSystem: !tenantId,
+      tenantId: tenantId || null,
       createdBy: userId,
     });
   }

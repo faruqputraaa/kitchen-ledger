@@ -37,12 +37,19 @@ const computeLineCost = (
 };
 
 class RecipeService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
+    // Enforce tenant recipe limit
+    if (tenantId) {
+      const Tenant = (await import('#modules/tenant/tenant.model')).default;
+      const tenant = await Tenant.findById(tenantId);
+      if (tenant) {
+        const Recipe = (await import('./recipe.model.js')).default;
+        const count = await Recipe.countDocuments({ tenantId, isDeleted: false });
+        if (count >= tenant.limits.maxRecipes) throw new ValidationError('Tenant recipe limit reached');
+      }
+    }
     return withTransaction(async (session) => {
-      const code = await counterService.generate(
-        'recipe',
-        session
-      );
+      const code = await counterService.generate('recipe', tenantId, session);
 
       const items = [];
 
@@ -106,6 +113,7 @@ class RecipeService {
           description: dto.description ?? '',
           status: dto.status ?? 'ACTIVE',
           note: dto.note ?? '',
+          tenantId,
           createdBy: userId,
         },
         session
@@ -114,6 +122,7 @@ class RecipeService {
       const itemsWithRef = items.map((it) => ({
         ...it,
         recipe: recipe._id,
+        tenantId,
       }));
 
       await recipeItemRepository.createMany(
@@ -185,12 +194,13 @@ class RecipeService {
     };
   }
 
-  async findById(id) {
+  async findById(id, tenantId) {
     const recipe = await recipeRepository.findById(id);
 
     if (!recipe) {
       throw new NotFoundError('Recipe not found');
     }
+    if (tenantId && recipe.tenantId && recipe.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Recipe not found');
 
     // Fetch items separately (virtual populate not supported)
     const recipeItems = await recipeItemRepository.findByRecipe(
@@ -217,7 +227,7 @@ class RecipeService {
     };
   }
 
-  async update(id, dto, userId) {
+  async update(id, dto, userId, tenantId) {
     return withTransaction(async (session) => {
       const existing = await recipeRepository.findById(
         id,
@@ -225,6 +235,9 @@ class RecipeService {
       );
 
       if (!existing) {
+        throw new NotFoundError('Recipe not found');
+      }
+      if (tenantId && existing.tenantId && existing.tenantId.toString() !== tenantId.toString()) {
         throw new NotFoundError('Recipe not found');
       }
 
@@ -295,6 +308,7 @@ class RecipeService {
           ingredient: it.ingredient,
           unit: it.unit,
           quantity: it.quantity,
+          tenantId: existing.tenantId,
         }));
 
         await recipeItemRepository.createMany(
@@ -335,8 +349,8 @@ class RecipeService {
     });
   }
 
-  async delete(id, userId) {
-    const recipe = await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const recipe = await this.findById(id, tenantId);
 
     return withTransaction(async (session) => {
       await recipeItemRepository.deleteByRecipe(

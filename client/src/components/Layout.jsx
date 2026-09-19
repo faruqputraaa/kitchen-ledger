@@ -4,6 +4,7 @@ import useAuthStore from '../store/authStore';
 
 const navLinks = [
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/settings/tenant', label: 'Tenant' },
   {
     label: 'Data',
     children: [
@@ -20,6 +21,7 @@ const navLinks = [
 
 const flatNav = [
   { to: '/dashboard', label: 'Dashboard' },
+  { to: '/settings/tenant', label: 'Tenant' },
   { to: '/ingredients', label: 'Bahan' },
   { to: '/categories', label: 'Kategori' },
   { to: '/suppliers', label: 'Supplier' },
@@ -27,6 +29,7 @@ const flatNav = [
   { to: '/recipes', label: 'Resep' },
   { to: '/menus', label: 'Menu' },
   { to: '/stock-adjustments', label: 'Riwayat Stok' },
+  { to: '/admin/tenants', label: 'Admin Tenants', adminOnly: true },
 ];
 
 export default function Layout() {
@@ -35,6 +38,7 @@ export default function Layout() {
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -127,7 +131,7 @@ export default function Layout() {
       {menuOpen && (
         <div className="md:hidden fixed top-14 left-0 right-0 bg-white shadow-lg z-40 overflow-y-auto max-h-[calc(100vh-56px)]"
           style={{ borderBottom: '1px solid #E2E8F0' }}>
-          {flatNav.map((l) => (
+          {flatNav.filter(l => !l.adminOnly || isSuperAdmin).map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
               className="block px-5 py-3 text-sm font-medium"
               style={{ color: '#1E293B', borderBottom: '1px solid #F1F5F9' }}>

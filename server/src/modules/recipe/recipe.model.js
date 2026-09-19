@@ -26,6 +26,13 @@ const recipeSchema = new mongoose.Schema(
       maxlength: 500,
     },
 
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: true,
+      index: true,
+    },
+
     status: {
       type: String,
       enum: Object.values(RECIPE_STATUS),
@@ -75,6 +82,8 @@ recipeSchema.index({ code: 1 });
 recipeSchema.index({ name: 1 });
 recipeSchema.index({ status: 1 });
 recipeSchema.index({ isDeleted: 1 });
+recipeSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+recipeSchema.index({ tenantId: 1, name: 1 });
 
 // ======== VIRTUAL items (dari RecipeItem collection) ========
 recipeSchema.virtual('items', {
@@ -97,6 +106,24 @@ recipeSchema.virtual('foodCost').get(function () {
 // Agar virtual muncul di JSON response
 recipeSchema.set('toJSON', { virtuals: true });
 recipeSchema.set('toObject', { virtuals: true });
+
+// Auto-filter by tenantId for all queries
+recipeSchema.pre(/^find/, async function () {
+  const tenantId = this.getOptions().tenantId;
+  if (tenantId) {
+    this.where({ tenantId });
+  }
+});
+
+// Auto-set tenantId on create
+recipeSchema.pre('save', async function () {
+  if (this.isNew && !this.tenantId) {
+    const tenantId = this.getOptions().tenantId;
+    if (tenantId) {
+      this.tenantId = tenantId;
+    }
+  }
+});
 
 const Recipe = mongoose.model('Recipe', recipeSchema);
 

@@ -37,6 +37,13 @@ const counterSchema = new mongoose.Schema(
       enum: ['NEVER', 'YEARLY', 'MONTHLY'],
       default: 'NEVER',
     },
+
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      default: null,
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -44,7 +51,7 @@ const counterSchema = new mongoose.Schema(
   }
 );
 
-counterSchema.index({ module: 1 }, { unique: true });
+counterSchema.index({ module: 1, tenantId: 1 }, { unique: true });
 
 const Counter = mongoose.model('Counter', counterSchema);
 

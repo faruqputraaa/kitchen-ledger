@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import validate from '#middlewares/validation.middleware';
 import authMiddleware from '#middlewares/auth.middleware';
+import { requireTenant } from '#middlewares/tenant.middleware';
 import roleMiddleware from '#middlewares/role.middleware';
 
 import {
@@ -22,6 +23,7 @@ import {
 const router = Router();
 
 router.use(authMiddleware);
+router.use(requireTenant);
 
 router.get(
   '/',

@@ -6,7 +6,7 @@ import categoryMapper from './category.mapper.js';
 import categoryService from './category.service.js';
 
 export const create = asyncHandler(async (req, res) => {
-  const category = await categoryService.create(req.validated.body, req.user.id);
+  const category = await categoryService.create(req.validated.body, req.user.id, req.tenantId);
 
   return successResponse(res, {
     statusCode: 201,
@@ -16,7 +16,7 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const findAll = asyncHandler(async (req, res) => {
-  const result = await categoryService.findAll(req.validated.query);
+  const result = await categoryService.findAll({ ...req.validated.query, tenantId: req.tenantId?.toString() });
 
   return successResponse(res, {
     data: categoryMapper.toList(result.data),

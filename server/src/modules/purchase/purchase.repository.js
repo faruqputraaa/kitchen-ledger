@@ -50,6 +50,7 @@ class PurchaseRepository {
 
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { tenantId: query.tenantId } : {}),
       ...buildSearch(
         restQuery.search,
         PURCHASE_SEARCH_FIELDS

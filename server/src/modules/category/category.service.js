@@ -6,7 +6,7 @@ import counterService from '#shared/counter/counter.service';
 import categoryRepository from './category.repository.js';
 
 class CategoryService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     const exists = await categoryRepository.findByName(dto.name);
 
     if (exists) {
@@ -19,6 +19,8 @@ class CategoryService {
       code,
       name: dto.name,
       description: dto.description || '',
+      isSystem: !tenantId,
+      tenantId: tenantId || null,
       createdBy: userId,
     });
   }

@@ -24,6 +24,7 @@ class StockAdjustmentRepository {
   async findMany(query = {}) {
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { tenantId: query.tenantId } : {}),
       ...buildSearch(query.search, STOCK_ADJUSTMENT_SEARCH_FIELDS),
     };
     if (query.ingredient) filter.ingredient = query.ingredient;

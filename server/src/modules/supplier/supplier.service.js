@@ -6,10 +6,11 @@ import counterService from '#shared/counter/counter.service';
 import supplierRepository from './supplier.repository.js';
 
 class SupplierService {
-  async create(dto, userId, session = null) {
+  async create(dto, userId, tenantId, session = null) {
     const duplicate = await supplierRepository.findOne(
       {
         name: dto.name,
+        tenantId,
         isDeleted: false,
       },
       {
@@ -21,7 +22,7 @@ class SupplierService {
       throw new ConflictError('Supplier name already exists');
     }
 
-    const code = await counterService.generate('supplier', session);
+    const code = await counterService.generate('supplier', tenantId, session);
 
     return supplierRepository.create(
       {
@@ -32,6 +33,7 @@ class SupplierService {
         email: dto.email ?? '',
         address: dto.address ?? '',
         notes: dto.notes ?? '',
+        tenantId,
         createdBy: userId,
       },
       session
@@ -53,18 +55,19 @@ class SupplierService {
     };
   }
 
-  async findById(id) {
+  async findById(id, tenantId) {
     const supplier = await supplierRepository.findById(id);
 
     if (!supplier) {
       throw new NotFoundError('Supplier not found');
     }
+    if (tenantId && supplier.tenantId && supplier.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Supplier not found');
 
     return supplier;
   }
 
-  async update(id, dto, userId, session = null) {
-    const supplier = await this.findById(id);
+  async update(id, dto, userId, tenantId, session = null) {
+    const supplier = await this.findById(id, tenantId);
 
     if (dto.name && dto.name !== supplier.name) {
       const duplicate = await supplierRepository.findOne(
@@ -100,7 +103,7 @@ class SupplierService {
     );
   }
 
-  async delete(id, userId, session = null) {
+  async delete(id, userId, tenantId, session = null) {
     await this.findById(id);
 
     return supplierRepository.softDelete(

@@ -31,6 +31,7 @@ class CategoryRepository {
 
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { $or: [{ isSystem: true }, { tenantId: query.tenantId }] } : {}),
       ...buildSearch(query.search, ['name']),
     };
 

@@ -5,7 +5,6 @@ import env from '#config/env';
 import userService from '#modules/user/user.service';
 
 const configurePassport = () => {
-  // Only configure Google OAuth if credentials are provided
   if (env.google.clientId && env.google.clientSecret) {
     passport.use(
       new GoogleStrategy(
@@ -13,8 +12,9 @@ const configurePassport = () => {
           clientID: env.google.clientId,
           clientSecret: env.google.clientSecret,
           callbackURL: env.google.callbackUrl,
+          passReqToCallback: true,
         },
-        async (accessToken, refreshToken, profile, done) => {
+        async (req, accessToken, refreshToken, profile, done) => {
           try {
             const email = profile.emails?.[0]?.value;
 
@@ -23,26 +23,31 @@ const configurePassport = () => {
             }
 
             let user = await userService.findByGoogleId(profile.id);
-
             if (!user) {
               user = await userService.findByEmail(email);
             }
 
             if (!user) {
+              // Create new Google user WITHOUT tenant - will complete via invitation page
               user = await userService.createGoogleUser({
                 name: profile.displayName,
                 email,
                 googleId: profile.id,
                 avatar: profile.photos?.[0]?.value ?? null,
+                tenantId: null,
               });
+            } else if (!user.googleId && profile.id) {
+              // Link googleId if existing email user logs in via Google
+              const { default: User } = await import('#modules/user/user.model');
+              user = await User.findByIdAndUpdate(user._id, { googleId: profile.id, avatar: profile.photos?.[0]?.value ?? user.avatar }, { new: true });
             }
 
             return done(null, user);
           } catch (error) {
             return done(error, null);
           }
-        }
-      )
+        },
+      ),
     );
   }
 

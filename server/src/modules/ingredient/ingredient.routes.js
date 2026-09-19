@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as ingredientController from './ingredient.controller.js';
 import validate from '#middlewares/validation.middleware';
 import authMiddleware from '#middlewares/auth.middleware';
+import { requireTenant } from '#middlewares/tenant.middleware';
 import roleMiddleware from '#middlewares/role.middleware';
 import { ingredientPriceHistoryRepository } from '../ingredient-price-history/index.js';
 import { successResponse } from '#shared/response/apiResponse';
@@ -17,6 +18,7 @@ import {
 const router = Router();
 
 router.use(authMiddleware);
+router.use(requireTenant);
 
 router.get('/', validate(ingredientQuerySchema), ingredientController.getIngredients);
 

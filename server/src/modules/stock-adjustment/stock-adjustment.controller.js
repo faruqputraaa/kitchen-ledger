@@ -4,11 +4,11 @@ import stockAdjustmentMapper from './stock-adjustment.mapper.js';
 import stockAdjustmentService from './stock-adjustment.service.js';
 
 export const createAdjustment = asyncHandler(async (req, res) => {
-  const doc = await stockAdjustmentService.create(req.validated.body, req.user.id);
+  const doc = await stockAdjustmentService.create(req.validated.body, req.user.id, req.tenantId);
   return successResponse(res, { statusCode: 201, message: 'Penyesuaian stok berhasil', data: stockAdjustmentMapper.toResponse(doc) });
 });
 
 export const getAdjustments = asyncHandler(async (req, res) => {
-  const result = await stockAdjustmentService.findAll(req.validated.query);
+  const result = await stockAdjustmentService.findAll({ ...req.validated.query, tenantId: req.tenantId });
   return successResponse(res, { data: stockAdjustmentMapper.toList(result.data), pagination: result.pagination });
 });

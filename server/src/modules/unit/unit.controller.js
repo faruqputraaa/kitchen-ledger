@@ -6,7 +6,7 @@ import unitMapper from './unit.mapper.js';
 import unitService from './unit.service.js';
 
 export const createUnit = asyncHandler(async (req, res) => {
-  const unit = await unitService.create(req.validated.body, req.user.id);
+  const unit = await unitService.create(req.validated.body, req.user.id, req.tenantId);
 
   return successResponse(res, {
     statusCode: 201,
@@ -16,7 +16,7 @@ export const createUnit = asyncHandler(async (req, res) => {
 });
 
 export const getUnits = asyncHandler(async (req, res) => {
-  const result = await unitService.findAll(req.validated.query);
+  const result = await unitService.findAll({ ...req.validated.query, tenantId: req.tenantId?.toString() });
 
   return successResponse(res, {
     data: unitMapper.toList(result.data),

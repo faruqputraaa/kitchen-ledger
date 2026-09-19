@@ -12,12 +12,9 @@ import ingredientService from '../ingredient/ingredient.service.js';
 import stockAdjustmentRepository from '../stock-adjustment/stock-adjustment.repository.js';
 
 class PurchaseService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     return withTransaction(async (session) => {
-      const code = await counterService.generate(
-        'purchase',
-        session
-      );
+      const code = await counterService.generate('purchase', tenantId, session);
 
       let totalAmount = 0;
 
@@ -50,6 +47,7 @@ class PurchaseService {
           status: dto.status ?? 'COMPLETED',
           note: dto.note ?? '',
           totalAmount,
+          tenantId,
           createdBy: userId,
         },
         session
@@ -58,6 +56,7 @@ class PurchaseService {
       const itemsWithRef = items.map((it) => ({
         ...it,
         purchase: purchase._id,
+        tenantId,
       }));
 
       await purchaseItemRepository.createMany(
@@ -76,7 +75,7 @@ class PurchaseService {
           );
 
           // Generate unique code for EACH stock adjustment
-          const adjCode = await counterService.generate('stock-adjustment', session);
+          const adjCode = await counterService.generate('stock-adjustment', tenantId, session);
 
           // Record as stock adjustment (IN from purchase)
           await stockAdjustmentRepository.create({
@@ -87,6 +86,7 @@ class PurchaseService {
             quantity: result.addedQuantity,
             stockBefore: result.previousStock,
             stockAfter: result.newStock,
+            tenantId,
             notes: `Purchase ${purchaseCode}`,
             createdBy: userId,
           }, session);
@@ -132,12 +132,13 @@ class PurchaseService {
     };
   }
 
-  async findById(id) {
+  async findById(id, tenantId) {
     const purchase = await purchaseRepository.findById(id);
 
     if (!purchase) {
       throw new NotFoundError('Purchase not found');
     }
+    if (tenantId && purchase.tenantId && purchase.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Purchase not found');
 
     const items = await purchaseItemRepository.findByPurchase(
       purchase._id
@@ -149,8 +150,8 @@ class PurchaseService {
     };
   }
 
-  async delete(id, userId) {
-    const purchase = await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const purchase = await this.findById(id, tenantId);
 
     return purchaseRepository.softDelete(
       { _id: id, isDeleted: false },

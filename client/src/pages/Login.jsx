@@ -45,7 +45,12 @@ export default function Login() {
       setGlobalError('');
       const { data } = await api.post('/auth/login', values);
       setAuth(data.data.user, data.data.accessToken);
-      navigate('/dashboard');
+      const needsInvite = data.data.needsInvite || !data.data.user?.tenantId;
+      if (needsInvite) {
+        navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setGlobalError(err.response?.data?.message || 'Login gagal. Cek email & password.');
     }
@@ -60,7 +65,12 @@ export default function Login() {
         password: values.password,
       });
       setAuth(data.data.user, data.data.accessToken);
-      navigate('/dashboard');
+      const needsInvite = data.data.needsInvite || !data.data.user?.tenantId;
+      if (needsInvite) {
+        navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setGlobalError(err.response?.data?.message || 'Registrasi gagal. Email mungkin sudah digunakan.');
     }

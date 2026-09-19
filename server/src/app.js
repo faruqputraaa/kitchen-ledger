@@ -12,6 +12,7 @@ import notFoundMiddleware from './middlewares/notFound.middleware.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import configurePassport from './config/passport.js';
 import routes from './routes/index.js';
+// tenantScope handled inside requireTenant/validateTenant after auth
 
 configurePassport();
 
@@ -112,6 +113,9 @@ app.use(requestLogger);
 
 // Apply auth rate limiter to auth routes
 app.use('/api/v1/auth', authRateLimit);
+
+// Tenant scoping is done inside validateTenant/requireTenant after auth - no global scope here
+
 app.use('/api/v1', routes);
 
 app.use(notFoundMiddleware);

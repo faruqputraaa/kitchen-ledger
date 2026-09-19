@@ -7,6 +7,8 @@ export const registerSchema = z.object({
     email: z.email().transform((value) => value.toLowerCase()),
 
     password: z.string().min(6).max(100),
+
+    tenantId: z.string().optional(),
   }),
 });
 
@@ -15,5 +17,7 @@ export const loginSchema = z.object({
     email: z.email().transform((value) => value.toLowerCase()),
 
     password: z.string().min(1),
+
+    tenantId: z.string().optional(),
   }),
 });

@@ -56,6 +56,13 @@ const supplierSchema = new mongoose.Schema(
       maxlength: 1000,
     },
 
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: true,
+      index: true,
+    },
+
     status: {
       type: String,
       enum: Object.values(SUPPLIER_STATUS),
@@ -101,6 +108,26 @@ const supplierSchema = new mongoose.Schema(
 supplierSchema.index({
   isDeleted: 1,
   status: 1,
+});
+supplierSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+supplierSchema.index({ tenantId: 1, name: 1 });
+
+// Auto-filter by tenantId for all queries
+supplierSchema.pre(/^find/, async function () {
+  const tenantId = this.getOptions().tenantId;
+  if (tenantId) {
+    this.where({ tenantId });
+  }
+});
+
+// Auto-set tenantId on create
+supplierSchema.pre('save', async function () {
+  if (this.isNew && !this.tenantId) {
+    const tenantId = this.getOptions().tenantId;
+    if (tenantId) {
+      this.tenantId = tenantId;
+    }
+  }
 });
 
 const Supplier = mongoose.model('Supplier', supplierSchema);

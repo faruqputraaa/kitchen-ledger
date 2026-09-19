@@ -4,6 +4,7 @@ export const AUTH_PROVIDER = {
 };
 
 export const USER_ROLE = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   STAFF: 'STAFF',
   OWNER: 'OWNER',

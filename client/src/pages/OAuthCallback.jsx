@@ -10,12 +10,39 @@ export default function OAuthCallback() {
 
   useEffect(() => {
     const token = params.get('token');
+    const needsInvite = params.get('needsInvite') === 'true';
     if (token) {
       localStorage.setItem('accessToken', token);
       setAuth({ role: 'OWNER' }, token);
+      if (needsInvite) {
+        navigate('/onboarding/invite?token=' + encodeURIComponent(token), { replace: true });
+        return;
+      }
       api.get('/auth/me')
-        .then((res) => { if (res.data?.data) setAuth(res.data.data, token); })
-        .finally(() => navigate('/dashboard'));
+        .then((res) => {
+          const user = res.data?.data;
+          if (user) {
+            setAuth(user, token);
+            if (!user.tenantId) {
+              navigate('/onboarding/invite?token=' + encodeURIComponent(token), { replace: true });
+              return;
+            }
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          const tok = localStorage.getItem('accessToken');
+          if (tok) {
+            try {
+              const payload = JSON.parse(atob(tok.split('.')[1]));
+              if (!payload.tenantId) {
+                navigate('/onboarding/invite?token=' + encodeURIComponent(tok), { replace: true });
+                return;
+              }
+            } catch {}
+          }
+          navigate('/dashboard');
+        });
     } else {
       navigate('/login?error=oauth_failed');
     }

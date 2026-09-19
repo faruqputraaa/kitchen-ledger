@@ -1,0 +1,1 @@
+export { default as Tenant } from './tenant.model.js';
