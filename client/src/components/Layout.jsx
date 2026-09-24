@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import useAuthStore from '../store/authStore';
+import { getTheme, toggleTheme } from '../theme.js';
 
 const navLinks = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -38,8 +39,14 @@ export default function Layout() {
   const user = useAuthStore((s) => s.user);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [theme, setTheme] = useState(getTheme());
   const isSuperAdmin = user?.role === 'SUPER_ADMIN';
   const dropdownRef = useRef(null);
+
+  const handleToggleTheme = () => {
+    const next = toggleTheme();
+    setTheme(next);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -60,19 +67,19 @@ export default function Layout() {
   const navItemStyle = (l) => (
     <Link key={l.to} to={l.to}
       className="px-4 py-2 rounded-lg text-sm font-medium transition-colors block whitespace-nowrap"
-      style={{ color: '#64748B' }}
-      onMouseEnter={(e) => { e.target.style.backgroundColor = '#D1FAE5'; e.target.style.color = '#059669'; }}
-      onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#64748B'; }}>
+      style={{ color: 'var(--text-muted)' }}
+      onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--primary-light)'; e.target.style.color = 'var(--primary-dark)'; }}
+      onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'var(--text-muted)'; }}>
       {l.label}
     </Link>
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--surface-alt)' }}>
       {/* Desktop Nav */}
-      <nav className="hidden md:flex items-center justify-between px-6 py-3 bg-white shadow-sm sticky top-0 z-40"
-        style={{ borderBottom: '1px solid #E2E8F0' }}>
-        <Link to="/dashboard" className="font-bold text-xl" style={{ color: '#10B981' }}>
+      <nav className="hidden md:flex items-center justify-between px-6 py-3 shadow-sm sticky top-0 z-40"
+        style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <Link to="/dashboard" className="font-bold text-xl" style={{ color: 'var(--primary)' }}>
           Kitchen Ledger
         </Link>
         <div className="flex items-center gap-1" ref={dropdownRef}>
@@ -82,20 +89,20 @@ export default function Layout() {
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  style={{ color: '#64748B' }}
-                  onMouseEnter={(e) => { e.target.style.backgroundColor = '#D1FAE5'; e.target.style.color = '#059669'; }}
-                  onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#64748B'; }}>
+                  style={{ color: 'var(--text-muted)' }}
+                  onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--primary-light)'; e.target.style.color = 'var(--primary-dark)'; }}
+                  onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'var(--text-muted)'; }}>
                   {l.label} ▾
                 </button>
                 {dropdownOpen && (
-                  <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-lg py-1 min-w-[160px] z-50"
-                    style={{ border: '1px solid #E2E8F0' }}>
+                  <div className="absolute top-full left-0 mt-1 shadow-lg rounded-lg py-1 min-w-[160px] z-50"
+                    style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)' }}>
                     {l.children.map((c) => (
                       <Link key={c.to} to={c.to} onClick={() => setDropdownOpen(false)}
                         className="block px-4 py-2 text-sm transition-colors"
-                        style={{ color: '#1E293B' }}
-                        onMouseEnter={(e) => { e.target.style.backgroundColor = '#D1FAE5'; e.target.style.color = '#059669'; }}
-                        onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#1E293B'; }}>
+                        style={{ color: 'var(--text)' }}
+                        onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--primary-light)'; e.target.style.color = 'var(--primary-dark)'; }}
+                        onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = 'var(--text)'; }}>
                         {c.label}
                       </Link>
                     ))}
@@ -106,40 +113,52 @@ export default function Layout() {
           )}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm" style={{ color: '#64748B' }}>
+          <button onClick={handleToggleTheme} aria-label="Ganti tema"
+            className="p-2 rounded-lg transition-colors"
+            style={{ color: 'var(--text-muted)', backgroundColor: 'var(--surface-hover)' }}
+            title={theme === 'dark' ? 'Mode terang' : 'Mode gelap'}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {user?.name || user?.email || 'User'}
           </span>
           <button onClick={handleLogout}
             className="text-sm px-3 py-1.5 rounded-lg transition-colors"
-            style={{ color: '#F97316', border: '1px solid #FED7AA', backgroundColor: '#FFF7ED' }}>
+            style={{ color: 'var(--accent)', border: '1px solid var(--accent-border)', backgroundColor: 'var(--accent-bg)' }}>
             Logout
           </button>
         </div>
       </nav>
 
       {/* Mobile Nav - Fixed top */}
-      <nav className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between px-4 py-3 bg-white shadow-sm z-50"
-        style={{ borderBottom: '1px solid #E2E8F0' }}>
-        <Link to="/dashboard" className="font-bold text-lg" style={{ color: '#10B981' }}>Kitchen</Link>
-        <button onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 rounded-lg" style={{ backgroundColor: '#D1FAE5', color: '#059669' }}>
-          {menuOpen ? '✕' : '☰'}
-        </button>
+      <nav className="md:hidden fixed top-0 left-0 right-0 flex items-center justify-between px-4 py-3 shadow-sm z-50"
+        style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <Link to="/dashboard" className="font-bold text-lg" style={{ color: 'var(--primary)' }}>Kitchen</Link>
+        <div className="flex items-center gap-2">
+          <button onClick={handleToggleTheme} aria-label="Ganti tema"
+            className="p-2 rounded-lg" style={{ backgroundColor: 'var(--surface-hover)' }}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <button onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary-dark)' }}>
+            {menuOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden fixed top-14 left-0 right-0 bg-white shadow-lg z-40 overflow-y-auto max-h-[calc(100vh-56px)]"
-          style={{ borderBottom: '1px solid #E2E8F0' }}>
+        <div className="md:hidden fixed top-14 left-0 right-0 shadow-lg z-40 overflow-y-auto max-h-[calc(100vh-56px)]"
+          style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
           {flatNav.filter(l => !l.adminOnly || isSuperAdmin).map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
               className="block px-5 py-3 text-sm font-medium"
-              style={{ color: '#1E293B', borderBottom: '1px solid #F1F5F9' }}>
+              style={{ color: 'var(--text)', borderBottom: '1px solid var(--surface-hover)' }}>
               {l.label}
             </Link>
           ))}
           <button onClick={handleLogout} className="block w-full text-left px-5 py-3 text-sm font-medium"
-            style={{ color: '#F97316' }}>
+            style={{ color: 'var(--accent)' }}>
             Logout
           </button>
         </div>

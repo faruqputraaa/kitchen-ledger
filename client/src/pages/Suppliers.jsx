@@ -121,7 +121,7 @@ export default function Suppliers() {
   return (
     <div className="max-w-3xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>
           Supplier
         </h1>
         <button onClick={handleOpenCreate} className="btn-primary text-sm">
@@ -136,7 +136,7 @@ export default function Suppliers() {
           ))}
         </div>
       ) : suppliers.length === 0 ? (
-        <div className="text-center py-12" style={{ color: '#64748B' }}>
+        <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
           <p className="mb-4">Belum ada supplier</p>
           <button onClick={handleOpenCreate} className="btn-primary">
             + Tambah Supplier Pertama
@@ -200,12 +200,12 @@ export default function Suppliers() {
           onClick={(e) => e.target === e.currentTarget && closeModal()}
         >
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
               {editing ? 'Edit Supplier' : 'Supplier Baru'}
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
                 Nama *
               </label>
               <input
@@ -216,8 +216,8 @@ export default function Suppliers() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Kontak Person <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Kontak Person <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <input
                 placeholder="Nama kontak"
@@ -228,8 +228,8 @@ export default function Suppliers() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                  Telepon <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+                <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                  Telepon <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
                 </label>
                 <input
                   placeholder="08xxx"
@@ -238,8 +238,8 @@ export default function Suppliers() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                  Email <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+                <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                  Email <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
                 </label>
                 <input
                   placeholder="email@contoh.com"
@@ -250,8 +250,8 @@ export default function Suppliers() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Alamat <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Alamat <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={2}
@@ -262,8 +262,8 @@ export default function Suppliers() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Notes <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Notes <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={2}

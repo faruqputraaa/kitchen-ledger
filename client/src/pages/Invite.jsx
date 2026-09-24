@@ -85,40 +85,40 @@ export default function Invite() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ backgroundColor: '#F8FAFC' }}>
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-6" style={{ borderColor: '#E2E8F0' }}>
-        <h1 className="text-xl font-semibold mb-1" style={{ color: '#0F172A' }}>Tenant Onboarding</h1>
-        <p className="text-sm mb-4" style={{ color: '#64748B' }}>Gabung tenant dengan kode undangan, atau buat tenant baru (kamu jadi OWNER).</p>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{ backgroundColor: 'var(--surface-alt)' }}>
+      <div className="w-full max-w-md rounded-2xl shadow-sm border p-6" style={{ backgroundColor: 'var(--surface)', borderColor: 'var(--border)' }}>
+        <h1 className="text-xl font-semibold mb-1" style={{ color: 'var(--heading)' }}>Tenant Onboarding</h1>
+        <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>Gabung tenant dengan kode undangan, atau buat tenant baru (kamu jadi OWNER).</p>
 
         <div className="flex gap-2 mb-4">
-          <button onClick={() => { setMode('join'); setError(''); }} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${mode === 'join' ? 'text-white' : ''}`} style={{ backgroundColor: mode === 'join' ? '#0F172A' : '#fff', borderColor: '#CBD5E1', color: mode === 'join' ? '#fff' : '#334155' }}>Gabung</button>
-          <button onClick={() => { setMode('create'); setError(''); }} className={`flex-1 py-2 rounded-lg text-sm font-medium border ${mode === 'create' ? 'text-white' : ''}`} style={{ backgroundColor: mode === 'create' ? '#0F172A' : '#fff', borderColor: '#CBD5E1', color: mode === 'create' ? '#fff' : '#334155' }}>Buat Baru</button>
+          <button onClick={() => { setMode('join'); setError(''); }} className="flex-1 py-2 rounded-lg text-sm font-medium border" style={{ backgroundColor: mode === 'join' ? 'var(--chip-bg)' : 'var(--surface)', borderColor: 'var(--border-strong)', color: mode === 'join' ? 'var(--chip-text)' : 'var(--text-soft)' }}>Gabung</button>
+          <button onClick={() => { setMode('create'); setError(''); }} className="flex-1 py-2 rounded-lg text-sm font-medium border" style={{ backgroundColor: mode === 'create' ? 'var(--chip-bg)' : 'var(--surface)', borderColor: 'var(--border-strong)', color: mode === 'create' ? 'var(--chip-text)' : 'var(--text-soft)' }}>Buat Baru</button>
         </div>
 
         {mode === 'join' ? (
           <form onSubmit={handleJoin} className="space-y-4">
             <div>
-              <label className="text-sm font-medium" style={{ color: '#334155' }}>Kode Undangan</label>
-              <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="AB12CD34" className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none" style={{ borderColor: '#CBD5E1' }} maxLength={20} autoFocus />
-              {preview && <p className="text-xs mt-1" style={{ color: '#059669' }}>→ Tenant: <b>{preview.name}</b> ({preview.code}) — {preview.plan}</p>}
-              {code.length >= 4 && !preview && <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>Kode tidak ditemukan atau kadaluarsa</p>}
+              <label className="text-sm font-medium" style={{ color: 'var(--text-soft)' }}>Kode Undangan</label>
+              <input value={code} onChange={e => setCode(e.target.value.toUpperCase())} placeholder="AB12CD34" className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none" style={{ borderColor: 'var(--border-strong)' }} maxLength={20} autoFocus />
+              {preview && <p className="text-xs mt-1" style={{ color: 'var(--primary-dark)' }}>→ Tenant: <b>{preview.name}</b> ({preview.code}) — {preview.plan}</p>}
+              {code.length >= 4 && !preview && <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>Kode tidak ditemukan atau kadaluarsa</p>}
             </div>
-            {error && <p className="text-sm" style={{ color: '#EF4444' }}>{error}</p>}
-            <button type="submit" disabled={loading} className="w-full rounded-lg py-2.5 text-sm font-medium text-white disabled:opacity-50" style={{ backgroundColor: '#0F172A' }}>{loading ? 'Memproses...' : 'Gabung Tenant'}</button>
-            {preview && <button type="button" onClick={copyLink} className="w-full text-xs py-1" style={{ color: '#64748B' }}>Copy link undangan</button>}
+            {error && <p className="text-sm" style={{ color: 'var(--err)' }}>{error}</p>}
+            <button type="submit" disabled={loading} className="w-full rounded-lg py-2.5 text-sm font-medium disabled:opacity-50" style={{ backgroundColor: 'var(--chip-bg)', color: 'var(--chip-text)' }}>{loading ? 'Memproses...' : 'Gabung Tenant'}</button>
+            {preview && <button type="button" onClick={copyLink} className="w-full text-xs py-1" style={{ color: 'var(--text-muted)' }}>Copy link undangan</button>}
           </form>
         ) : (
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="text-sm font-medium" style={{ color: '#334155' }}>Nama Tenant Baru</label>
-              <input value={newTenantName} onChange={e => setNewTenantName(e.target.value)} placeholder="Contoh: Warung Bu Ana" className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none" style={{ borderColor: '#CBD5E1' }} maxLength={100} />
-              <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>Kamu akan jadi OWNER. Invite code otomatis dibuat (berlaku 7 hari, trial 14 hari).</p>
+              <label className="text-sm font-medium" style={{ color: 'var(--text-soft)' }}>Nama Tenant Baru</label>
+              <input value={newTenantName} onChange={e => setNewTenantName(e.target.value)} placeholder="Contoh: Warung Bu Ana" className="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none" style={{ borderColor: 'var(--border-strong)' }} maxLength={100} />
+              <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>Kamu akan jadi OWNER. Invite code otomatis dibuat (berlaku 7 hari, trial 14 hari).</p>
             </div>
-            {error && <p className="text-sm" style={{ color: '#EF4444' }}>{error}</p>}
-            <button type="submit" disabled={loading} className="w-full rounded-lg py-2.5 text-sm font-medium text-white disabled:opacity-50" style={{ backgroundColor: '#10B981' }}>{loading ? 'Membuat...' : 'Buat Tenant'}</button>
+            {error && <p className="text-sm" style={{ color: 'var(--err)' }}>{error}</p>}
+            <button type="submit" disabled={loading} className="w-full rounded-lg py-2.5 text-sm font-medium disabled:opacity-50" style={{ backgroundColor: 'var(--primary)', color: 'var(--on-color)' }}>{loading ? 'Membuat...' : 'Buat Tenant'}</button>
           </form>
         )}
-        <p className="mt-4 text-xs text-center" style={{ color: '#94A3B8' }}>Sudah punya tenant? Tanya OWNER untuk kode undangan.</p>
+        <p className="mt-4 text-xs text-center" style={{ color: 'var(--text-faint)' }}>Sudah punya tenant? Tanya OWNER untuk kode undangan.</p>
       </div>
     </div>
   );

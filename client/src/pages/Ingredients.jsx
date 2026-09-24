@@ -115,7 +115,7 @@ export default function Ingredients() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Bahan</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Bahan</h1>
         <button onClick={openCreate} className="btn-primary text-sm">+ Bahan Baru</button>
       </div>
 
@@ -139,9 +139,9 @@ export default function Ingredients() {
                 <tr key={ing.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/ingredients/${ing.id}`)}>
                   <td className="font-medium">{ing.name}</td>
                   <td>{ing.category?.name || '-'}</td>
-                  <td className="text-right" style={{ color: ing.currentStock <= ing.minimumStock ? '#F97316' : '#059669', fontWeight: '600' }}>{ing.currentStock}</td>
-                  <td className="text-right" style={{ color: '#64748B' }}>{ing.minimumStock}</td>
-                  <td className="text-right" style={{ color: '#10B981' }}>Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}</td>
+                  <td className="text-right" style={{ color: ing.currentStock <= ing.minimumStock ? 'var(--accent)' : 'var(--primary-dark)', fontWeight: '600' }}>{ing.currentStock}</td>
+                  <td className="text-right" style={{ color: 'var(--text-muted)' }}>{ing.minimumStock}</td>
+                  <td className="text-right" style={{ color: 'var(--primary)' }}>Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}</td>
                   <td className="text-right">
                     <div className="flex items-center gap-1 justify-end">
                       <button
@@ -178,17 +178,17 @@ export default function Ingredients() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
               {editingId ? 'Edit Bahan' : 'Bahan Baru'}
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Nama</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Nama</label>
               <input placeholder="Contoh: Ayam Segar" value={form.name} onChange={(e) => updateForm('name', e.target.value)} />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Kategori</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Kategori</label>
               <select value={form.category} onChange={(e) => updateForm('category', e.target.value)}>
                 <option value="">Pilih Kategori</option>
                 {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
@@ -196,7 +196,7 @@ export default function Ingredients() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Unit</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Unit</label>
               <select value={form.unit} onChange={(e) => updateForm('unit', e.target.value)}>
                 <option value="">Pilih Unit</option>
                 {units.map((u) => (<option key={u.id} value={u.id}>{u.name} ({u.symbol})</option>))}
@@ -204,12 +204,12 @@ export default function Ingredients() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Stok Minimum</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Stok Minimum</label>
               <input type="number" placeholder="0" value={form.minimumStock} onChange={(e) => updateForm('minimumStock', e.target.value)} />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Catatan <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span></label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Catatan <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span></label>
               <input placeholder="Opsional" value={form.notes} onChange={(e) => updateForm('notes', e.target.value)} />
             </div>
 

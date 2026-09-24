@@ -1,65 +1,171 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Kitchen Ledger — Fresh Culinary Pro
+   CSS variables + dark mode ([data-theme="dark"])
+   ============================================================ */
 :root {
-  --color-primary: #10B981;
-  --color-primary-dark: #059669;
-  --color-primary-light: #D1FAE5;
-  --color-secondary: #F59E0B;
-  --color-accent: #F97316;
-  --color-bg: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-text: #1E293B;
-  --color-text-muted: #64748B;
-  --color-border: #E2E8F0;
+  /* Brand */
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --primary-darker: #047857;
+  --primary-light: #D1FAE5;
+
+  /* Sidebar (dark emerald) */
+  --sidebar-bg: linear-gradient(180deg, #064E3B 0%, #065F46 60%, #047857 100%);
+  --sidebar-text: #A7F3D0;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active-bg: rgba(255, 255, 255, 0.14);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+
+  /* Surfaces */
+  --bg: #F1F5F9;
+  --surface: #FFFFFF;
+  --surface-alt: #F8FAFC;
+  --surface-hover: #F1F5F9;
+
+  /* Text */
+  --heading: #0F172A;
+  --text: #1E293B;
+  --text-soft: #374151;
+  --text-muted: #64748B;
+  --text-faint: #94A3B8;
+  --on-color: #FFFFFF;
+
+  /* Borders */
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  /* Accents */
+  --accent: #F97316;
+  --accent-dark: #D97706;
+  --accent-bg: #FFF7ED;
+  --accent-border: #FED7AA;
+
+  --warn: #F59E0B;
+  --warn-dark: #D97706;
+  --warn-bg: #FEF3C7;
+
+  --err: #EF4444;
+  --err-dark: #DC2626;
+  --err-bg: #FEE2E2;
+  --err-border: #FECACA;
+
+  --purple: #8B5CF6;
+  --purple-dark: #7C3AED;
+  --purple-bg: #EDE9FE;
+
+  --info-bg: #DBEAFE;
+  --info-border: #BFDBFE;
+  --info-dark: #1D4ED8;
+
+  --hint-bg: #FEF9C3;
+  --hint-border: #FDE68A;
+  --hint-text: #92400E;
+
+  /* Inverted "dark chip" (e.g. active tab on Invite page) */
+  --chip-bg: #0F172A;
+  --chip-text: #FFFFFF;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(16, 185, 129, 0.15);
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-pop: 0 10px 30px rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="dark"] {
+  --bg: #0B1220;
+  --surface: #111A2C;
+  --surface-alt: #16213A;
+  --surface-hover: #1B2A47;
+
+  --heading: #F1F5F9;
+  --text: #E2E8F0;
+  --text-soft: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-faint: #64748B;
+
+  --border: #24334D;
+  --border-strong: #33415C;
+
+  --primary-light: #063D2F;
+  --accent-bg: #3D2A0F;
+  --accent-border: #6B4718;
+  --warn-bg: #3D2E0B;
+  --err-bg: #3D1414;
+  --err-border: #6B2020;
+  --purple-bg: #2A1D4D;
+
+  --info-bg: #14283D;
+  --info-border: #203C5C;
+  --info-dark: #93C5FD;
+  --hint-bg: #3D350B;
+  --hint-border: #6B5E18;
+  --hint-text: #FDE68A;
+
+  /* Inverted "dark chip" stays dark in dark mode */
+  --chip-bg: #1E293B;
+  --chip-text: #F1F5F9;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 * { -webkit-tap-highlight-color: transparent; }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s, color 0.2s;
 }
 
+/* ===== Buttons ===== */
 .btn-primary {
-  background-color: #10B981; color: white; padding: 0.625rem 1.25rem;
+  background-color: var(--primary); color: var(--on-color); padding: 0.625rem 1.25rem;
   border-radius: 0.5rem; font-weight: 600; transition: background-color 0.15s;
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
 }
-.btn-primary:hover { background-color: #059669; }
+.btn-primary:hover { background-color: var(--primary-dark); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
-  background-color: #F59E0B; color: white; padding: 0.625rem 1.25rem;
+  background-color: var(--warn); color: var(--on-color); padding: 0.625rem 1.25rem;
   border-radius: 0.5rem; font-weight: 600; transition: background-color 0.15s;
 }
-.btn-secondary:hover { background-color: #D97706; }
+.btn-secondary:hover { background-color: var(--warn-dark); }
 
 .btn-outline {
-  border: 1px solid #E2E8F0; padding: 0.625rem 1.25rem; border-radius: 0.5rem;
-  font-weight: 500; background: white; transition: background-color 0.15s;
+  border: 1px solid var(--border-strong); padding: 0.625rem 1.25rem; border-radius: 0.5rem;
+  font-weight: 500; background: var(--surface); color: var(--text); transition: background-color 0.15s;
 }
-.btn-outline:hover { background-color: #F8FAFC; }
+.btn-outline:hover { background-color: var(--surface-alt); }
 
+/* ===== Card ===== */
 .card {
-  background: white; border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  background: var(--surface); border-radius: 0.75rem;
+  box-shadow: var(--shadow-card);
   padding: 1.25rem;
 }
 
+/* ===== Table ===== */
 .table-wrap {
   overflow-x: auto; -webkit-overflow-scrolling: touch;
-  border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border-radius: 0.75rem; box-shadow: var(--shadow-card);
 }
-.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.875rem; background: white; min-width: 500px; }
-.table-wrap th { text-align: left; padding: 0.75rem 1rem; background: #F1F5F9; font-weight: 600; color: #64748B; border-bottom: 1px solid #E2E8F0; white-space: nowrap; }
-.table-wrap td { padding: 0.75rem 1rem; border-bottom: 1px solid #F1F5F9; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.875rem; background: var(--surface); min-width: 500px; }
+.table-wrap th { text-align: left; padding: 0.75rem 1rem; background: var(--surface-alt); font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.table-wrap td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); color: var(--text); }
 .table-wrap tr:last-child td { border-bottom: none; }
-.table-wrap tbody tr:hover { background-color: #F8FAFC; }
+.table-wrap tbody tr:hover { background-color: var(--surface-hover); }
 
+/* ===== Modal ===== */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  position: fixed; inset: 0; background: rgba(2, 6, 23, 0.5);
   display: flex; align-items: flex-end; justify-content: center;
   z-index: 50; padding: 0;
 }
@@ -67,22 +173,25 @@ body {
   .modal-overlay { align-items: center; padding: 1rem; }
 }
 .modal-box {
-  background: white; border-radius: 1rem 1rem 0 0; padding: 1.5rem;
-  width: 100%; max-height: 90vh; overflow-y: auto;
+  background: var(--surface); border-radius: 1rem 1rem 0 0; padding: 1.5rem;
+  width: 100%; max-height: 90vh; overflow-y: auto; color: var(--text);
 }
 @media (min-width: 640px) {
   .modal-box { border-radius: 1rem; max-width: 36rem; }
 }
 
-input, select {
-  border: 1px solid #E2E8F0; border-radius: 0.5rem; padding: 0.625rem 0.75rem;
-  width: 100%; font-size: 0.875rem; background: white; transition: border-color 0.15s;
+/* ===== Inputs ===== */
+input, select, textarea {
+  border: 1px solid var(--border-strong); border-radius: 0.5rem; padding: 0.625rem 0.75rem;
+  width: 100%; font-size: 0.875rem; background: var(--surface); color: var(--text); transition: border-color 0.15s, box-shadow 0.15s;
 }
-input:focus, select:focus {
-  outline: none; border-color: #10B981;
-  box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: var(--focus-ring);
 }
 
+/* ===== Nav ===== */
 @media (max-width: 640px) {
   .nav-desktop { display: none; }
   .nav-mobile { display: flex; }
@@ -92,11 +201,18 @@ input:focus, select:focus {
   .nav-mobile { display: none; }
 }
 
+/* ===== Skeleton ===== */
 .skeleton {
-  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background: linear-gradient(90deg, var(--surface-alt) 25%, var(--border) 50%, var(--surface-alt) 75%);
   background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 0.25rem;
 }
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* ===== Badge ===== */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 0.75rem; padding: 0.125rem 0.5rem; border-radius: 9999px;
 }

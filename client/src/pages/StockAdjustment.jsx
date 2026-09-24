@@ -57,14 +57,14 @@ export default function StockAdjustment() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Riwayat Stok</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Riwayat Stok</h1>
         <button onClick={() => setOpen(true)} className="btn-primary text-sm">+ Kurangi Stok</button>
       </div>
 
       {isLoading ? (
         <div className="space-y-2">{[1,2,3,4,5].map(i => <div key={i} className="skeleton h-12 w-full" />)}</div>
       ) : adjustments.length === 0 ? (
-        <div className="text-center py-12" style={{ color: '#64748B' }}>
+        <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
           <p className="mb-4">Belum ada penyesuaian stok</p>
           <button onClick={() => setOpen(true)} className="btn-primary">+ Penyesuaian Pertama</button>
         </div>
@@ -108,10 +108,10 @@ export default function StockAdjustment() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>Kurangi Stok</h2>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>Kurangi Stok</h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Bahan *</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Bahan *</label>
               <select value={form.ingredient} onChange={(e) => setForm(p => ({ ...p, ingredient: e.target.value }))}>
                 <option value="">Pilih Bahan</option>
                 {ingredients.map((ing) => (
@@ -122,7 +122,7 @@ export default function StockAdjustment() {
 
             <div className="grid grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Alasan *</label>
+                <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Alasan *</label>
                 <select value={form.reason} onChange={(e) => setForm(p => ({ ...p, reason: e.target.value }))}>
                   <option value="OTHER">Lainnya</option>
                   <option value="WASTE">Waste</option>
@@ -133,7 +133,7 @@ export default function StockAdjustment() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Quantity *</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Quantity *</label>
               <input
                 type="number"
                 min="0.01"
@@ -145,8 +145,8 @@ export default function StockAdjustment() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Catatan <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Catatan <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <input
                 placeholder="Catatan tambahan"

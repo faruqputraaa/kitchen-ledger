@@ -62,7 +62,7 @@ export default function IngredientDetail() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Link to="/ingredients" className="text-sm" style={{ color: '#10B981' }}>
+        <Link to="/ingredients" className="text-sm" style={{ color: 'var(--primary)' }}>
           ← Kembali ke Bahan
         </Link>
         <div className="flex gap-2">
@@ -79,47 +79,47 @@ export default function IngredientDetail() {
       <div className="card">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#1E293B' }}>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
               {ingredient.name}
             </h1>
-            <p className="text-sm mt-1" style={{ color: '#64748B' }}>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
               Kode: {ingredient.code} • Kategori: {ingredient.category?.name || '-'}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold" style={{ color: '#10B981' }}>
+            <p className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>
               {formatPrice(ingredient.lastPrice || 0)}
             </p>
-            <p className="text-sm" style={{ color: '#64748B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
               Harga Beli Terakhir
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t" style={{ borderColor: '#E2E8F0' }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Stok Saat Ini</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Stok Saat Ini</p>
             <p className="text-xl font-semibold" style={{
-              color: ingredient.currentStock <= ingredient.minimumStock ? '#F97316' : '#059669'
+              color: ingredient.currentStock <= ingredient.minimumStock ? 'var(--accent)' : 'var(--primary-dark)'
             }}>
               {ingredient.currentStock} {ingredient.unit?.symbol || ''}
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Stok Minimum</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Stok Minimum</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {ingredient.minimumStock} {ingredient.unit?.symbol || ''}
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Satuan</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Satuan</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {ingredient.unit?.name || '-'} ({ingredient.unit?.symbol || ''})
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Terakhir Beli</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Terakhir Beli</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {ingredient.lastPurchaseDate ? new Date(ingredient.lastPurchaseDate).toLocaleDateString('id-ID') : '-'}
             </p>
           </div>
@@ -128,41 +128,41 @@ export default function IngredientDetail() {
 
       {/* Price History Chart */}
       <div className="card">
-        <h2 className="font-semibold mb-4" style={{ color: '#1E293B' }}>
+        <h2 className="font-semibold mb-4" style={{ color: 'var(--text)' }}>
           Riwayat Harga Beli
         </h2>
         {chartData.length === 0 ? (
-          <p className="text-center text-sm py-8" style={{ color: '#64748B' }}>
+          <p className="text-center text-sm py-8" style={{ color: 'var(--text-muted)' }}>
             Belum ada riwayat harga beli untuk bahan ini
           </p>
         ) : (
           <div style={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                 <XAxis
                   dataKey="date"
-                  tick={{ fontSize: 12, fill: '#64748B' }}
-                  axisLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+                  axisLine={{ stroke: 'var(--border)' }}
                 />
                 <YAxis
-                  tick={{ fontSize: 12, fill: '#64748B' }}
-                  axisLine={{ stroke: '#E2E8F0' }}
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
+                  axisLine={{ stroke: 'var(--border)' }}
                   tickFormatter={(value) => `Rp ${value.toLocaleString('id-ID')}`}
                 />
                 <Tooltip
                   formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Harga']}
                   labelFormatter={(date) => new Date(date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid var(--border)', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
                 <Legend />
                 <Line
                   type="monotone"
                   dataKey="price"
-                  stroke="#10B981"
+                  stroke="var(--primary)"
                   strokeWidth={2}
-                  dot={{ r: 4, fill: '#10B981' }}
-                  activeDot={{ r: 6, fill: '#059669' }}
+                  dot={{ r: 4, fill: 'var(--primary)' }}
+                  activeDot={{ r: 6, fill: 'var(--primary-dark)' }}
                 />
               </LineChart>
             </ResponsiveContainer>

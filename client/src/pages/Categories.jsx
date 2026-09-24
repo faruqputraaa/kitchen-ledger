@@ -106,7 +106,7 @@ export default function Categories() {
   return (
     <div className="max-w-3xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>
           Kategori
         </h1>
         <button onClick={handleOpenCreate} className="btn-primary text-sm">
@@ -121,7 +121,7 @@ export default function Categories() {
           ))}
         </div>
       ) : categories.length === 0 ? (
-        <div className="text-center py-12" style={{ color: '#64748B' }}>
+        <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
           <p className="mb-4">Belum ada kategori</p>
           <button onClick={handleOpenCreate} className="btn-primary">
             + Tambah Kategori Pertama
@@ -143,7 +143,7 @@ export default function Categories() {
                 <tr key={cat.id} className="hover:bg-slate-50">
                   <td className="font-medium">{cat.code}</td>
                   <td>{cat.name}</td>
-                  <td style={{ color: '#64748B' }}>{cat.description || '-'}</td>
+                  <td style={{ color: 'var(--text-muted)' }}>{cat.description || '-'}</td>
                   <td>
                     <div className="flex items-center gap-1">
                       <button
@@ -183,12 +183,12 @@ export default function Categories() {
           onClick={(e) => e.target === e.currentTarget && closeModal()}
         >
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
               {editing ? 'Edit Kategori' : 'Kategori Baru'}
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
                 Nama *
               </label>
               <input
@@ -199,8 +199,8 @@ export default function Categories() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Deskripsi <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Deskripsi <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={3}

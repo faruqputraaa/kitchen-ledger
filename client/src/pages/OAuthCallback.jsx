@@ -49,12 +49,12 @@ export default function OAuthCallback() {
   }, [params, navigate, setAuth]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--surface-alt)' }}>
       <div className="text-center">
-        <div className="w-12 h-12 rounded-full mx-auto mb-3" style={{ backgroundColor: '#D1FAE5' }}>
-          <div className="w-8 h-8 rounded-full mx-auto" style={{ backgroundColor: '#10B981' }} />
+        <div className="w-12 h-12 rounded-full mx-auto mb-3" style={{ backgroundColor: 'var(--primary-light)' }}>
+          <div className="w-8 h-8 rounded-full mx-auto" style={{ backgroundColor: 'var(--primary)' }} />
         </div>
-        <p className="text-sm" style={{ color: '#64748B' }}>Sedang masuk...</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Sedang masuk...</p>
       </div>
     </div>
   );

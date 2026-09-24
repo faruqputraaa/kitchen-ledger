@@ -133,7 +133,7 @@ export default function Menus() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Menu</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Menu</h1>
         <button onClick={handleOpenCreate} className="btn-primary text-sm">+ Menu Baru</button>
       </div>
 
@@ -142,7 +142,7 @@ export default function Menus() {
           {[1,2,3,4,5].map(i => <div key={i} className="skeleton h-12 w-full" />)}
         </div>
       ) : menus.length === 0 ? (
-        <div className="text-center py-12" style={{ color: '#64748B' }}>
+        <div className="text-center py-12" style={{ color: 'var(--text-muted)' }}>
           <p className="mb-4">Belum ada menu</p>
           <button onClick={handleOpenCreate} className="btn-primary">+ Tambah Menu Pertama</button>
         </div>
@@ -167,10 +167,10 @@ export default function Menus() {
                   <td className="font-medium">{menu.code}</td>
                   <td>{menu.name}</td>
                   <td>{menu.recipe?.name || '-'}</td>
-                  <td className="text-right font-semibold" style={{ color: '#10B981' }}>Rp {formatRupiah(menu.sellingPrice)}</td>
-                  <td className="text-right" style={{ color: '#F59E0B' }}>Rp {formatRupiah(menu.foodCost)}</td>
-                  <td className="text-right" style={{ color: menu.margin >= 0 ? '#059669' : '#F97316' }}>Rp {formatRupiah(menu.margin)}</td>
-                  <td className="text-right" style={{ color: menu.marginPct >= 20 ? '#059669' : menu.marginPct >= 0 ? '#F59E0B' : '#F97316' }}>{menu.marginPct?.toFixed(1)}%</td>
+                  <td className="text-right font-semibold" style={{ color: 'var(--primary)' }}>Rp {formatRupiah(menu.sellingPrice)}</td>
+                  <td className="text-right" style={{ color: 'var(--warn)' }}>Rp {formatRupiah(menu.foodCost)}</td>
+                  <td className="text-right" style={{ color: menu.margin >= 0 ? 'var(--primary-dark)' : 'var(--accent)' }}>Rp {formatRupiah(menu.margin)}</td>
+                  <td className="text-right" style={{ color: menu.marginPct >= 20 ? 'var(--primary-dark)' : menu.marginPct >= 0 ? 'var(--warn)' : 'var(--accent)' }}>{menu.marginPct?.toFixed(1)}%</td>
                   <td>
                     <div className="flex items-center gap-1">
                       <button
@@ -205,12 +205,12 @@ export default function Menus() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
               {editing ? 'Edit Menu' : 'Menu Baru'}
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Nama *</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Nama *</label>
               <input
                 placeholder="Contoh: Nasi Goreng Special"
                 value={form.name}
@@ -219,8 +219,8 @@ export default function Menus() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
-                Deskripsi <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
+                Deskripsi <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span>
               </label>
               <textarea
                 rows={2}
@@ -231,7 +231,7 @@ export default function Menus() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Resep *</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Resep *</label>
               <select
                 value={form.recipe}
                 onChange={(e) => setForm(p => ({ ...p, recipe: e.target.value }))}
@@ -246,7 +246,7 @@ export default function Menus() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Harga Jual *</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Harga Jual *</label>
               <input
                 type="number"
                 min="1"
