@@ -3,7 +3,7 @@ import { STOCK_ADJUSTMENT_REASON } from './stock-adjustment.constants.js';
 
 const stockAdjustmentSchema = new mongoose.Schema(
   {
-    code: { type: String, required: true, unique: true, trim: true },
+    code: { type: String, required: true, trim: true },
     ingredient: { type: mongoose.Schema.Types.ObjectId, ref: 'Ingredient', required: true },
     type: { type: String, enum: ['IN', 'OUT'], required: true },
     reason: { type: String, enum: Object.values(STOCK_ADJUSTMENT_REASON), required: true },
