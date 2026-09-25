@@ -43,10 +43,10 @@ export default function Dashboard() {
   const { data: recipes } = useQuery({ queryKey: ['recent-recipes'], queryFn: fetchRecentRecipes });
 
   const cards = [
-    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', color: 'var(--primary)', Icon: Package },
-    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', color: 'var(--warn)', Icon: ShoppingCart },
-    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', color: 'var(--purple)', Icon: ChefHat },
-    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', color: 'var(--primary)', Icon: Utensils },
+    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', Icon: Package },
+    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', Icon: ShoppingCart },
+    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', Icon: ChefHat },
+    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', Icon: Utensils },
   ];
 
   const lowList = lowStock ?? [];
@@ -59,9 +59,16 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {cards.map((c) => (
-          <Link key={c.label} to={c.to} className="card hover:opacity-90 transition-opacity text-center relative overflow-hidden" style={{ backgroundColor: c.color, color: 'var(--on-color)' }}>
-            <c.Icon className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mx-auto block mb-2" strokeWidth={1.75} />
-            <p className="text-xs sm:text-sm opacity-90 font-medium">{c.label}</p>
+          <Link key={c.label} to={c.to} className="card transition-colors text-left relative overflow-hidden" style={{ color: 'var(--heading)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                <c.Icon className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
+              </div>
+              <span className="text-xs" style={{ color: 'var(--text-faint)' }}>→</span>
+            </div>
+            <p className="text-xs sm:text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{c.label}</p>
             <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1">{c.value}</p>
           </Link>
         ))}
@@ -91,7 +98,7 @@ export default function Dashboard() {
                     {lowList.map((i) => (
                       <tr key={i.id} className="border-b">
                         <td className="py-2">{i.name}</td>
-                        <td className="py-2 text-right font-bold" style={{ color: 'var(--accent)' }}>{i.currentStock}</td>
+                        <td className="py-2 text-right font-bold" style={{ color: 'var(--err-dark)' }}>{i.currentStock}</td>
                         <td className="py-2 text-right" style={{ color: 'var(--text-muted)' }}>{i.minimumStock}</td>
                       </tr>
                     ))}
@@ -117,8 +124,8 @@ export default function Dashboard() {
                 {recentPurchases.map((p) => (
                   <Link key={p.id} to={`/purchases/${p.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--warn-bg)' }}>
-                        <ShoppingCart className="w-5 h-5" style={{ color: 'var(--accent-dark)' }} strokeWidth={1.75} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                        <ShoppingCart className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
                         <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{p.code}</p>
@@ -130,8 +137,8 @@ export default function Dashboard() {
                     <div className="text-right">
                       <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{formatCurrency(p.totalAmount || 0)}</p>
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                        backgroundColor: p.status === 'COMPLETED' ? 'var(--primary-light)' : 'var(--warn-bg)',
-                        color: p.status === 'COMPLETED' ? 'var(--primary-dark)' : 'var(--accent-dark)',
+                        backgroundColor: p.status === 'COMPLETED' ? 'var(--primary-light)' : 'var(--surface-hover)',
+                        color: p.status === 'COMPLETED' ? 'var(--primary-dark)' : 'var(--text-muted)',
                       }}>
                         {p.status}
                       </span>
@@ -146,7 +153,7 @@ export default function Dashboard() {
           <div className="card">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-lg" style={{ color: 'var(--heading)' }}>Resep Terbaru</h2>
-              <Link to="/recipes" className="text-xs" style={{ color: 'var(--purple)' }}>Lihat semua →</Link>
+              <Link to="/recipes" className="text-xs" style={{ color: 'var(--primary)' }}>Lihat semua →</Link>
             </div>
             {recentRecipes.length === 0 ? (
               <p className="text-center text-sm py-8" style={{ color: 'var(--text-faint)' }}>Belum ada resep</p>
@@ -155,8 +162,8 @@ export default function Dashboard() {
                 {recentRecipes.map((r) => (
                   <Link key={r.id} to={`/recipes/${r.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--purple-bg)' }}>
-                        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-dark)' }} strokeWidth={1.75} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                        <ChefHat className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
                         <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{r.name}</p>
@@ -164,8 +171,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full" style={{
-                      backgroundColor: r.status === 'ACTIVE' ? 'var(--primary-light)' : 'var(--warn-bg)',
-                      color: r.status === 'ACTIVE' ? 'var(--primary-dark)' : 'var(--accent-dark)',
+                      backgroundColor: r.status === 'ACTIVE' ? 'var(--primary-light)' : 'var(--surface-hover)',
+                      color: r.status === 'ACTIVE' ? 'var(--primary-dark)' : 'var(--text-muted)',
                     }}>
                       {r.status}
                     </span>
