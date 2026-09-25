@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { Package, ShoppingCart, ChefHat, Utensils, CheckCircle2, ArrowRight } from 'lucide-react';
 import api from '../lib/axios';
 
 const formatCurrency = (amount) =>
@@ -42,10 +43,10 @@ export default function Dashboard() {
   const { data: recipes } = useQuery({ queryKey: ['recent-recipes'], queryFn: fetchRecentRecipes });
 
   const cards = [
-    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', color: 'var(--primary)', icon: '📦' },
-    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', color: 'var(--warn)', icon: '🛒' },
-    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', color: 'var(--purple)', icon: '📝' },
-    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', color: 'var(--primary)', icon: '🍽️' },
+    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', color: 'var(--primary)', Icon: Package },
+    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', color: 'var(--warn)', Icon: ShoppingCart },
+    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', color: 'var(--purple)', Icon: ChefHat },
+    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', color: 'var(--primary)', Icon: Utensils },
   ];
 
   const lowList = lowStock ?? [];
@@ -59,7 +60,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {cards.map((c) => (
           <Link key={c.label} to={c.to} className="card hover:opacity-90 transition-opacity text-center relative overflow-hidden" style={{ backgroundColor: c.color, color: 'var(--on-color)' }}>
-            <span className="text-3xl sm:text-3xl md:text-4xl block mb-1">{c.icon}</span>
+            <c.Icon className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 mx-auto block mb-2" strokeWidth={1.75} />
             <p className="text-xs sm:text-sm opacity-90 font-medium">{c.label}</p>
             <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1">{c.value}</p>
           </Link>
@@ -75,13 +76,13 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-lg" style={{ color: 'var(--heading)' }}>Peringatan Stok Rendah</h2>
               {lowList.length > 0 && (
-                <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 font-medium">
+                <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: 'var(--err-bg)', color: 'var(--err-dark)' }}>
                   {lowList.length} item
                 </span>
               )}
             </div>
             {lowList.length === 0 ? (
-              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Semua bahan di atas stok minimum ✅</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Semua bahan di atas stok minimum <CheckCircle2 className="w-4 h-4 inline" style={{ color: 'var(--primary)' }} /></p>
             ) : (
               <div className="table-wrap">
                 <table>
@@ -114,10 +115,10 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {recentPurchases.map((p) => (
-                  <Link key={p.id} to={`/purchases/${p.id}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                  <Link key={p.id} to={`/purchases/${p.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--warn-bg)' }}>
-                        <span className="text-lg">🛒</span>
+                        <ShoppingCart className="w-5 h-5" style={{ color: 'var(--accent-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
                         <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{p.code}</p>
@@ -152,10 +153,10 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {recentRecipes.map((r) => (
-                  <Link key={r.id} to={`/recipes/${r.id}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                  <Link key={r.id} to={`/recipes/${r.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--purple-bg)' }}>
-                        <span className="text-lg">📝</span>
+                        <ChefHat className="w-5 h-5" style={{ color: 'var(--purple-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
                         <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{r.name}</p>

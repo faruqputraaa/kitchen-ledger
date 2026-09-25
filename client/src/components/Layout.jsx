@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
+import { Sun, Moon, X, Menu } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import { getTheme, toggleTheme } from '../theme.js';
 
@@ -117,7 +118,7 @@ export default function Layout() {
             className="p-2 rounded-lg transition-colors"
             style={{ color: 'var(--text-muted)', backgroundColor: 'var(--surface-hover)' }}
             title={theme === 'dark' ? 'Mode terang' : 'Mode gelap'}>
-            {theme === 'dark' ? '☀️' : '🌙'}
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {user?.name || user?.email || 'User'}
@@ -137,11 +138,11 @@ export default function Layout() {
         <div className="flex items-center gap-2">
           <button onClick={handleToggleTheme} aria-label="Ganti tema"
             className="p-2 rounded-lg" style={{ backgroundColor: 'var(--surface-hover)' }}>
-            {theme === 'dark' ? '☀️' : '🌙'}
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <button onClick={() => setMenuOpen(!menuOpen)}
             className="p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-light)', color: 'var(--primary-dark)' }}>
-            {menuOpen ? '✕' : '☰'}
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </nav>
