@@ -46,7 +46,7 @@ class PurchaseRepository {
 
   async findMany(query = {}) {
     // Extract filter fields
-    const { status, supplier, ...restQuery } = query;
+    const { status, supplier, createdBy, ...restQuery } = query;
 
     const filter = {
       isDeleted: false,
@@ -60,6 +60,7 @@ class PurchaseRepository {
     // Add filter fields to filter
     if (status) filter.status = status;
     if (supplier) filter.supplier = supplier;
+    if (createdBy) filter.createdBy = createdBy;
 
     const options = buildQueryOptions({
       query: restQuery,

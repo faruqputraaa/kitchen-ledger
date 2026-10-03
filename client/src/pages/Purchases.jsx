@@ -5,6 +5,10 @@ import api from '../lib/axios';
 
 const OCR_API_URL = '/ocr';
 
+function getTenantId() {
+  try { return JSON.parse(atob(localStorage.getItem('accessToken').split('.')[1])).tenantId; } catch { return null; }
+}
+
 const fetchPurchases = async (params = {}) => {
   const query = new URLSearchParams();
   if (params.page) query.set('page', params.page);
@@ -14,6 +18,7 @@ const fetchPurchases = async (params = {}) => {
   if (params.order) query.set('order', params.order);
   if (params.status) query.set('status', params.status);
   if (params.supplier) query.set('supplier', params.supplier);
+  if (params.createdBy) query.set('createdBy', params.createdBy);
   const { data } = await api.get(`/purchases?${query.toString()}`);
   return data;
 };
@@ -42,6 +47,7 @@ const formatPrice = (price) =>
   `Rp ${(price ?? 0).toLocaleString('id-ID')}`;
 
 export default function Purchases() {
+  const tenantId = getTenantId();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -69,14 +75,15 @@ export default function Purchases() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [supplierFilter, setSupplierFilter] = useState('');
+  const [createdByFilter, setCreatedByFilter] = useState('');
   const [sort, setSort] = useState('purchaseDate');
   const [order, setOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const limit = 20;
 
   const { data, isLoading } = useQuery({
-    queryKey: ['purchases', { search, sort, order, page, status: statusFilter, supplier: supplierFilter }],
-    queryFn: () => fetchPurchases({ search, sort, order, page, limit, status: statusFilter, supplier: supplierFilter }),
+    queryKey: ['purchases', { search, sort, order, page, status: statusFilter, supplier: supplierFilter, createdBy: createdByFilter }],
+    queryFn: () => fetchPurchases({ search, sort, order, page, limit, status: statusFilter, supplier: supplierFilter, createdBy: createdByFilter }),
   });
 
   const { data: ingredients = [] } = useQuery({
@@ -92,6 +99,15 @@ export default function Purchases() {
   const { data: units = [] } = useQuery({
     queryKey: ['units-list'],
     queryFn: fetchUnits,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['users-list', tenantId],
+    queryFn: async () => {
+      const { data } = await api.get(`/tenants/${tenantId}/members`);
+      return data.data;
+    },
+    enabled: !!tenantId,
   });
 
   const purchases = data?.data || [];
@@ -276,6 +292,10 @@ export default function Purchases() {
               <option value="">Semua Supplier</option>
               {suppliers.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
             </select>
+            <select value={createdByFilter} onChange={(e) => { setCreatedByFilter(e.target.value); setPage(1); }} className="w-40">
+              <option value="">Semua Pembeli</option>
+              {users.map((u) => (<option key={u._id} value={u._id}>{u.name}</option>))}
+            </select>
             <select value={sort} onChange={(e) => handleSort(e.target.value)} className="w-36">
               <option value="purchaseDate">Tanggal</option><option value="code">Kode</option><option value="totalAmount">Total</option>
             </select>
@@ -297,19 +317,21 @@ export default function Purchases() {
                   <th onClick={() => handleSort('code')} className="cursor-pointer select-none">Kode {sort === 'code' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
                   <th>Supplier</th>
                   <th onClick={() => handleSort('purchaseDate')} className="cursor-pointer select-none">Tanggal {sort === 'purchaseDate' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
+                  <th>Dibeli Oleh</th>
                   <th>Status</th>
                   <th onClick={() => handleSort('totalAmount')} className="cursor-pointer select-none text-right">Total {sort === 'totalAmount' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-8" style={{ color: 'var(--text-faint)' }}>Tidak ada pembelian</td></tr>
+                  <tr><td colSpan={6} className="text-center py-8" style={{ color: 'var(--text-faint)' }}>Tidak ada pembelian</td></tr>
                 ) : (
                   purchases.map((p) => (
                     <tr key={p.id} className="cursor-pointer hover:bg-slate-50" onClick={() => navigate(`/purchases/${p.id}`)}>
                       <td className="font-medium">{p.code}</td>
                       <td>{p.supplier?.name || '-'}</td>
                       <td>{new Date(p.purchaseDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td>{p.createdBy?.name || '-'}</td>
                       <td>
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: p.status === 'COMPLETED' ? 'var(--primary-light)' : p.status === 'ORDERED' ? 'var(--info-bg)' : p.status === 'CANCELLED' ? 'var(--err-bg)' : 'var(--warn-bg)', color: p.status === 'COMPLETED' ? 'var(--primary-dark)' : p.status === 'ORDERED' ? 'var(--info-dark)' : p.status === 'CANCELLED' ? 'var(--err-dark)' : 'var(--accent-dark)' }}>{p.status}</span>
                       </td>

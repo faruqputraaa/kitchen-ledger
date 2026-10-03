@@ -22,4 +22,8 @@ export const PURCHASE_POPULATE = Object.freeze([
     path: 'supplier',
     select: 'code name',
   },
+  {
+    path: 'createdBy',
+    select: 'name email',
+  },
 ]);

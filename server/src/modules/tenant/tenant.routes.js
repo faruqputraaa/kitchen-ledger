@@ -360,13 +360,19 @@ router.get(
   '/:tenantId/members',
   authMiddleware,
   validateTenant,
-  roleMiddleware('OWNER'),
+  roleMiddleware('OWNER', 'ADMIN', 'STAFF'),
   asyncHandler(async (req, res) => {
     const { tenantId } = req.params;
     if (req.tenantId.toString() !== tenantId) return res.status(403).json({ success: false, message: 'Not authorized' });
     const members = await userService.findByTenant(tenantId);
-    return successResponse(res, { data: members });
-  }),
+    // Hide invite code related fields for non-owners
+    const filtered = members.map(m => {
+      const base = { _id: m._id, code: m.code, name: m.name, email: m.email, role: m.role, status: m.status, avatar: m.avatar, createdAt: m.createdAt };
+      if (req.user.role === 'OWNER') return { ...base, tenantId: m.tenantId, lastLogin: m.lastLogin };
+      return base;
+    });
+    return successResponse(res, { data: filtered });
+  })
 );
 
 router.patch(

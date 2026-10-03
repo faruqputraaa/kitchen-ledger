@@ -17,6 +17,13 @@ class PurchaseMapper {
       totalAmount: purchase.totalAmount,
       createdAt: purchase.createdAt,
       updatedAt: purchase.updatedAt,
+      createdBy: purchase.createdBy
+        ? {
+            id: purchase.createdBy._id.toString(),
+            name: purchase.createdBy.name,
+            email: purchase.createdBy.email,
+          }
+        : null,
     };
   }
 

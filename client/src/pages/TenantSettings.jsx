@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
+import useAuthStore from '../store/authStore';
 
 function getTenantId() {
   try { return JSON.parse(atob(localStorage.getItem('accessToken').split('.')[1])).tenantId; } catch { return null; }
 }
 
+function getUserRole() {
+  try { return JSON.parse(atob(localStorage.getItem('accessToken').split('.')[1])).role; } catch { return null; }
+}
+
 export default function TenantSettings() {
   const tenantId = getTenantId();
+  const userRole = getUserRole();
+  const isOwner = userRole === 'OWNER';
   const qc = useQueryClient();
   const [name, setName] = useState('');
   const [currency, setCurrency] = useState('IDR');
@@ -30,7 +37,7 @@ export default function TenantSettings() {
   const { data: invite } = useQuery({
     queryKey: ['tenant-invite', tenantId],
     queryFn: async () => (await api.get(`/tenants/${tenantId}/invite-code`)).data.data,
-    enabled: !!tenantId,
+    enabled: !!tenantId && isOwner,
   });
 
   const { data: members } = useQuery({
@@ -68,6 +75,7 @@ export default function TenantSettings() {
   });
 
   const handleExport = async () => {
+    if (!isOwner) return;
     const { data } = await api.get(`/tenants/${tenantId}/export`);
     const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -104,28 +112,30 @@ export default function TenantSettings() {
         </div>
       )}
 
-      {/* Invite */}
-      <div className="card">
-        <h2 className="font-semibold mb-2" style={{ color: 'var(--heading)' }}>Kode Undangan</h2>
-        <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>Bagikan kode atau link ini ke anggota. Berlaku 7 hari, bisa di-rotate.</p>
-        {invite && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-lg font-bold tracking-widest px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--surface-hover)', color: 'var(--heading)' }}>{invite.inviteCode}</span>
-              <button onClick={() => copy(invite.inviteCode)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: 'var(--border-strong)' }}>Copy kode</button>
-              <button onClick={() => rotateMut.mutate()} disabled={rotateMut.isPending} className="text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--primary)', color: 'var(--on-color)' }}>{rotateMut.isPending ? '...' : 'Rotate'}</button>
+      {/* Invite - OWNER only */}
+      {isOwner && (
+        <div className="card">
+          <h2 className="font-semibold mb-2" style={{ color: 'var(--heading)' }}>Kode Undangan</h2>
+          <p className="text-xs mb-3" style={{ color: 'var(--text-muted)' }}>Bagikan kode atau link ini ke anggota. Berlaku 7 hari, bisa di-rotate.</p>
+          {invite && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg font-bold tracking-widest px-3 py-2 rounded-lg" style={{ backgroundColor: 'var(--surface-hover)', color: 'var(--heading)' }}>{invite.inviteCode}</span>
+                <button onClick={() => copy(invite.inviteCode)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: 'var(--border-strong)' }}>Copy kode</button>
+                <button onClick={() => rotateMut.mutate()} disabled={rotateMut.isPending} className="text-xs px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--primary)', color: 'var(--on-color)' }}>{rotateMut.isPending ? '...' : 'Rotate'}</button>
+              </div>
+              <div className="flex items-center gap-2">
+                <input readOnly value={inviteLink} className="flex-1 text-xs px-2 py-1.5 rounded border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-alt)' }} />
+                <button onClick={() => copy(inviteLink)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: 'var(--border-strong)' }}>Copy link</button>
+              </div>
+              <p className="text-xs" style={{ color: invite.expired ? 'var(--err)' : 'var(--text-muted)' }}>
+                {invite.expiresAt ? `Kadaluarsa: ${new Date(invite.expiresAt).toLocaleString('id-ID')}${invite.expired ? ' — KADALUARSA' : ''}` : 'Tidak ada expiry'}
+              </p>
+              {inviteMsg && <p className="text-xs" style={{ color: 'var(--primary-dark)' }}>{inviteMsg}</p>}
             </div>
-            <div className="flex items-center gap-2">
-              <input readOnly value={inviteLink} className="flex-1 text-xs px-2 py-1.5 rounded border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-alt)' }} />
-              <button onClick={() => copy(inviteLink)} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: 'var(--border-strong)' }}>Copy link</button>
-            </div>
-            <p className="text-xs" style={{ color: invite.expired ? 'var(--err)' : 'var(--text-muted)' }}>
-              {invite.expiresAt ? `Kadaluarsa: ${new Date(invite.expiresAt).toLocaleString('id-ID')}${invite.expired ? ' — KADALUARSA' : ''}` : 'Tidak ada expiry'}
-            </p>
-            {inviteMsg && <p className="text-xs" style={{ color: 'var(--primary-dark)' }}>{inviteMsg}</p>}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Settings */}
       <div className="card">
@@ -146,20 +156,33 @@ export default function TenantSettings() {
         <h2 className="font-semibold mb-3" style={{ color: 'var(--heading)' }}>Anggota ({members?.length ?? 0})</h2>
         <div className="table-wrap overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr style={{ color: 'var(--text-muted)' }}><th className="text-left py-2">Nama</th><th className="text-left">Email</th><th className="text-left">Role</th><th className="text-right">Aksi</th></tr></thead>
+            <thead>
+              <tr style={{ color: 'var(--text-muted)' }}>
+                <th className="text-left py-2">Nama</th>
+                <th className="text-left">Email</th>
+                <th className="text-left">Role</th>
+                {isOwner && <th className="text-right">Aksi</th>}
+              </tr>
+            </thead>
             <tbody>
               {(members || []).map(m => (
                 <tr key={m._id} style={{ borderTop: '1px solid var(--surface-hover)' }}>
                   <td className="py-2">{m.name}</td>
                   <td style={{ color: 'var(--text-muted)' }}>{m.email}</td>
                   <td>
-                    <select value={m.role} onChange={e => roleMut.mutate({ userId: m._id, role: e.target.value })} className="text-xs px-2 py-1 rounded border" style={{ borderColor: 'var(--border-strong)' }}>
-                      <option value="OWNER">OWNER</option><option value="ADMIN">ADMIN</option><option value="STAFF">STAFF</option>
-                    </select>
+                    {isOwner ? (
+                      <select value={m.role} onChange={e => roleMut.mutate({ userId: m._id, role: e.target.value })} className="text-xs px-2 py-1 rounded border" style={{ borderColor: 'var(--border-strong)' }}>
+                        <option value="OWNER">OWNER</option><option value="ADMIN">ADMIN</option><option value="STAFF">STAFF</option>
+                      </select>
+                    ) : (
+                      <span className="inline-block px-2 py-1 text-xs rounded bg-[var(--chip-bg)] text-[var(--chip-text)]">{m.role}</span>
+                    )}
                   </td>
-                  <td className="text-right">
-                    <button onClick={() => { if (confirm(`Keluarkan ${m.name}?`)) kickMut.mutate(m._id); }} className="text-xs px-2 py-1 rounded" style={{ color: 'var(--err)', backgroundColor: 'var(--err-bg)' }}>Kick</button>
-                  </td>
+                  {isOwner && (
+                    <td className="text-right">
+                      <button onClick={() => { if (confirm(`Keluarkan ${m.name}?`)) kickMut.mutate(m._id); }} className="text-xs px-2 py-1 rounded" style={{ color: 'var(--err)', backgroundColor: 'var(--err-bg)' }}>Kick</button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
