@@ -9,6 +9,7 @@ class UserMapper {
       email: user.email,
       avatar: user.avatar,
       role: user.role,
+      tenantId: user.tenantId?.toString() ?? null,
       provider: user.provider,
       status: user.status,
       lastLogin: user.lastLogin,

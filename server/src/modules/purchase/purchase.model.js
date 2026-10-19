@@ -7,7 +7,6 @@ const purchaseSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
 
@@ -20,6 +19,13 @@ const purchaseSchema = new mongoose.Schema(
     purchaseDate: {
       type: Date,
       default: Date.now,
+    },
+
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: true,
+      index: true,
     },
 
     status: {
@@ -78,6 +84,25 @@ purchaseSchema.index({ supplier: 1 });
 purchaseSchema.index({ status: 1 });
 purchaseSchema.index({ purchaseDate: 1 });
 purchaseSchema.index({ isDeleted: 1 });
+purchaseSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+
+// Auto-filter by tenantId for all queries
+purchaseSchema.pre(/^find/, async function () {
+  const tenantId = this.getOptions().tenantId;
+  if (tenantId) {
+    this.where({ tenantId });
+  }
+});
+
+// Auto-set tenantId on create
+purchaseSchema.pre('save', async function () {
+  if (this.isNew && !this.tenantId) {
+    const tenantId = this.getOptions().tenantId;
+    if (tenantId) {
+      this.tenantId = tenantId;
+    }
+  }
+});
 
 const Purchase = mongoose.model(
   'Purchase',

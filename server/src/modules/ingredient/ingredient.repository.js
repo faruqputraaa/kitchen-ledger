@@ -54,6 +54,7 @@ class IngredientRepository {
   async findMany(query = {}) {
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { tenantId: query.tenantId } : {}),
 
       ...buildSearch(query.search, INGREDIENT_SEARCH_FIELDS),
     };

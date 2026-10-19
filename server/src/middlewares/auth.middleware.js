@@ -18,7 +18,7 @@ const authMiddleware = (req, res, next) => {
     const payload = verifyAccessToken(token);
 
     req.user = payload;
-
+    req.tenantId = payload.tenantId;
     next();
   } catch {
     next(new UnauthorizedError('Invalid or expired access token'));

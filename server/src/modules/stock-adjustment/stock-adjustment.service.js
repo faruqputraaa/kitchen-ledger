@@ -5,7 +5,7 @@ import stockAdjustmentRepository from './stock-adjustment.repository.js';
 import ingredientRepository from '../ingredient/ingredient.repository.js';
 
 class StockAdjustmentService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     const ingredient = await ingredientRepository.findById(dto.ingredient);
     if (!ingredient) throw new NotFoundError('Ingredient not found');
 
@@ -14,7 +14,7 @@ class StockAdjustmentService {
 
     if (stockAfter < 0) throw new ValidationError('Stock tidak boleh negatif');
 
-    const code = await counterService.generate('stock-adjustment');
+    const code = await counterService.generate('stock-adjustment', tenantId);
 
     // Update ingredient stock (only decrease)
     await ingredientRepository.update(
@@ -33,6 +33,7 @@ class StockAdjustmentService {
       notes: dto.notes ?? '',
       stockBefore,
       stockAfter,
+      tenantId,
       createdBy: userId,
     });
   }

@@ -45,7 +45,13 @@ export default function Login() {
       setGlobalError('');
       const { data } = await api.post('/auth/login', values);
       setAuth(data.data.user, data.data.accessToken);
-      navigate('/dashboard');
+      const { user } = data.data;
+      const needsInvite = data.data.needsInvite || (!user?.tenantId && user?.role !== 'SUPER_ADMIN');
+      if (needsInvite) {
+        navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setGlobalError(err.response?.data?.message || 'Login gagal. Cek email & password.');
     }
@@ -60,7 +66,13 @@ export default function Login() {
         password: values.password,
       });
       setAuth(data.data.user, data.data.accessToken);
-      navigate('/dashboard');
+      const { user } = data.data;
+      const needsInvite = data.data.needsInvite || (!user?.tenantId && user?.role !== 'SUPER_ADMIN');
+      if (needsInvite) {
+        navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setGlobalError(err.response?.data?.message || 'Registrasi gagal. Email mungkin sudah digunakan.');
     }
@@ -75,12 +87,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, var(--primary-darker) 100%)' }}>
       <div className="w-full max-w-sm">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 shadow-lg" style={{ backgroundColor: '#FFFFFF' }}>
-            <span className="font-bold text-3xl" style={{ color: '#10B981' }}>KL</span>
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 shadow-lg" style={{ backgroundColor: 'var(--surface)' }}>
+            <span className="font-bold text-3xl" style={{ color: 'var(--primary)' }}>KL</span>
           </div>
           <h1 className="text-3xl font-bold text-white drop-shadow-sm">Kitchen Ledger</h1>
           <p className="text-sm mt-2 text-white/80">Inventaris & Resep Manager</p>
@@ -88,14 +100,14 @@ export default function Login() {
 
         {/* Card */}
         <div className="card p-6 shadow-xl">
-          <div className="flex mb-4 border-b" style={{ borderColor: '#E2E8F0' }}>
+          <div className="flex mb-4 border-b" style={{ borderColor: 'var(--border)' }}>
             <button
               type="button"
               onClick={() => setIsRegister(false)}
               className={`flex-1 pb-3 text-sm font-medium transition-colors ${!isRegister ? 'border-b-2' : ''}`}
               style={{ 
-                color: !isRegister ? '#10B981' : '#64748B',
-                borderColor: !isRegister ? '#10B981' : 'transparent',
+                color: !isRegister ? 'var(--primary)' : 'var(--text-muted)',
+                borderColor: !isRegister ? 'var(--primary)' : 'transparent',
               }}
             >
               Masuk
@@ -105,8 +117,8 @@ export default function Login() {
               onClick={() => setIsRegister(true)}
               className={`flex-1 pb-3 text-sm font-medium transition-colors ${isRegister ? 'border-b-2' : ''}`}
               style={{ 
-                color: isRegister ? '#10B981' : '#64748B',
-                borderColor: isRegister ? '#10B981' : 'transparent',
+                color: isRegister ? 'var(--primary)' : 'var(--text-muted)',
+                borderColor: isRegister ? 'var(--primary)' : 'transparent',
               }}
             >
               Daftar
@@ -114,7 +126,7 @@ export default function Login() {
           </div>
 
           {globalError && (
-            <div className="mb-4 p-3 rounded-lg text-sm" style={{ backgroundColor: '#FEE2E2', color: '#DC2626' }}>
+            <div className="mb-4 p-3 rounded-lg text-sm" style={{ backgroundColor: 'var(--err-bg)', color: 'var(--err-dark)' }}>
               {globalError}
             </div>
           )}
@@ -123,7 +135,7 @@ export default function Login() {
             /* Login Form */
             <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Email
                 </label>
                 <input
@@ -139,7 +151,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Password
                 </label>
                 <input
@@ -166,7 +178,7 @@ export default function Login() {
             /* Register Form */
             <form onSubmit={registerForm.handleSubmit(handleRegister)} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Nama Lengkap
                 </label>
                 <input
@@ -181,7 +193,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Email
                 </label>
                 <input
@@ -197,7 +209,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Password
                 </label>
                 <input
@@ -213,7 +225,7 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1" style={{ color: '#374151' }}>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-soft)' }}>
                   Konfirmasi Password
                 </label>
                 <input
@@ -239,9 +251,9 @@ export default function Login() {
           )}
 
           <div className="relative flex items-center gap-3 my-4">
-            <div className="flex-1 h-px" style={{ backgroundColor: '#E2E8F0' }} />
-            <span className="text-xs" style={{ color: '#94A3B8' }}>atau</span>
-            <div className="flex-1 h-px" style={{ backgroundColor: '#E2E8F0' }} />
+            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
+            <span className="text-xs" style={{ color: 'var(--text-faint)' }}>atau</span>
+            <div className="flex-1 h-px" style={{ backgroundColor: 'var(--border)' }} />
           </div>
 
           <a

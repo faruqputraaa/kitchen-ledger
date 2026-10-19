@@ -10,7 +10,8 @@ export const createMenu = asyncHandler(
   async (req, res) => {
     const menu = await menuService.create(
       req.validated.body,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -23,9 +24,10 @@ export const createMenu = asyncHandler(
 
 export const getMenus = asyncHandler(
   async (req, res) => {
-    const result = await menuService.findAll(
-      req.validated.query
-    );
+    const result = await menuService.findAll({
+      ...req.validated.query,
+      tenantId: req.tenantId,
+    });
 
     return successResponse(res, {
       data: menuMapper.toList(result.data),
@@ -37,7 +39,8 @@ export const getMenus = asyncHandler(
 export const getMenuById = asyncHandler(
   async (req, res) => {
     const menu = await menuService.findById(
-      req.validated.params.id
+      req.validated.params.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -50,7 +53,8 @@ export const deleteMenu = asyncHandler(
   async (req, res) => {
     await menuService.delete(
       req.validated.params.id,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -64,7 +68,8 @@ export const updateMenu = asyncHandler(
     const menu = await menuService.update(
       req.validated.params.id,
       req.validated.body,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {

@@ -115,7 +115,7 @@ export default function Ingredients() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Bahan</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Bahan</h1>
         <button onClick={openCreate} className="btn-primary text-sm">+ Bahan Baru</button>
       </div>
 
@@ -136,19 +136,35 @@ export default function Ingredients() {
             </thead>
             <tbody>
               {ingredients.map((ing) => (
-                <tr key={ing.id} className="hover:bg-slate-50">
+                <tr key={ing.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => navigate(`/ingredients/${ing.id}`)}>
                   <td className="font-medium">{ing.name}</td>
                   <td>{ing.category?.name || '-'}</td>
-                  <td className="text-right" style={{ color: ing.currentStock <= ing.minimumStock ? '#F97316' : '#059669', fontWeight: '600' }}>{ing.currentStock}</td>
-                  <td className="text-right" style={{ color: '#64748B' }}>{ing.minimumStock}</td>
-                  <td className="text-right" style={{ color: '#10B981' }}>Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}</td>
+                  <td className="text-right" style={{ color: ing.currentStock <= ing.minimumStock ? 'var(--accent)' : 'var(--primary-dark)', fontWeight: '600' }}>{ing.currentStock}</td>
+                  <td className="text-right" style={{ color: 'var(--text-muted)' }}>{ing.minimumStock}</td>
+                  <td className="text-right" style={{ color: 'var(--primary)' }}>Rp {(ing.lastPrice ?? 0).toLocaleString('id-ID')}</td>
                   <td className="text-right">
                     <div className="flex items-center gap-1 justify-end">
-                      <button onClick={() => openEdit(ing)} title="Edit" style={{ color: '#2563EB', fontSize: '1rem', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
-                        ✎
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openEdit(ing); }}
+                        className="btn-icon"
+                        title="Edit"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
                       </button>
-                      <button onClick={() => { if (confirm(`Hapus ${ing.name}?`)) deleteMut.mutate(ing.id); }} title="Hapus" style={{ color: '#DC2626', fontSize: '14px', padding: '4px 6px', border: 'none', background: 'none', cursor: 'pointer' }}>
-                        ✕
+                      <button
+                        onClick={(e) => { e.stopPropagation(); if (confirm(`Hapus ${ing.name}?`)) deleteMut.mutate(ing.id); }}
+                        className="btn-icon text-red-500 hover:bg-red-50"
+                        title="Hapus"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          <line x1="10" y1="11" x2="10" y2="17"></line>
+                          <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
                       </button>
                     </div>
                   </td>
@@ -162,17 +178,17 @@ export default function Ingredients() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setOpen(false)}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>
               {editingId ? 'Edit Bahan' : 'Bahan Baru'}
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Nama</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Nama</label>
               <input placeholder="Contoh: Ayam Segar" value={form.name} onChange={(e) => updateForm('name', e.target.value)} />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Kategori</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Kategori</label>
               <select value={form.category} onChange={(e) => updateForm('category', e.target.value)}>
                 <option value="">Pilih Kategori</option>
                 {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
@@ -180,7 +196,7 @@ export default function Ingredients() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Unit</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Unit</label>
               <select value={form.unit} onChange={(e) => updateForm('unit', e.target.value)}>
                 <option value="">Pilih Unit</option>
                 {units.map((u) => (<option key={u.id} value={u.id}>{u.name} ({u.symbol})</option>))}
@@ -188,12 +204,12 @@ export default function Ingredients() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Stok Minimum</label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Stok Minimum</label>
               <input type="number" placeholder="0" value={form.minimumStock} onChange={(e) => updateForm('minimumStock', e.target.value)} />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Catatan <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional)</span></label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Catatan <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional)</span></label>
               <input placeholder="Opsional" value={form.notes} onChange={(e) => updateForm('notes', e.target.value)} />
             </div>
 

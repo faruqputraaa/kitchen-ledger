@@ -6,7 +6,7 @@ import ingredientService from './ingredient.service.js';
 import { ingredientPriceHistoryRepository } from '../ingredient-price-history/index.js';
 
 export const createIngredient = asyncHandler(async (req, res) => {
-  const ingredient = await ingredientService.create(req.validated.body, req.user.id);
+  const ingredient = await ingredientService.create(req.validated.body, req.user.id, req.tenantId);
 
   return successResponse(res, {
     statusCode: 201,
@@ -16,7 +16,7 @@ export const createIngredient = asyncHandler(async (req, res) => {
 });
 
 export const getIngredients = asyncHandler(async (req, res) => {
-  const result = await ingredientService.findAll(req.validated.query);
+  const result = await ingredientService.findAll({ ...req.validated.query, tenantId: req.tenantId });
 
   return successResponse(res, {
     data: ingredientMapper.toList(result.data),
@@ -25,7 +25,7 @@ export const getIngredients = asyncHandler(async (req, res) => {
 });
 
 export const getIngredientById = asyncHandler(async (req, res) => {
-  const ingredient = await ingredientService.findById(req.validated.params.id);
+  const ingredient = await ingredientService.findById(req.validated.params.id, req.tenantId);
 
   return successResponse(res, {
     data: ingredientMapper.toResponse(ingredient),
@@ -36,7 +36,8 @@ export const updateIngredient = asyncHandler(async (req, res) => {
   const ingredient = await ingredientService.update(
     req.validated.params.id,
     req.validated.body,
-    req.user.id
+    req.user.id,
+    req.tenantId
   );
 
   return successResponse(res, {
@@ -46,7 +47,7 @@ export const updateIngredient = asyncHandler(async (req, res) => {
 });
 
 export const deleteIngredient = asyncHandler(async (req, res) => {
-  await ingredientService.delete(req.validated.params.id, req.user.id);
+  await ingredientService.delete(req.validated.params.id, req.user.id, req.tenantId);
 
   return successResponse(res, {
     message: 'Ingredient deleted successfully',

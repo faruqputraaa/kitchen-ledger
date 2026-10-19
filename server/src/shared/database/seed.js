@@ -6,6 +6,7 @@ import {
   seedOwner,
   seedUnits,
   seedCategories,
+  seedSuperAdmin,
 } from './seeders/index.js';
 
 import seedCounters from '#shared/counter/counter.seed';
@@ -19,6 +20,7 @@ const runSeeder = async () => {
     );
 
     await seedOwner();
+    await seedSuperAdmin();
 
     await seedCategories();
     await seedUnits();

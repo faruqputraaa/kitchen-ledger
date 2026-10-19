@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import healthRoute from '#modules/health/health.routes';
 import authRoutes from '#modules/auth/auth.routes';
+import tenantRoutes from '#modules/tenant/tenant.routes';
 import categoryRoutes from '#modules/category/category.routes';
 import unitRoutes from '#modules/unit/unit.routes';
 import supplierRoutes from '#modules/supplier/supplier.routes';
@@ -11,11 +12,13 @@ import recipeRoutes from '#modules/recipe/recipe.routes';
 import menuRoutes from '#modules/menu/menu.routes';
 import stockAdjustmentRoutes from '#modules/stock-adjustment/stock-adjustment.routes';
 
-
 const router = Router();
 
 router.use('/health', healthRoute);
 router.use('/auth', authRoutes);
+router.use('/tenants', tenantRoutes);
+
+// Data routes - tenant check is applied inside each route file after auth
 router.use('/categories', categoryRoutes);
 router.use('/units', unitRoutes);
 router.use('/suppliers', supplierRoutes);

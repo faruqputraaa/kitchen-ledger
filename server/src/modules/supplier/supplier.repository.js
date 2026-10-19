@@ -48,6 +48,7 @@ class SupplierRepository {
   async findMany(query = {}) {
     const filter = {
       isDeleted: false,
+      ...(query.tenantId ? { tenantId: query.tenantId } : {}),
       ...buildSearch(query.search, ['name', 'contactPerson', 'phone']),
     };
 

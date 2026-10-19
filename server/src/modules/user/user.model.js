@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
       index: true,
       trim: true,
     },
@@ -23,7 +22,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
     },
@@ -62,6 +60,13 @@ const userSchema = new mongoose.Schema(
       default: USER_STATUS.ACTIVE,
     },
 
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      default: null,
+      index: true,
+    },
+
     lastLogin: {
       type: Date,
       default: null,
@@ -84,6 +89,9 @@ const userSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+userSchema.index({ tenantId: 1, email: 1 }, { unique: true, sparse: true });
+userSchema.index({ tenantId: 1, code: 1 }, { unique: true });
 
 const User = mongoose.model('User', userSchema);
 

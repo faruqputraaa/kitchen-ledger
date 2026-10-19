@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <meta name="theme-color" content="#10B981" />
     <meta name="description" content="Kitchen Inventory & Recipe Management" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Kitchen Ledger" />
@@ -12,6 +13,10 @@
     <link rel="icon" type="image/svg+xml" href="/icon-192.svg" />
     <link rel="apple-touch-icon" href="/icon-512.svg" />
     <title>Kitchen Ledger</title>
+    <script>
+      // Anti-FOUC: apply saved theme before first paint
+      (function () { try { var t = localStorage.getItem('kl-theme'); document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); } catch (e) {} })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

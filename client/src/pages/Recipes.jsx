@@ -134,7 +134,7 @@ export default function Recipes() {
     <div className="max-w-5xl mx-auto space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>
           Resep
         </h1>
         <button
@@ -217,7 +217,7 @@ export default function Recipes() {
               <tbody>
                 {recipes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8" style={{ color: '#94A3B8' }}>
+                    <td colSpan={5} className="text-center py-8" style={{ color: 'var(--text-faint)' }}>
                       Tidak ada resep
                     </td>
                   </tr>
@@ -234,9 +234,9 @@ export default function Recipes() {
                           className="px-2 py-0.5 rounded-full text-xs font-medium"
                           style={{
                             backgroundColor:
-                              r.status === 'ACTIVE' ? '#D1FAE5' : '#FEF3C7',
+                              r.status === 'ACTIVE' ? 'var(--primary-light)' : 'var(--warn-bg)',
                             color:
-                              r.status === 'ACTIVE' ? '#059669' : '#D97706',
+                              r.status === 'ACTIVE' ? 'var(--primary-dark)' : 'var(--accent-dark)',
                           }}
                         >
                           {r.status}
@@ -255,7 +255,7 @@ export default function Recipes() {
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm" style={{ color: '#64748B' }}>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Halaman {page} dari {pagination.totalPages} (Total: {pagination.total})
               </p>
               <div className="flex gap-2">
@@ -290,13 +290,13 @@ export default function Recipes() {
           <div className="modal-box space-y-3">
             <h2
               className="font-semibold text-lg"
-              style={{ color: '#1E293B' }}
+              style={{ color: 'var(--text)' }}
             >
               Resep Baru
             </h2>
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>
                 Nama Resep *
               </label>
               <input
@@ -347,7 +347,7 @@ export default function Recipes() {
             <button
               onClick={addRow}
               className="text-sm"
-              style={{ color: '#10B981' }}
+              style={{ color: 'var(--primary)' }}
             >
               + Tambah Item
             </button>

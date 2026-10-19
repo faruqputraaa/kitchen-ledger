@@ -7,7 +7,6 @@ const unitSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       index: true,
     },
@@ -54,6 +53,18 @@ const unitSchema = new mongoose.Schema(
       index: true,
     },
 
+    isSystem: {
+      type: Boolean,
+      default: true,
+    },
+
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      default: null,
+      index: true,
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,
@@ -93,6 +104,8 @@ unitSchema.index({
   isDeleted: 1,
   status: 1,
 });
+unitSchema.index({ tenantId: 1, code: 1 }, { unique: true, partialFilterExpression: { tenantId: { $exists: true, $ne: null } } });
+unitSchema.index({ tenantId: 1, name: 1 });
 
 const Unit = mongoose.model('Unit', unitSchema);
 

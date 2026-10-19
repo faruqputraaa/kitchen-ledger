@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import authMiddleware from '#middlewares/auth.middleware';
+import { requireTenant } from '#middlewares/tenant.middleware';
 import roleMiddleware from '#middlewares/role.middleware';
 import validate from '#middlewares/validation.middleware';
 
@@ -22,6 +23,7 @@ import {
 const router = Router();
 
 router.use(authMiddleware);
+router.use(requireTenant);
 
 router.get('/', validate(supplierQuerySchema), getSuppliers);
 

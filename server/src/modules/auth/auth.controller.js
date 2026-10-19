@@ -7,6 +7,7 @@ import UnauthorizedError from '#errors/UnauthorizedError';
 
 import env from '#config/env';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
 
 import userService from '#modules/user/user.service';
 import userMapper from '#modules/user/user.mapper';
@@ -14,16 +15,21 @@ import userMapper from '#modules/user/user.mapper';
 import authService from './auth.service.js';
 
 export const register = asyncHandler(async (req, res) => {
-  const result = await authService.register(req.validated.body);
+  // No auto tenant assignment - user must complete invitation
+  const result = await authService.register({
+    ...req.validated.body,
+    tenantId: null,
+  });
 
   setRefreshCookie(res, result.refreshToken);
-
   delete result.refreshToken;
 
+  // SUPER_ADMIN doesn't need invite - they have global access
+  const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
     statusCode: 201,
-    message: 'User registered successfully',
-    data: result,
+    message: needsInvite ? 'User registered successfully. Please enter invitation code to join a tenant.' : 'User registered successfully',
+    data: { ...result, needsInvite },
   });
 });
 
@@ -35,12 +41,13 @@ export const login = asyncHandler(async (req, res) => {
   });
 
   setRefreshCookie(res, result.refreshToken);
-
   delete result.refreshToken;
 
+  // SUPER_ADMIN doesn't need invite - they have global access
+  const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
-    message: 'Login successful',
-    data: result,
+    message: needsInvite ? 'Login successful. Please enter invitation code.' : 'Login successful',
+    data: { ...result, needsInvite },
   });
 });
 
@@ -90,8 +97,10 @@ export const logoutAll = asyncHandler(async (req, res) => {
 export const me = asyncHandler(async (req, res) => {
   const user = await userService.findCurrentUser(req.user.id);
 
+  // SUPER_ADMIN doesn't need invite - they have global access without a tenant
+  const needsInvite = !user.tenantId && user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
-    data: userMapper.toResponse(user),
+    data: { ...userMapper.toResponse(user), needsInvite },
   });
 });
 
@@ -112,6 +121,17 @@ export const googleCallback = (req, res, next) => {
       const result = await authService.googleLogin(user);
 
       setRefreshCookie(res, result.refreshToken);
+
+      const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
+      if (needsInvite) {
+        const query = new URLSearchParams({
+          token: result.accessToken,
+          needsInvite: 'true',
+          email: result.user.email,
+          name: result.user.name,
+        }).toString();
+        return res.redirect(`${env.clientUrl}/onboarding/invite?${query}`);
+      }
 
       const query = new URLSearchParams({
         token: result.accessToken,

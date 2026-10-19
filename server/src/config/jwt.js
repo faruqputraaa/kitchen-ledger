@@ -10,3 +10,7 @@ export const generateAccessToken = (payload) => {
 export const verifyAccessToken = (token) => {
   return jwt.verify(token, env.jwt.accessSecret);
 };
+
+export const decodeToken = (token) => {
+  return jwt.decode(token);
+};

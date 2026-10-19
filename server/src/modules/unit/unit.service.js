@@ -6,7 +6,7 @@ import counterService from '#shared/counter/counter.service';
 import unitRepository from './unit.repository.js';
 
 class UnitService {
-  async create(dto, userId) {
+  async create(dto, userId, tenantId) {
     const duplicate = await unitRepository.findOne({
       isDeleted: false,
       $or: [{ name: dto.name }, { symbol: dto.symbol }],
@@ -23,6 +23,8 @@ class UnitService {
     return unitRepository.create({
       code,
       ...dto,
+      isSystem: !tenantId,
+      tenantId: tenantId || null,
       createdBy: userId,
     });
   }
@@ -51,8 +53,10 @@ class UnitService {
     return unit;
   }
 
-  async update(id, dto, userId) {
+  async update(id, dto, userId, tenantId) {
     const current = await this.findById(id);
+    if (current.isSystem && !current.tenantId) throw new ForbiddenError('Unit system tidak bisa diubah');
+    if (current.tenantId && tenantId && current.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Unit not found');
 
     if (dto.name || dto.symbol) {
       const duplicate = await unitRepository.findOne({
@@ -74,8 +78,10 @@ class UnitService {
     });
   }
 
-  async delete(id, userId) {
-    await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const current = await this.findById(id);
+    if (current.isSystem && !current.tenantId) throw new ForbiddenError('Unit system tidak bisa dihapus');
+    if (current.tenantId && tenantId && current.tenantId.toString() !== tenantId.toString()) throw new NotFoundError('Unit not found');
 
     return unitRepository.softDelete(id, userId);
   }

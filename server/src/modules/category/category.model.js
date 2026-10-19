@@ -8,7 +8,6 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
       index: true,
     },
 
@@ -31,6 +30,18 @@ const categorySchema = new mongoose.Schema(
       type: String,
       enum: Object.values(CATEGORY_STATUS),
       default: CATEGORY_STATUS.ACTIVE,
+      index: true,
+    },
+
+    isSystem: {
+      type: Boolean,
+      default: true,
+    },
+
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      default: null,
       index: true,
     },
 
@@ -73,6 +84,8 @@ categorySchema.index({
   isDeleted: 1,
   status: 1,
 });
+categorySchema.index({ tenantId: 1, code: 1 }, { unique: true, partialFilterExpression: { tenantId: { $exists: true, $ne: null } } });
+categorySchema.index({ tenantId: 1, name: 1 });
 
 const Category = mongoose.model('Category', categorySchema);
 

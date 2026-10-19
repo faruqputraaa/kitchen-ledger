@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { Package, ShoppingCart, ChefHat, Utensils, CheckCircle2, ArrowRight } from 'lucide-react';
 import api from '../lib/axios';
 
 const formatCurrency = (amount) =>
@@ -42,10 +43,10 @@ export default function Dashboard() {
   const { data: recipes } = useQuery({ queryKey: ['recent-recipes'], queryFn: fetchRecentRecipes });
 
   const cards = [
-    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', color: '#10B981', icon: '📦' },
-    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', color: '#F59E0B', icon: '🛒' },
-    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', color: '#8B5CF6', icon: '📝' },
-    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', color: '#10B981', icon: '🍽️' },
+    { label: 'Bahan', value: totalIngredients ?? 0, to: '/ingredients', Icon: Package },
+    { label: 'Pembelian', value: totalPurchases ?? 0, to: '/purchases', Icon: ShoppingCart },
+    { label: 'Resep', value: totalRecipes ?? 0, to: '/recipes', Icon: ChefHat },
+    { label: 'Menu', value: totalMenus ?? 0, to: '/menus', Icon: Utensils },
   ];
 
   const lowList = lowStock ?? [];
@@ -54,13 +55,20 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 p-4 md:p-6">
-      <h1 className="text-2xl font-bold" style={{ color: '#0F172A' }}>Dashboard</h1>
+      <h1 className="text-2xl font-bold" style={{ color: 'var(--heading)' }}>Dashboard</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {cards.map((c) => (
-          <Link key={c.label} to={c.to} className="card text-white hover:opacity-90 transition-opacity text-center relative overflow-hidden" style={{ backgroundColor: c.color }}>
-            <span className="text-3xl sm:text-3xl md:text-4xl block mb-1">{c.icon}</span>
-            <p className="text-xs sm:text-sm opacity-90 font-medium">{c.label}</p>
+          <Link key={c.label} to={c.to} className="card transition-colors text-left relative overflow-hidden" style={{ color: 'var(--heading)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = ''; }}>
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                <c.Icon className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
+              </div>
+              <span className="text-xs" style={{ color: 'var(--text-faint)' }}>→</span>
+            </div>
+            <p className="text-xs sm:text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{c.label}</p>
             <p className="text-xl sm:text-2xl md:text-3xl font-bold mt-1">{c.value}</p>
           </Link>
         ))}
@@ -73,15 +81,15 @@ export default function Dashboard() {
           {/* Low Stock Card */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg" style={{ color: '#0F172A' }}>Peringatan Stok Rendah</h2>
+              <h2 className="font-semibold text-lg" style={{ color: 'var(--heading)' }}>Peringatan Stok Rendah</h2>
               {lowList.length > 0 && (
-                <span className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-600 font-medium">
+                <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: 'var(--err-bg)', color: 'var(--err-dark)' }}>
                   {lowList.length} item
                 </span>
               )}
             </div>
             {lowList.length === 0 ? (
-              <p className="text-sm" style={{ color: '#64748B' }}>Semua bahan di atas stok minimum ✅</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Semua bahan di atas stok minimum <CheckCircle2 className="w-4 h-4 inline" style={{ color: 'var(--primary)' }} /></p>
             ) : (
               <div className="table-wrap">
                 <table>
@@ -90,8 +98,8 @@ export default function Dashboard() {
                     {lowList.map((i) => (
                       <tr key={i.id} className="border-b">
                         <td className="py-2">{i.name}</td>
-                        <td className="py-2 text-right font-bold" style={{ color: '#F97316' }}>{i.currentStock}</td>
-                        <td className="py-2 text-right" style={{ color: '#64748B' }}>{i.minimumStock}</td>
+                        <td className="py-2 text-right font-bold" style={{ color: 'var(--err-dark)' }}>{i.currentStock}</td>
+                        <td className="py-2 text-right" style={{ color: 'var(--text-muted)' }}>{i.minimumStock}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -106,31 +114,31 @@ export default function Dashboard() {
           {/* Recent Purchases */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg" style={{ color: '#0F172A' }}>Pembelian Terbaru</h2>
-              <Link to="/purchases" className="text-xs" style={{ color: '#10B981' }}>Lihat semua →</Link>
+              <h2 className="font-semibold text-lg" style={{ color: 'var(--heading)' }}>Pembelian Terbaru</h2>
+              <Link to="/purchases" className="text-xs" style={{ color: 'var(--primary)' }}>Lihat semua →</Link>
             </div>
             {recentPurchases.length === 0 ? (
-              <p className="text-center text-sm py-8" style={{ color: '#94A3B8' }}>Belum ada pembelian</p>
+              <p className="text-center text-sm py-8" style={{ color: 'var(--text-faint)' }}>Belum ada pembelian</p>
             ) : (
               <div className="space-y-3">
                 {recentPurchases.map((p) => (
-                  <Link key={p.id} to={`/purchases/${p.id}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                  <Link key={p.id} to={`/purchases/${p.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#FEF3C7' }}>
-                        <span className="text-lg">🛒</span>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                        <ShoppingCart className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
-                        <p className="font-medium text-sm" style={{ color: '#0F172A' }}>{p.code}</p>
-                        <p className="text-xs" style={{ color: '#94A3B8' }}>
+                        <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{p.code}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
                           {p.supplier?.name || 'Tanpa Supplier'} • {new Date(p.purchaseDate).toLocaleDateString('id-ID')}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-sm" style={{ color: '#10B981' }}>{formatCurrency(p.totalAmount || 0)}</p>
+                      <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{formatCurrency(p.totalAmount || 0)}</p>
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{
-                        backgroundColor: p.status === 'COMPLETED' ? '#D1FAE5' : '#FEF3C7',
-                        color: p.status === 'COMPLETED' ? '#059669' : '#D97706',
+                        backgroundColor: p.status === 'COMPLETED' ? 'var(--primary-light)' : 'var(--surface-hover)',
+                        color: p.status === 'COMPLETED' ? 'var(--primary-dark)' : 'var(--text-muted)',
                       }}>
                         {p.status}
                       </span>
@@ -144,27 +152,27 @@ export default function Dashboard() {
           {/* Recent Recipes */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg" style={{ color: '#0F172A' }}>Resep Terbaru</h2>
-              <Link to="/recipes" className="text-xs" style={{ color: '#8B5CF6' }}>Lihat semua →</Link>
+              <h2 className="font-semibold text-lg" style={{ color: 'var(--heading)' }}>Resep Terbaru</h2>
+              <Link to="/recipes" className="text-xs" style={{ color: 'var(--primary)' }}>Lihat semua →</Link>
             </div>
             {recentRecipes.length === 0 ? (
-              <p className="text-center text-sm py-8" style={{ color: '#94A3B8' }}>Belum ada resep</p>
+              <p className="text-center text-sm py-8" style={{ color: 'var(--text-faint)' }}>Belum ada resep</p>
             ) : (
               <div className="space-y-3">
                 {recentRecipes.map((r) => (
-                  <Link key={r.id} to={`/recipes/${r.id}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+                  <Link key={r.id} to={`/recipes/${r.id}`} className="flex items-center justify-between p-3 rounded-lg transition-colors" onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--surface-hover)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#EDE9FE' }}>
-                        <span className="text-lg">📝</span>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--primary-light)' }}>
+                        <ChefHat className="w-5 h-5" style={{ color: 'var(--primary-dark)' }} strokeWidth={1.75} />
                       </div>
                       <div>
-                        <p className="font-medium text-sm" style={{ color: '#0F172A' }}>{r.name}</p>
-                        <p className="text-xs" style={{ color: '#94A3B8' }}>{r.code} • {formatCurrency(r.foodCost || 0)}</p>
+                        <p className="font-medium text-sm" style={{ color: 'var(--heading)' }}>{r.name}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-faint)' }}>{r.code} • {formatCurrency(r.foodCost || 0)}</p>
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full" style={{
-                      backgroundColor: r.status === 'ACTIVE' ? '#D1FAE5' : '#FEF3C7',
-                      color: r.status === 'ACTIVE' ? '#059669' : '#D97706',
+                      backgroundColor: r.status === 'ACTIVE' ? 'var(--primary-light)' : 'var(--surface-hover)',
+                      color: r.status === 'ACTIVE' ? 'var(--primary-dark)' : 'var(--text-muted)',
                     }}>
                       {r.status}
                     </span>

@@ -17,6 +17,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({
@@ -43,12 +44,17 @@ class AuthService {
       throw new UnauthorizedError('Invalid email or password');
     }
 
+    if (user.status === 'INACTIVE') {
+      throw new UnauthorizedError('Account is inactive');
+    }
+
     await userService.updateLastLogin(user._id);
 
     const accessToken = generateAccessToken({
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({
@@ -94,6 +100,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     return {
@@ -122,6 +129,7 @@ class AuthService {
       id: user._id,
       code: user.code,
       role: user.role,
+      tenantId: user.tenantId,
     });
 
     const refreshToken = await refreshTokenService.create({

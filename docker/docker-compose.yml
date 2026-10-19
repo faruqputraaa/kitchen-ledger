@@ -4,7 +4,7 @@
 
 services:
   mongodb:
-    image: mongo:8
+    image: mongo:latest
     container_name: mongodb
     restart: unless-stopped
     command:
@@ -20,13 +20,15 @@ services:
     volumes:
       - mongodb_data:/data/db
       - ./keyfile:/data/configdb/keyfile
+    ports:
+      - "127.0.0.1:27017:27017"
     networks:
-      - kl-network
+      - app-network
 
   server:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile.server
+      context: ../server
+      dockerfile: Dockerfile
     container_name: kl-server
     restart: unless-stopped
     env_file:
@@ -36,7 +38,7 @@ services:
     volumes:
       - /opt/logs/kitchen-ledger:/app/src/logs
     networks:
-      - kl-network
+      - app-network
     depends_on:
       - mongodb
 
@@ -49,33 +51,33 @@ services:
     ports:
       - "3000:80"
     networks:
-      - kl-network
+      - app-network
 
-  paddleocr:
-    build:
-      context: ../../paddleocr
-      dockerfile: Dockerfile
-    container_name: kl-paddleocr
-    restart: unless-stopped
-    env_file:
-      - ../../paddleocr/.env
-    ports:
-      - "8001:8000"
-    volumes:
-      - paddleocr_cache:/app/.paddleocr
-    networks:
-      - kl-network
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
+#  paddleocr:
+#    build:
+#      context: ../../paddleocr
+#      dockerfile: Dockerfile
+#    container_name: kl-paddleocr
+#    restart: unless-stopped
+#    env_file:
+#      - ../../paddleocr/.env
+#    ports:
+#      - "8001:8000"
+#    volumes:
+#      - paddleocr_cache:/app/.paddleocr
+#    networks:
+#      - app-network
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 1G
+ #       reservations:
+#          memory: 512M
 
 networks:
-  kl-network:
+  app-network:
     external: true
 
 volumes:
-  paddleocr_cache:
+ # paddleocr_cache:
   mongodb_data:

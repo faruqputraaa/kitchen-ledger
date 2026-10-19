@@ -5,6 +5,10 @@ import api from '../lib/axios';
 
 const OCR_API_URL = '/ocr';
 
+function getTenantId() {
+  try { return JSON.parse(atob(localStorage.getItem('accessToken').split('.')[1])).tenantId; } catch { return null; }
+}
+
 const fetchPurchases = async (params = {}) => {
   const query = new URLSearchParams();
   if (params.page) query.set('page', params.page);
@@ -14,6 +18,7 @@ const fetchPurchases = async (params = {}) => {
   if (params.order) query.set('order', params.order);
   if (params.status) query.set('status', params.status);
   if (params.supplier) query.set('supplier', params.supplier);
+  if (params.createdBy) query.set('createdBy', params.createdBy);
   const { data } = await api.get(`/purchases?${query.toString()}`);
   return data;
 };
@@ -42,6 +47,7 @@ const formatPrice = (price) =>
   `Rp ${(price ?? 0).toLocaleString('id-ID')}`;
 
 export default function Purchases() {
+  const tenantId = getTenantId();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -69,14 +75,15 @@ export default function Purchases() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [supplierFilter, setSupplierFilter] = useState('');
+  const [createdByFilter, setCreatedByFilter] = useState('');
   const [sort, setSort] = useState('purchaseDate');
   const [order, setOrder] = useState('desc');
   const [page, setPage] = useState(1);
   const limit = 20;
 
   const { data, isLoading } = useQuery({
-    queryKey: ['purchases', { search, sort, order, page, status: statusFilter, supplier: supplierFilter }],
-    queryFn: () => fetchPurchases({ search, sort, order, page, limit, status: statusFilter, supplier: supplierFilter }),
+    queryKey: ['purchases', { search, sort, order, page, status: statusFilter, supplier: supplierFilter, createdBy: createdByFilter }],
+    queryFn: () => fetchPurchases({ search, sort, order, page, limit, status: statusFilter, supplier: supplierFilter, createdBy: createdByFilter }),
   });
 
   const { data: ingredients = [] } = useQuery({
@@ -92,6 +99,15 @@ export default function Purchases() {
   const { data: units = [] } = useQuery({
     queryKey: ['units-list'],
     queryFn: fetchUnits,
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['users-list', tenantId],
+    queryFn: async () => {
+      const { data } = await api.get(`/tenants/${tenantId}/members`);
+      return data.data;
+    },
+    enabled: !!tenantId,
   });
 
   const purchases = data?.data || [];
@@ -258,7 +274,7 @@ export default function Purchases() {
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: '#1E293B' }}>Pembelian</h1>
+        <h1 className="text-xl font-bold" style={{ color: 'var(--text)' }}>Pembelian</h1>
         <button onClick={() => setOpen(true)} className="btn-primary text-sm">+ Pembelian Baru</button>
       </div>
 
@@ -275,6 +291,10 @@ export default function Purchases() {
             <select value={supplierFilter} onChange={(e) => { setSupplierFilter(e.target.value); setPage(1); }} className="w-40">
               <option value="">Semua Supplier</option>
               {suppliers.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
+            </select>
+            <select value={createdByFilter} onChange={(e) => { setCreatedByFilter(e.target.value); setPage(1); }} className="w-40">
+              <option value="">Semua Pembeli</option>
+              {users.map((u) => (<option key={u._id} value={u._id}>{u.name}</option>))}
             </select>
             <select value={sort} onChange={(e) => handleSort(e.target.value)} className="w-36">
               <option value="purchaseDate">Tanggal</option><option value="code">Kode</option><option value="totalAmount">Total</option>
@@ -297,21 +317,23 @@ export default function Purchases() {
                   <th onClick={() => handleSort('code')} className="cursor-pointer select-none">Kode {sort === 'code' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
                   <th>Supplier</th>
                   <th onClick={() => handleSort('purchaseDate')} className="cursor-pointer select-none">Tanggal {sort === 'purchaseDate' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
+                  <th>Dibeli Oleh</th>
                   <th>Status</th>
                   <th onClick={() => handleSort('totalAmount')} className="cursor-pointer select-none text-right">Total {sort === 'totalAmount' && (order === 'asc' ? ' ↑' : ' ↓')}</th>
                 </tr>
               </thead>
               <tbody>
                 {purchases.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-8" style={{ color: '#94A3B8' }}>Tidak ada pembelian</td></tr>
+                  <tr><td colSpan={6} className="text-center py-8" style={{ color: 'var(--text-faint)' }}>Tidak ada pembelian</td></tr>
                 ) : (
                   purchases.map((p) => (
                     <tr key={p.id} className="cursor-pointer hover:bg-slate-50" onClick={() => navigate(`/purchases/${p.id}`)}>
                       <td className="font-medium">{p.code}</td>
                       <td>{p.supplier?.name || '-'}</td>
                       <td>{new Date(p.purchaseDate).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td>{p.createdBy?.name || '-'}</td>
                       <td>
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: p.status === 'COMPLETED' ? '#D1FAE5' : p.status === 'ORDERED' ? '#DBEAFE' : p.status === 'CANCELLED' ? '#FEE2E2' : '#FEF3C7', color: p.status === 'COMPLETED' ? '#059669' : p.status === 'ORDERED' ? '#2563EB' : p.status === 'CANCELLED' ? '#DC2626' : '#D97706' }}>{p.status}</span>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ backgroundColor: p.status === 'COMPLETED' ? 'var(--primary-light)' : p.status === 'ORDERED' ? 'var(--info-bg)' : p.status === 'CANCELLED' ? 'var(--err-bg)' : 'var(--warn-bg)', color: p.status === 'COMPLETED' ? 'var(--primary-dark)' : p.status === 'ORDERED' ? 'var(--info-dark)' : p.status === 'CANCELLED' ? 'var(--err-dark)' : 'var(--accent-dark)' }}>{p.status}</span>
                       </td>
                       <td className="text-right font-semibold">{formatPrice(p.totalAmount)}</td>
                     </tr>
@@ -322,7 +344,7 @@ export default function Purchases() {
           </div>
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-sm" style={{ color: '#64748B' }}>Halaman {page} dari {pagination.totalPages} (Total: {pagination.total})</p>
+              <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Halaman {page} dari {pagination.totalPages} (Total: {pagination.total})</p>
               <div className="flex gap-2">
                 <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="btn-outline text-sm px-3">Prev</button>
                 <button onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))} disabled={page === pagination.totalPages} className="btn-outline text-sm px-3">Next</button>
@@ -335,31 +357,31 @@ export default function Purchases() {
       {open && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && closeModal()}>
           <div className="modal-box space-y-3">
-            <h2 className="font-semibold text-lg" style={{ color: '#1E293B' }}>Pembelian Baru</h2>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--text)' }}>Pembelian Baru</h2>
 
             <div className="mb-3">
-              <label className="cursor-pointer block w-full px-3 py-2 rounded border" style={{ borderColor: '#E2E8F0', backgroundColor: '#F8FAFC' }}>
+              <label className="cursor-pointer block w-full px-3 py-2 rounded border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-alt)' }}>
                 <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: '#10B981' }}>
+                  <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--primary)' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-sm font-medium flex-1" style={{ color: '#10B981' }}>Scan Nota</span>
-                  {scanning && <span className="text-xs animate-pulse" style={{ color: '#94A3B8' }}>Memproses...</span>}
+                  <span className="text-sm font-medium flex-1" style={{ color: 'var(--primary)' }}>Scan Nota</span>
+                  {scanning && <span className="text-xs animate-pulse" style={{ color: 'var(--text-faint)' }}>Memproses...</span>}
                 </div>
                 <input type="file" accept="image/*" onChange={handleScanReceipt} disabled={scanning} className="hidden" id="scan-receipt-input" />
               </label>
-              <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>Pilih foto nota belanja untuk auto-isi form</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-faint)' }}>Pilih foto nota belanja untuk auto-isi form</p>
             </div>
 
             {previewImage && (
               <div className="mb-3 relative">
-                <img src={previewImage} alt="Preview nota" className="max-h-64 w-auto rounded border" style={{ borderColor: '#E2E8F0' }} />
+                <img src={previewImage} alt="Preview nota" className="max-h-64 w-auto rounded border" style={{ borderColor: 'var(--border)' }} />
                 <button type="button" onClick={() => { URL.revokeObjectURL(previewImage); setPreviewImage(null); }} className="absolute top-2 right-2 p-1 rounded-full" style={{ backgroundColor: 'rgba(0,0,0,0.5)', color: 'white' }}>×</button>
               </div>
             )}
 
             <div>
-              <label className="text-sm font-medium mb-1 block" style={{ color: '#475569' }}>Supplier <span style={{ color: '#94A3B8', fontWeight: 'normal' }}>(opsional — ketik nama, otomatis dibuat jika baru)</span></label>
+              <label className="text-sm font-medium mb-1 block" style={{ color: 'var(--text-soft)' }}>Supplier <span style={{ color: 'var(--text-faint)', fontWeight: 'normal' }}>(opsional — ketik nama, otomatis dibuat jika baru)</span></label>
               <input type="text" list="supplier-list" value={supplierText} onChange={(e) => setSupplierField(e.target.value)} placeholder="Nama supplier..." className="w-full" />
               <datalist id="supplier-list">
                 {suppliers.map((s) => (<option key={s.id} value={s.name} />))}
@@ -367,25 +389,44 @@ export default function Purchases() {
             </div>
 
             {items.map((row, i) => (
-              <div key={i} className="grid grid-cols-[1fr_80px_100px_80px_40px] gap-3 mb-3 items-start">
-                <div className="min-w-0">
-                  <input type="text" list={`ingredient-list-${i}`} value={row.ingredientText} onChange={(e) => setItemIngredient(i, e.target.value)} placeholder="Nama bahan..." className="w-full" />
-                  <datalist id={`ingredient-list-${i}`}>
-                    {ingredients.map((ing) => (<option key={ing.id} value={ing.name} />))}
-                  </datalist>
-                  {row.unit && <span className="text-xs" style={{ color: '#94A3B8' }}>Default: {row.unit}</span>}
+              <div key={i} className="space-y-3 mb-3 p-3 rounded-lg border" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--surface-alt)' }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-soft)' }}>Item #{i + 1}</span>
+                  <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-1.5 rounded" title="Hapus item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
                 </div>
-                <input type="number" placeholder="Qty" value={row.quantity} onChange={(e) => updateRow(i, 'quantity', e.target.value)} className="w-full" />
-                <input type="number" placeholder="Harga" value={row.unitPrice} onChange={(e) => updateRow(i, 'unitPrice', e.target.value)} className="w-full" />
-                <input type="text" list={`unit-list-${i}`} value={row.unit || ''} onChange={(e) => updateRow(i, 'unit', e.target.value)} placeholder="Unit" className="w-full" />
-                <datalist id={`unit-list-${i}`}>
-                  {units.map((u) => (<option key={u.id} value={u.symbol} />))}
-                </datalist>
-                <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-2 rounded" title="Hapus item">−</button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_80px_100px_80px_40px] gap-3 items-start">
+                  <div className="min-w-0 lg:col-span-1">
+                    <input type="text" list={`ingredient-list-${i}`} value={row.ingredientText} onChange={(e) => setItemIngredient(i, e.target.value)} placeholder="Nama bahan..." className="w-full" />
+                    <datalist id={`ingredient-list-${i}`}>
+                      {ingredients.map((ing) => (<option key={ing.id} value={ing.name} />))}
+                    </datalist>
+                    {row.unit && <span className="text-xs" style={{ color: 'var(--text-faint)' }}>Default: {row.unit}</span>}
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[80px]">
+                    <input type="number" placeholder="Qty" value={row.quantity} onChange={(e) => updateRow(i, 'quantity', e.target.value)} className="w-full" />
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[100px]">
+                    <input type="number" placeholder="Harga" value={row.unitPrice} onChange={(e) => updateRow(i, 'unitPrice', e.target.value)} className="w-full" />
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[80px]">
+                    <input type="text" list={`unit-list-${i}`} value={row.unit || ''} onChange={(e) => updateRow(i, 'unit', e.target.value)} placeholder="Unit" className="w-full" />
+                    <datalist id={`unit-list-${i}`}>
+                      {units.map((u) => (<option key={u.id} value={u.symbol} />))}
+                    </datalist>
+                  </div>
+                  <div className="w-full sm:w-full lg:w-[40px] lg:flex lg:items-end">
+                    <button type="button" onClick={() => setItems(items.filter((_, idx) => idx !== i))} className="text-red-500 hover:bg-red-50 p-2 rounded lg:hidden" title="Hapus item">−</button>
+                  </div>
+                </div>
               </div>
             ))}
 
-            <button onClick={addRow} className="text-sm" style={{ color: '#10B981' }}>+ Tambah Item</button>
+            <button onClick={addRow} className="text-sm" style={{ color: 'var(--primary)' }}>+ Tambah Item</button>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
 

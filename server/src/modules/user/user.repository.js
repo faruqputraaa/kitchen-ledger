@@ -17,8 +17,12 @@ class UserRepository {
     return User.findOne({ email });
   }
 
-  findByEmailWithPassword(email) {
-    return User.findOne({ email });
+  findByEmailWithPassword(email, tenantId) {
+    const query = { email };
+    if (tenantId) {
+      query.tenantId = tenantId;
+    }
+    return User.findOne(query);
   }
 
   findByGoogleId(googleId) {
@@ -30,6 +34,24 @@ class UserRepository {
       new: true,
       runValidators: true,
     });
+  }
+
+  updateTenantAndRole(id, tenantId, role) {
+    const update = { tenantId };
+    if (role) update.role = role;
+    return User.findByIdAndUpdate(id, update, { new: true });
+  }
+
+  updateTenant(id, tenantId) {
+    return User.findByIdAndUpdate(id, { tenantId }, { new: true });
+  }
+
+  findByTenant(tenantId) {
+    return User.find({ tenantId }).select('-password').lean();
+  }
+
+  countByTenant(tenantId) {
+    return User.countDocuments({ tenantId });
   }
 
   delete(id) {

@@ -8,24 +8,25 @@ const recipeItemSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-
     ingredient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Ingredient',
       required: true,
     },
-
-    // unit yang dipakai di resep (boleh beda dari unit ingredient)
     unit: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Unit',
       required: true,
     },
-
     quantity: {
       type: Number,
       required: true,
       min: 0,
+    },
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      index: true,
     },
   },
   {
@@ -33,6 +34,8 @@ const recipeItemSchema = new mongoose.Schema(
     versionKey: false,
   }
 );
+
+recipeItemSchema.index({ tenantId: 1 });
 
 const RecipeItem = mongoose.model(
   'RecipeItem',

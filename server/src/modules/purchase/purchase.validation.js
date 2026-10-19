@@ -53,5 +53,6 @@ export const purchaseQuerySchema = z.object({
     // Filter fields (pisah dari sort)
     status: z.enum(Object.values(PURCHASE_STATUS)).optional(),
     supplier: objectIdSchema.optional(),
+    createdBy: objectIdSchema.optional(),
   }),
 });

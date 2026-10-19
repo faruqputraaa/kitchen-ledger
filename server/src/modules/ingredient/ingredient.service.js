@@ -1,3 +1,4 @@
+import Tenant from '#modules/tenant/tenant.model';
 import NotFoundError from '#shared/errors/NotFoundError';
 import ValidationError from '#shared/errors/ValidationError';
 
@@ -6,8 +7,16 @@ import { ingredientPriceHistoryRepository } from '../ingredient-price-history/in
 import counterService from '#shared/counter/counter.service';
 
 class IngredientService {
-  async create(dto, userId) {
-    const code = await counterService.generate('ingredient');
+  async create(dto, userId, tenantId) {
+    const code = await counterService.generate('ingredient', tenantId);
+    // Enforce tenant limit
+    if (tenantId) {
+      const tenant = await Tenant.findById(tenantId);
+      if (tenant) {
+        const count = await ingredientRepository.count({ tenantId });
+        if (count >= tenant.limits.maxIngredients) throw new ValidationError('Tenant ingredient limit reached');
+      }
+    }
 
     const ingredient = await ingredientRepository.create({
       code,
@@ -20,6 +29,7 @@ class IngredientService {
       lastPurchaseDate: null,
       status: dto.status ?? 'ACTIVE',
       notes: dto.notes ?? '',
+      tenantId,
       createdBy: userId,
     });
 
@@ -42,19 +52,22 @@ class IngredientService {
     };
   }
 
-  async findById(id) {
+  async findById(id, tenantId) {
     const ingredient =
       await ingredientRepository.findById(id);
 
     if (!ingredient) {
       throw new NotFoundError('Ingredient not found');
     }
+    if (tenantId && ingredient.tenantId && ingredient.tenantId.toString() !== tenantId.toString()) {
+      throw new NotFoundError('Ingredient not found');
+    }
 
     return ingredient;
   }
 
-  async update(id, dto, userId) {
-    const existing = await this.findById(id);
+  async update(id, dto, userId, tenantId) {
+    const existing = await this.findById(id, tenantId);
 
     const patch = { updatedBy: userId };
 
@@ -77,8 +90,8 @@ class IngredientService {
     );
   }
 
-  async delete(id, userId) {
-    const ingredient = await this.findById(id);
+  async delete(id, userId, tenantId) {
+    const ingredient = await this.findById(id, tenantId);
 
     return ingredientRepository.softDelete(
       ingredient._id,
@@ -132,6 +145,7 @@ class IngredientService {
         date: new Date(),
         lastPrice: unitPrice,
         purchaseId: purchaseId,
+        tenantId: ingredient.tenantId,
       },
       session
     );

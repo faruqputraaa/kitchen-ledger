@@ -8,7 +8,8 @@ export const createPurchase = asyncHandler(
   async (req, res) => {
     const purchase = await purchaseService.create(
       req.validated.body,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -21,9 +22,10 @@ export const createPurchase = asyncHandler(
 
 export const getPurchases = asyncHandler(
   async (req, res) => {
-    const result = await purchaseService.findAll(
-      req.validated.query
-    );
+    const result = await purchaseService.findAll({
+      ...req.validated.query,
+      tenantId: req.tenantId,
+    });
 
     return successResponse(res, {
       data: purchaseMapper.toList(result.data),
@@ -35,7 +37,8 @@ export const getPurchases = asyncHandler(
 export const getPurchaseById = asyncHandler(
   async (req, res) => {
     const purchase = await purchaseService.findById(
-      req.validated.params.id
+      req.validated.params.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -48,7 +51,8 @@ export const deletePurchase = asyncHandler(
   async (req, res) => {
     await purchaseService.delete(
       req.validated.params.id,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {

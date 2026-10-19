@@ -7,7 +7,6 @@ const menuSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
 
@@ -36,6 +35,13 @@ const menuSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
+    },
+
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      required: true,
+      index: true,
     },
 
     // Virtual foodCost (from recipe.virtual foodCost)
@@ -103,6 +109,26 @@ menuSchema.index({ name: 1 });
 menuSchema.index({ recipe: 1 });
 menuSchema.index({ status: 1 });
 menuSchema.index({ isDeleted: 1 });
+menuSchema.index({ tenantId: 1, code: 1 }, { unique: true });
+menuSchema.index({ tenantId: 1, name: 1 });
+
+// Auto-filter by tenantId for all queries
+menuSchema.pre(/^find/, async function () {
+  const tenantId = this.getOptions().tenantId;
+  if (tenantId) {
+    this.where({ tenantId });
+  }
+});
+
+// Auto-set tenantId on create
+menuSchema.pre('save', async function () {
+  if (this.isNew && !this.tenantId) {
+    const tenantId = this.getOptions().tenantId;
+    if (tenantId) {
+      this.tenantId = tenantId;
+    }
+  }
+});
 
 const Menu = mongoose.model('Menu', menuSchema);
 

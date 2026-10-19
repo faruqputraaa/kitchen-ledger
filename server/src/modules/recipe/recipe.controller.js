@@ -9,7 +9,8 @@ export const createRecipe = asyncHandler(
   async (req, res) => {
     const recipe = await recipeService.create(
       req.validated.body,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -22,9 +23,10 @@ export const createRecipe = asyncHandler(
 
 export const getRecipes = asyncHandler(
   async (req, res) => {
-    const result = await recipeService.findAll(
-      req.validated.query
-    );
+    const result = await recipeService.findAll({
+      ...req.validated.query,
+      tenantId: req.tenantId,
+    });
 
     return successResponse(res, {
       data: recipeMapper.toList(result.data),
@@ -36,7 +38,8 @@ export const getRecipes = asyncHandler(
 export const getRecipeById = asyncHandler(
   async (req, res) => {
     const recipe = await recipeService.findById(
-      req.validated.params.id
+      req.validated.params.id,
+      req.tenantId
     );
 
     return successResponse(res, {
@@ -49,7 +52,7 @@ export const deleteRecipe = asyncHandler(
   async (req, res) => {
     await recipeService.delete(
       req.validated.params.id,
-      req.user.id
+      req.user.id, req.tenantId
     );
 
     return successResponse(res, {
@@ -63,7 +66,8 @@ export const updateRecipe = asyncHandler(
     const recipe = await recipeService.update(
       req.validated.params.id,
       req.validated.body,
-      req.user.id
+      req.user.id,
+      req.tenantId
     );
 
     return successResponse(res, {

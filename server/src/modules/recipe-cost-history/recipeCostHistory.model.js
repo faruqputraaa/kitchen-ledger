@@ -18,6 +18,11 @@ const recipeCostHistorySchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    tenantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tenant',
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -25,7 +30,8 @@ const recipeCostHistorySchema = new mongoose.Schema(
   }
 );
 
-recipeCostHistorySchema.index({ recipe: 1, date: -1 }); // Untuk query histori
+recipeCostHistorySchema.index({ recipe: 1, date: -1 });
+recipeCostHistorySchema.index({ tenantId: 1 });
 
 const RecipeCostHistory = mongoose.model(
   'RecipeCostHistory',

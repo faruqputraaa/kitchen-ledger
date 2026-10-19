@@ -41,7 +41,7 @@ export default function PurchaseDetail() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Link to="/purchases" className="text-sm" style={{ color: '#10B981' }}>
+        <Link to="/purchases" className="text-sm" style={{ color: 'var(--primary)' }}>
           ← Kembali ke Pembelian
         </Link>
         <div className="flex gap-2">
@@ -67,43 +67,43 @@ export default function PurchaseDetail() {
       <div className="card">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#1E293B' }}>
+            <h1 className="text-2xl font-bold" style={{ color: 'var(--text)' }}>
               {purchase.code}
             </h1>
-            <p className="text-sm mt-1" style={{ color: '#64748B' }}>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
               {purchase.supplier ? `Supplier: ${purchase.supplier.name}` : 'Tanpa Supplier'}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold" style={{ color: '#10B981' }}>
+            <p className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>
               {formatPrice(purchase.totalAmount || 0)}
             </p>
-            <p className="text-sm" style={{ color: '#64748B' }}>Total Pembelian</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Total Pembelian</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t" style={{ borderColor: '#E2E8F0' }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Tanggal</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Tanggal</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {formatDate(purchase.purchaseDate)}
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Status</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Status</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {purchase.status}
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Jumlah Item</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Jumlah Item</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {items.length}
             </p>
           </div>
           <div>
-            <p className="text-sm" style={{ color: '#64748B' }}>Catatan</p>
-            <p className="text-xl font-semibold" style={{ color: '#1E293B' }}>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Catatan</p>
+            <p className="text-xl font-semibold" style={{ color: 'var(--text)' }}>
               {purchase.note || '-'}
             </p>
           </div>
@@ -112,11 +112,11 @@ export default function PurchaseDetail() {
 
       {/* Items Table */}
       <div className="card">
-        <h2 className="font-semibold mb-4" style={{ color: '#1E293B' }}>
+        <h2 className="font-semibold mb-4" style={{ color: 'var(--text)' }}>
           Item Pembelian ({items.length})
         </h2>
         {items.length === 0 ? (
-          <p className="text-center text-sm py-8" style={{ color: '#64748B' }}>
+          <p className="text-center text-sm py-8" style={{ color: 'var(--text-muted)' }}>
             Tidak ada item
           </p>
         ) : (

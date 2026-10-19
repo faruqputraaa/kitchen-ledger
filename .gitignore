@@ -31,5 +31,8 @@ Thumbs.db
 # coverage
 coverage
 
+# docs (generated locally, not committed)
+docs/
+
 # secrets
 docker/keyfile
