@@ -13,7 +13,6 @@ Aplikasi manajemen resep, inventory, food cost, OCR nota, dan analisis pengeluar
 - [Multi-Tenancy](#multi-tenancy)
 - [SUPER_ADMIN Dashboard](#super_admin-dashboard)
 - [Deploy Docker](#deploy-docker)
-- [QA & Arsitektur](#qa--arsitektur)
 - [Contributing](#contributing)
 
 ---
@@ -158,28 +157,6 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/   # 404 (normal, n
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/   # 200 (frontend)
 ```
 
-### Verifikasi CORS (production)
-
-```bash
-curl -s -o /dev/null -w "%{http_code}" \
-  -H "Origin: https://ledger.imposibru.fun" \
-  -H "Access-Control-Request-Method: GET" \
-  -X OPTIONS http://localhost:5000/api/v1/ingredients?limit=1
-```
-Harusnya `204` (CORS diterima).
-
----
-
-## 🧪 QA & Arsitektur
-
-Dokumentasi lengkap tersedia di folder `docs/` (tidak di-commit ke GitHub, lihat `.gitignore`):
-
-| File | Isi |
-|------|-----|
-| `docs/QA_MULTITENANT.md` | QA checklist 58 test case: auth, invite flow, cross-tenant isolation, SUPER_ADMIN bypass, legacy index drop, client build order |
-| `docs/SA_MULTITENANT.md` | Software Architecture: request flow diagram, data model, middleware order, JWT shape, invite code lifecycle, migration steps, deploy order, rollback plan |
-
----
 
 ## 🔄 Migration (Existing Data)
 
@@ -187,7 +164,7 @@ Kalau sudah ada data sebelum multi-tenancy, jalankan migration:
 
 ```bash
 # Dari host (karena .env pakai host 'mongodb' yang tidak resolve dari host)
-MONGODB_URI="mongodb://root:adminhost123@localhost:27017/kitchen-ledger?authSource=admin&directConnection=true" \
+MONGODB_URI="mongodb://example:example123@localhost:27017/kitchen-ledger?authSource=admin&directConnection=true" \
 node scripts/migrate-localhost.js
 ```
 
@@ -215,4 +192,3 @@ MIT License.
 
 ---
 
-> 💡 **Catatan:** Semua perintah docker di lingkungan production butuh `sudo`. File `.env` dan `docker/keyfile` tidak di-commit (ada di `.gitignore`).
