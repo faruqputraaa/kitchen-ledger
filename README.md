@@ -40,7 +40,6 @@ kitchen-ledger/
 ├── server/              # Express backend (port 5000)
 ├── scripts/             # Migration & seed scripts
 ├── docker/              # Docker Compose + Dockerfile
-├── docs/                # Dokumentasi (QA, SA - generated locally)
 └── README.md
 ```
 
@@ -186,9 +185,5 @@ Script akan:
 
 ---
 
-## 📄 Lisensi
 
-MIT License.
-
----
 
