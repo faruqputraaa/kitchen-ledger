@@ -19,6 +19,8 @@ const navLinks = [
   { to: '/recipes', label: 'Resep' },
   { to: '/menus', label: 'Menu' },
   { to: '/stock-adjustments', label: 'Riwayat Stok' },
+  { to: '/admin/tenants', label: 'Admin Tenants', adminOnly: true },
+  { to: '/admin/overview', label: 'Admin Overview', adminOnly: true },
 ];
 
 const flatNav = [
@@ -32,6 +34,7 @@ const flatNav = [
   { to: '/menus', label: 'Menu' },
   { to: '/stock-adjustments', label: 'Riwayat Stok' },
   { to: '/admin/tenants', label: 'Admin Tenants', adminOnly: true },
+  { to: '/admin/overview', label: 'Admin Overview', adminOnly: true },
 ];
 
 export default function Layout() {
@@ -84,7 +87,7 @@ export default function Layout() {
           Kitchen Ledger
         </Link>
         <div className="flex items-center gap-1" ref={dropdownRef}>
-          {navLinks.map((l) =>
+          {navLinks.filter(l => isSuperAdmin ? l.adminOnly : !l.adminOnly).map((l) =>
             l.children ? (
               <div key={l.label} className="relative">
                 <button
@@ -122,6 +125,9 @@ export default function Layout() {
           </button>
           <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {user?.name || user?.email || 'User'}
+            {isSuperAdmin && (
+              <span className="ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase" style={{ backgroundColor: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent-border)' }}>SUPER_ADMIN</span>
+            )}
           </span>
           <button onClick={handleLogout}
             className="text-sm px-3 py-1.5 rounded-lg transition-colors"
@@ -151,7 +157,7 @@ export default function Layout() {
       {menuOpen && (
         <div className="md:hidden fixed top-14 left-0 right-0 shadow-lg z-40 overflow-y-auto max-h-[calc(100vh-56px)]"
           style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
-          {flatNav.filter(l => !l.adminOnly || isSuperAdmin).map((l) => (
+          {flatNav.filter(l => isSuperAdmin ? l.adminOnly : !l.adminOnly).map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)}
               className="block px-5 py-3 text-sm font-medium"
               style={{ color: 'var(--text)', borderBottom: '1px solid var(--surface-hover)' }}>

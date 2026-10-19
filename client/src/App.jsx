@@ -19,6 +19,8 @@ import StockAdjustment from './pages/StockAdjustment';
 import Invite from './pages/Invite';
 import TenantSettings from './pages/TenantSettings';
 import AdminTenants from './pages/AdminTenants';
+import AdminTenantDetail from './pages/AdminTenantDetail';
+import AdminOverview from './pages/AdminOverview';
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = useAuthStore((s) => s.isAuthenticated());
@@ -60,6 +62,8 @@ function App() {
             <Route path="/stock-adjustments" element={<StockAdjustment />} />
             <Route path="/settings/tenant" element={<TenantSettings />} />
             <Route path="/admin/tenants" element={<AdminTenants />} />
+            <Route path="/admin/tenants/:tenantId" element={<AdminTenantDetail />} />
+            <Route path="/admin/overview" element={<AdminOverview />} />
           </Route>
           
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

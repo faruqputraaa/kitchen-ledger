@@ -46,6 +46,15 @@ export default function TenantSettings() {
     enabled: !!tenantId,
   });
 
+  // Tenant-scoped member dropdown (GET /tenants/:tenantId/members)
+  const { data: usersList } = useQuery({
+    queryKey: ['users-list', tenantId],
+    queryFn: async () => (await api.get(`/tenants/${tenantId}/members`)).data.data,
+    enabled: !!tenantId,
+  });
+
+  const [selectedUserId, setSelectedUserId] = useState('');
+
   useEffect(() => {
     if (tenant) {
       setName(tenant.name || '');
@@ -154,6 +163,22 @@ export default function TenantSettings() {
       {/* Members */}
       <div className="card">
         <h2 className="font-semibold mb-3" style={{ color: 'var(--heading)' }}>Anggota ({members?.length ?? 0})</h2>
+        {usersList && usersList.length > 0 && (
+          <div className="mb-4 flex items-center gap-2">
+            <label className="text-xs" style={{ color: 'var(--text-muted)' }}>Pilih anggota:</label>
+            <select
+              value={selectedUserId}
+              onChange={e => setSelectedUserId(e.target.value)}
+              className="text-xs px-2 py-1 rounded border text-sm"
+              style={{ borderColor: 'var(--border-strong)' }}
+            >
+              <option value="">-- Pilih anggota --</option>
+              {usersList.map((u) => (
+                <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="table-wrap overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

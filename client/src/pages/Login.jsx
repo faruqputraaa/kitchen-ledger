@@ -45,7 +45,8 @@ export default function Login() {
       setGlobalError('');
       const { data } = await api.post('/auth/login', values);
       setAuth(data.data.user, data.data.accessToken);
-      const needsInvite = data.data.needsInvite || !data.data.user?.tenantId;
+      const { user } = data.data;
+      const needsInvite = data.data.needsInvite || (!user?.tenantId && user?.role !== 'SUPER_ADMIN');
       if (needsInvite) {
         navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
       } else {
@@ -65,7 +66,8 @@ export default function Login() {
         password: values.password,
       });
       setAuth(data.data.user, data.data.accessToken);
-      const needsInvite = data.data.needsInvite || !data.data.user?.tenantId;
+      const { user } = data.data;
+      const needsInvite = data.data.needsInvite || (!user?.tenantId && user?.role !== 'SUPER_ADMIN');
       if (needsInvite) {
         navigate('/onboarding/invite?token=' + encodeURIComponent(data.data.accessToken || ''), { replace: true });
       } else {

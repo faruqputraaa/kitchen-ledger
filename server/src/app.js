@@ -77,9 +77,25 @@ const authRateLimit = rateLimit({
 // Apply global limiter
 app.use(globalLimiter);
 
+const corsOrigin = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      const allowed = corsOrigin.length
+        ? corsOrigin
+        : ['https://ledger.imposibru.fun'];
+
+      if (allowed.includes(origin)) return callback(null, true);
+
+      return callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

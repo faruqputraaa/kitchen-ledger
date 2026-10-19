@@ -24,10 +24,12 @@ export const register = asyncHandler(async (req, res) => {
   setRefreshCookie(res, result.refreshToken);
   delete result.refreshToken;
 
+  // SUPER_ADMIN doesn't need invite - they have global access
+  const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
     statusCode: 201,
-    message: 'User registered successfully. Please enter invitation code to join a tenant.',
-    data: { ...result, needsInvite: true },
+    message: needsInvite ? 'User registered successfully. Please enter invitation code to join a tenant.' : 'User registered successfully',
+    data: { ...result, needsInvite },
   });
 });
 
@@ -41,7 +43,8 @@ export const login = asyncHandler(async (req, res) => {
   setRefreshCookie(res, result.refreshToken);
   delete result.refreshToken;
 
-  const needsInvite = !result.user.tenantId;
+  // SUPER_ADMIN doesn't need invite - they have global access
+  const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
     message: needsInvite ? 'Login successful. Please enter invitation code.' : 'Login successful',
     data: { ...result, needsInvite },
@@ -94,8 +97,10 @@ export const logoutAll = asyncHandler(async (req, res) => {
 export const me = asyncHandler(async (req, res) => {
   const user = await userService.findCurrentUser(req.user.id);
 
+  // SUPER_ADMIN doesn't need invite - they have global access without a tenant
+  const needsInvite = !user.tenantId && user.role !== 'SUPER_ADMIN';
   return successResponse(res, {
-    data: { ...userMapper.toResponse(user), needsInvite: !user.tenantId },
+    data: { ...userMapper.toResponse(user), needsInvite },
   });
 });
 
@@ -117,7 +122,7 @@ export const googleCallback = (req, res, next) => {
 
       setRefreshCookie(res, result.refreshToken);
 
-      const needsInvite = !result.user.tenantId;
+      const needsInvite = !result.user.tenantId && result.user.role !== 'SUPER_ADMIN';
       if (needsInvite) {
         const query = new URLSearchParams({
           token: result.accessToken,

@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
     code: {
       type: String,
       required: true,
-      unique: true,
       index: true,
       trim: true,
     },
@@ -23,7 +22,6 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
     },
@@ -93,6 +91,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.index({ tenantId: 1, email: 1 }, { unique: true, sparse: true });
+userSchema.index({ tenantId: 1, code: 1 }, { unique: true });
 
 const User = mongoose.model('User', userSchema);
 

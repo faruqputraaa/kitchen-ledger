@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import api from '../lib/axios';
 
 export default function AdminTenants() {
@@ -41,6 +42,7 @@ export default function AdminTenants() {
                 <td className="text-center">{t.userCount ?? '-'} / {t.limits?.maxUsers}</td>
                 <td className="text-center text-xs" style={{ color: 'var(--text-faint)' }}>{t.createdAt ? new Date(t.createdAt).toLocaleDateString('id-ID') : '-'}</td>
                 <td className="text-right">
+                  <Link to={`/admin/tenants/${t._id}`} className="text-xs px-2 py-1 rounded border" style={{ borderColor: 'var(--border-strong)', color: 'var(--primary)' }}>Lihat Detail</Link>
                   {editing === t._id ? (
                     <div className="flex flex-wrap gap-1 justify-end items-center">
                       <select value={editForm.status} onChange={e => setEditForm({ ...editForm, status: e.target.value })} className="text-xs px-1 py-1 rounded border" style={{ borderColor: 'var(--border-strong)' }}>

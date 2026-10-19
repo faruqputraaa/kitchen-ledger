@@ -30,6 +30,12 @@ const env = {
     password: process.env.OWNER_PASSWORD,
   },
 
+  superAdmin: {
+    name: process.env.SUPER_ADMIN_NAME,
+    email: process.env.SUPER_ADMIN_EMAIL,
+    password: process.env.SUPER_ADMIN_PASSWORD,
+  },
+
 };
 
 if (!process.env.JWT_ACCESS_SECRET) {

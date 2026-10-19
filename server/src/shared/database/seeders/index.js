@@ -9,3 +9,7 @@ export {
 export {
   seedOwner,
 } from './owner.seed.js';
+
+export {
+  seedSuperAdmin,
+} from './superadmin.seed.js';

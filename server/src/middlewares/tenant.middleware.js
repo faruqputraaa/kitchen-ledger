@@ -26,6 +26,13 @@ export const validateTenant = async (req, res, next) => {
 export const requireTenant = async (req, res, next) => {
   try {
     let tenantId = req.tenantId || req.user?.tenantId || null;
+
+    // SUPER_ADMIN bypass tenant requirement (tenantId: null)
+    if (req.user?.role === 'SUPER_ADMIN') {
+      req.mongooseOptions = { ...req.mongooseOptions, tenantId: null };
+      return next();
+    }
+
     if (!tenantId) {
       return res.status(403).json({ success: false, message: 'Tenant not assigned. Please enter invitation code.', needsInvite: true });
     }
